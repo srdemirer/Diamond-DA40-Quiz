@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Uçak Tipleri Limit Quizi</title>
+    <title>Uçuş Okulu Limit Sınav Portalı</title>
     <style>
         * { box-sizing: border-box; }
         body {
@@ -22,7 +22,7 @@
             border-radius: 16px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
             padding: 25px;
-            max-width: 500px;
+            max-width: 550px;
             width: 100%;
         }
         .header { text-align: center; margin-bottom: 20px; }
@@ -43,30 +43,56 @@
         .wrong { background-color: #fed7d7 !important; border-color: #f56565 !important; color: #742a2a !important; font-weight: 600; }
         .explanation { margin-top: 20px; padding: 15px; background-color: #ebf8ff; border-left: 4px solid #3182ce; border-radius: 4px; font-size: 0.95rem; line-height: 1.5; color: #2b6cb0; display: none; }
         .next-btn { display: block; width: 100%; background-color: #0b3c5d; color: white; text-align: center; padding: 14px; margin-top: 20px; border: none; border-radius: 10px; cursor: pointer; font-size: 1rem; font-weight: 600; display: none; box-shadow: 0 4px 6px rgba(11, 60, 93, 0.2); }
-        .score-container { text-align: center; padding: 20px 0; }
+        .score-container { text-align: center; padding: 10px 0; }
         .score-title { font-size: 1.4rem; font-weight: bold; color: #2d3748; margin-bottom: 10px; }
         .score-number { font-size: 3rem; font-weight: 800; color: #328cc1; margin-bottom: 20px; }
-        .restart-btn { background-color: #328cc1; color: white; border: none; padding: 12px 25px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+        .restart-btn { background-color: #328cc1; color: white; border: none; padding: 12px 25px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 15px;}
+        
+        /* Yeni Eklenen Alan Tasarımları */
+        .input-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
+        .input-control { padding: 14px; border-radius: 10px; border: 2px solid #e2e8f0; font-size: 1rem; }
+        .input-btn { background-color: #0b3c5d; color: white; border: none; font-weight: bold; cursor: pointer; }
+        .stats-panel { margin-top: 25px; border-top: 2px dashed #e2e8f0; padding-top: 20px; text-align: left; }
+        .stats-title { font-weight: bold; color: #4a5568; margin-bottom: 10px; font-size: 1.1rem; }
+        #stats-canvas { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; width: 100%; margin-top: 10px; }
+        .user-welcome { font-size: 0.95rem; color: #4a5568; margin-bottom: 15px; font-weight: 600; text-align: center; }
     </style>
 </head>
 <body>
 
 <div class="quiz-container">
     <div class="header">
-        <h1 id="main-title">Uçuş Öncesi Limit Kontrolü ✈️</h1>
-        <p id="question-counter">Lütfen uçacağınız uçak tipini seçin</p>
+        <h1 id="main-title">Uçuş Öncesi Limit Portalı ✈️</h1>
+        <p id="question-counter">Sistem Başlatılıyor...</p>
     </div>
     
     <div class="progress-bar" id="progress-bar-container"><div class="progress-fill" id="progress-fill"></div></div>
 
-    <div id="aircraft-selector" class="options">
-        <button class="btn aircraft-btn" onclick="startQuiz('da40')">Diamond DA40 NG</button>
-        <button class="btn aircraft-btn" onclick="startQuiz('c172')">Cessna 172 Skyhawk</button>
-        <button class="btn aircraft-btn" onclick="startQuiz('da42')">Diamond DA42 Twin Star</button>
+    <div id="login-screen" style="display: none;">
+        <div class="input-group">
+            <label style="font-weight: 600; color: #4a5568;">Lütfen Adınızı ve Soyadınızı Girin:</label>
+            <input type="text" id="username-input" class="input-control" placeholder="Örn: Ahmet Yılmaz">
+            <button class="input-control input-btn" onclick="saveUser()">Portala Giriş Yap</button>
+        </div>
+    </div>
+
+    <div id="aircraft-selector" style="display: none;">
+        <div id="welcome-msg" class="user-welcome"></div>
+        <div class="options">
+            <button class="btn aircraft-btn" onclick="startQuiz('da40')">Diamond DA40 NG</button>
+            <button class="btn aircraft-btn" onclick="startQuiz('a211')">Aquila A211</button>
+            <button class="btn aircraft-btn" onclick="startQuiz('da20')">Diamond DA20 Eclipse</button>
+            <button class="btn aircraft-btn" onclick="startQuiz('da42')">Diamond DA42 Twin Star</button>
+        </div>
+        
+        <div class="stats-panel" id="stats-panel" style="display: none;">
+            <div class="stats-title">📊 Son 5 Test Performans Grafiğiniz (%)</div>
+            <canvas id="stats-canvas" height="150"></canvas>
+        </div>
     </div>
 
     <div id="quiz-body" style="display: none;">
-        <div class="question" id="question-text" style="font-size: 1.15rem; font-weight: 600; margin-bottom: 20px;"></div>
+        <div class="question" id="question-text"></div>
         <div class="options" id="options-container"></div>
         <div class="explanation" id="explanation-box"></div>
         <button class="next-btn" id="next-button" onclick="nextQuestion()">Sonraki Soru</button>
@@ -75,55 +101,96 @@
     <div id="result-body" class="score-container" style="display: none;">
         <div class="score-title">Test Tamamlandı! 🎉</div>
         <div class="score-number"><span id="score">0</span> / <span id="total">0</span></div>
+        <div id="user-score-msg" style="font-weight: 600; color: #4a5568; margin-bottom: 10px;"></div>
         <button class="restart-btn" onclick="backToMenu()">Ana Menüye Dön</button>
     </div>
 </div>
 
 <script>
-    // TÜM UÇAKLARIN SORU HAVUZU BURASI
     const allQuizzes = {
         da40: [
-            {
-                soru: "DA40 NG için Maksimum Kalkış Ağırlığı (MTOM) kaç kg'dır?",
-                secenekler: ["1150 kg", "1280 kg", "1310 kg", "1200 kg"],
-                cevap: "1310 kg",
-                aciklama: "DA40 NG için maksimum kalkış ağırlığı 1310 kg'dır."
-            },
-            {
-                soru: "DA40'ın maksimum demo yan rüzgar (Demonstrated Crosswind) limiti kaç knots'tır?",
-                secenekler: ["15 kts", "20 kts", "25 kts", "30 kts"],
-                cevap: "25 kts",
-                aciklama: "Diamond DA40 için maksimum yan rüzgar bileşeni 25 knots'tır."
-            }
+            { soru: "VFE Landing Flap Sürati Nedir?", secenekler: ["98 KIAS", "110 KIAS", "130 KIAS", "88 KIAS"], cevap: "98 KIAS", aciklama: "Landing flapları tam açıkken yapısal sınır 98 KIAS'tır." },
+            { soru: "VFE Take Off Flap Sürati Nedir?", secenekler: ["98 KIAS", "110 KIAS", "120 KIAS", "108 KIAS"], cevap: "110 KIAS", aciklama: "Kalkış (Take Off) kademesinde maksimum flap sürati 110 KIAS'tır." },
+            { soru: "VNO (Maximum Structural Cruise Speed) Sürati Nedir?", secenekler: ["172 KIAS", "130 KIAS", "113 KIAS", "140 KIAS"], cevap: "130 KIAS", aciklama: "Yapısal seyir hız sınırı 130 KIAS'tır." },
+            { soru: "VNE (Never Exceed Speed) Sürati Nedir?", secenekler: ["130 KIAS", "164 KIAS", "172 KIAS", "180 KIAS"], cevap: "172 KIAS", aciklama: "Asla aşılmaması gereken hız limitidir, göstergede kırmızı çizgidir." },
+            { soru: "Best Glide Angle Speed Sürati Nedir?", secenekler: ["73 KIAS", "83 KIAS", "88 KIAS", "92 KIAS"], cevap: "88 KIAS", aciklama: "En iyi süzülüş süzülme açısı sürati maks ağırlıkta 88 KIAS'tır." },
+            { soru: "Engine Failure Durumunda İdeal İniş Sürati Nedir? (UP Flap)", secenekler: ["88 KIAS", "83 KIAS", "78 KIAS", "77 KIAS"], cevap: "83 KIAS", aciklama: "Flaplar UP konumdayken motor arızası iniş yaklaşma sürati 83 KIAS'tır." },
+            { soru: "Engine Failure Durumunda İdeal İniş Sürati Nedir? (Take OFF Flap)", secenekler: ["83 KIAS", "78 KIAS", "77 KIAS", "72 KIAS"], cevap: "78 KIAS", aciklama: "Take Off flap kademesinde motor arızası iniş sürati 78 KIAS'tır." },
+            { soru: "Engine Failure Durumunda İdeal İniş Sürati Nedir? (Landing Flap)", secenekler: ["78 KIAS", "77 KIAS", "75 KIAS", "60 KIAS"], cevap: "77 KIAS", aciklama: "Landing tam flap ile motor arızası iniş sürati 77 KIAS'tır." },
+            { soru: "Pervane Çapı Nedir?", secenekler: ["180 CM", "185 CM", "190 CM", "195 CM"], cevap: "190 CM", aciklama: "Uçağın MT-Propeller pervanesinin çapı 190 CM'dir." },
+            { soru: "Normal Yağ Basıncı Kaç Bar?(Green Arc)", secenekler: ["1.5 - 5 Bar", "2.5 - 6 Bar", "2.0 - 5.5 Bar", "3.0 - 6.5 Bar"], cevap: "2.5 - 6 Bar", aciklama: "Normal yeşil sektör aralığı 2.5 ile 6 bar arasındadır." },
+            { soru: "Yüksek Yağ Basıncı Kaç Bar?(Red Arc)", secenekler: ["6.0 Bar", "6.5 Bar +", "7.0 Bar +", "5.5 Bar"], cevap: "6.5 Bar +", aciklama: "6.5 bar ve üzeri yüksek yağ basıncı kırmızı limitidir." },
+            { soru: "Normal Yağ Sıcaklığı Kaç Santigrat Derecedir? (Green Arc)", secenekler: ["50 - 135 C", "60 - 120 C", "40 - 130 C", "50 - 125 C"], cevap: "50 - 135 C", aciklama: "Yağ sıcaklığı yeşil çalışma sektörü 50-135°C arasıdır." },
+            { soru: "Yüksek Yağ Sıcaklığı Kaç Santigrat Derecedir? (Red Arc)", secenekler: ["130 C", "135 C", "140 C +", "145 C"], cevap: "140 C +", aciklama: "140°C ve üzeri tehlikeli kırmızı limit bölgesidir." },
+            { soru: "Normal Sıvı Soğutma Sıcaklığı Kaç Santigrat Derecedir? (Green Arc)", secenekler: ["50 - 90 C", "60 - 95 C", "60 - 105 C", "70 - 100 C"], cevap: "60 - 95 C", aciklama: "Motor soğutma sıvısı (Coolant) yeşil aralığı 60-95°C'dir." },
+            { soru: "Yüksek Sıvı Soğutma Sıcaklığı Kaç Santigrat Derecedir? (Red Arc)", secenekler: ["95 C", "100 C", "105 C +", "110 C"], cevap: "105 C +", aciklama: "105°C ve üzeri aşırı hararet kırmızı limitidir." },
+            { soru: "Normal Gear Box Sıcaklığı Kaç Santigrat Derecedir? (Green Arc)", secenekler: ["35 -115 C", "50 - 120 C", "40 - 110 C", "35 - 120 C"], cevap: "35 -115 C", aciklama: "Pervane dişli kutusu yeşil sıcaklık sektörü 35-115°C arasıdır." },
+            { soru: "Yüksek Gear Box Sıcaklığı Kaç Santigrat Derecedir? (Red Arc)", secenekler: ["115 C", "120 C +", "125 C", "130 C"], cevap: "120 C +", aciklama: "Gear Box sıcaklığında kırmızı çizgi limiti 120°C'dir." },
+            { soru: "Normal Yakıt Sıcaklığı Kaç Santigrat Derecedir? (Green Arc)", secenekler: ["-30 / 40 C", "-20 / 50 C", "0 / 60 C", "-10 / 50 C"], cevap: "-20 / 50 C", aciklama: "Yakıt sıcaklığı emniyetli yeşil çalışma aralığı -20°C ile 50°C arasıdır." },
+            { soru: "Yüksek Yakıt Sıcaklığı Kaç Santigrat Derecedir? (Red Arc)", secenekler: ["50 C", "55 C", "60 C", "65 C"], cevap: "60 C", aciklama: "Yakıt sıcaklığı 60°C üst limit kırmızı çizgidir." },
+            { soru: "Normal Voltmetre Çalışma Aralığı Kaç Volttur? (Green Arc)", secenekler: ["12 - 14 V", "24 - 28 V", "25 - 30 V", "28 - 32 V"], cevap: "25 - 30 V", aciklama: "Ana DC barası normal şarj voltajı yeşil aralığı 25-30 Volttur." },
+            { soru: "Yüksek Voltmetre Çalışma Voltajı Kaçtır? (RedArc)", secenekler: ["30 V", "32 V", "34 V", "28 V"], cevap: "32 V", aciklama: "Aşırı voltaj kırmızı çizgisi 32 Volttur." },
+            { soru: "Yakıt Deposu Toplam Kaç Galondur?", secenekler: ["2 x 19.5 Galon", "2 x 20.5 Galon (41 Galon) / 2 x 77.6 Litre", "2 x 25 Galon", "40 Galon"], cevap: "2 x 20.5 Galon (41 Galon) / 2 x 77.6 Litre", aciklama: "Fiziksel toplam yakıt deposu hacmi 41 galondur." },
+            { soru: "Kullnılabilir Yakıt Kaç Galondur?", secenekler: ["41 Galon", "2 x 19.5 Galon (39 Galon) / 2 x 73.8 Litre", "38 Galon", "35 Galon"], cevap: "2 x 19.5 Galon (39 Galon) / 2 x 73.8 Litre", aciklama: "Uçuşta motor tarafından çekilebilen emniyetli yakıt miktarı 39 galondur." },
+            { soru: "İki Yakıt Tankı Arasındaki İzin Verilen Yakıt Farkı Kaç Galondur?", secenekler: ["5 Galon", "7 Galon", "9 Galon ( 34 Litre )", "12 Galon"], cevap: "9 Galon ( 34 Litre )", aciklama: "Maksimum kanat yakıt dengesizlik (imbalance) limiti 9 galondur." },
+            { soru: "Maksimum Kalkış Ağırlığı Kaç Kilogramdır?", secenekler: ["1150 KG", "1200 KG", "1280 - 1310 KG", "1350 KG"], cevap: "1280 - 1310 KG", aciklama: "Modifikasyon durumuna bağlı olarak MTOM 1280-1310 kg arasındadır." },
+            { soru: "Maksimum İniş Ağırlığı Kaç Kilogramdır?", secenekler: ["1310 KG", "1280 KG", "1200 KG", "1150 KG"], cevap: "1280 KG", aciklama: "Yapısal maksimum iniş ağırlığı sınırı 1280 kg'dır." },
+            { soru: "Minimum Uçuş Ağırlığı Kaç Kilogramdır?", secenekler: ["900 KG", "940 KG", "1000 KG", "850 KG"], cevap: "940 KG", aciklama: "Ağırlık merkezi dengesi için asgari uçuş kütlesi 940 kg'dır." },
+            { soru: "İzin Verilen Maksimum Pozitif G Kuvveti Kaçtır? (UP Flap)", secenekler: ["2.0 G", "3.8 G", "4.4 G", "1.52 G"], cevap: "3.8 G", aciklama: "Temiz konfigürasyonda maksimum pozitif yük faktörü +3.8 G'dir." },
+            { soru: "İzin Verilen Maksimum Pozitif G Kuvveti Kaçtır? (Take Off - Landing Flap)", secenekler: ["3.8 G", "2", "4 G", "1.5 G"], cevap: "2", aciklama: "Flaplar açıkken uçağın taşıyabileceği maksimum pozitif yük faktörü +2 G'dir." },
+            { soru: "İzin Verilen Maksimum Negatif G Kuvveti Kaçtır? (UP Flap)", secenekler: ["-1.52 G", "0.0 G", "-1.0 G", "-2.0 G"], cevap: "-1.52 G", aciklama: "Flaplar kapalıyken ters yükleme limiti -1.52 G'dir." },
+            { soru: "İzin Verilen Maksimum Negatif G Kuvveti Kaçtır? (Take Off - Landing Flap)", secenekler: ["-1.52 G", "-1.0 G", "0", "0.5 G"], cevap: "0", aciklama: "Flaplar açıkken hiçbir negatif yüklemeye izin verilmez (0 G)." },
+            { soru: "ECU Test Yapılmadan Önce Gear Box Sıcaklığı Minimum Kaç Santigrat Derece Olmalıdır?", secenekler: ["35 C", "38 C", "50 C", "60 C"], cevap: "38 C", aciklama: "Motor testi öncesi dişli kutusunun en az 38°C olması gerekir." },
+            { soru: "Take Off Flap Tırmanma Sürati Kaçtır?", secenekler: ["67 KIAS", "72 KIAS", "88 KIAS", "80 KIAS"], cevap: "72 KIAS", aciklama: "Kalkış flap kademesinde en iyi tırmanış oranı sürati (Vy) 72 KIAS'tır." },
+            { soru: "UP Flap Tırmanma Sürati Kaçtır?", secenekler: ["72 KIAS", "78 KIAS", "85 KIAS", "88 KIAS"], cevap: "88 KIAS", aciklama: "Temiz konfigürasyonda tırmanış sürati (Vy) 88 KIAS'tır." },
+            { soru: "1100 KG Kalkış Ağırlığı İçin Rotate Sürati Kaçtır?", secenekler: ["61 KIAS", "65 KIAS", "67 KIAS", "55 KIAS"], cevap: "61 KIAS", aciklama: "1100 kg ağırlık için tekerlek kesme sürati 61 KIAS'tır." },
+            { soru: "1200 KG Kalkış Ağırlığı İçin Rotate Sürati Kaçtır?", secenekler: ["61 KIAS", "65 KIAS", "67 KIAS", "70 KIAS"], cevap: "65 KIAS", aciklama: "1200 kg ağırlık için Rotate hızı 65 KIAS'dır." },
+            { soru: "1280+ KG Kalkış Ağırlığı İçin Rotate Sürati Kaçtır?", secenekler: ["61 KIAS", "65 KIAS", "67 KIAS", "72 KIAS"], cevap: "67 KIAS", aciklama: "Maksimum ağırlıkta Rotate hızı 67 KIAS'tır." },
+            { soru: "%30 Load ile Alçalma Sürati Kaçtır?", secenekler: ["80 KIAS", "90 KIAS", "100 KIAS", "110 KIAS"], cevap: "80 KIAS", aciklama: "%30 yük ile alçalırken muhafaza edilecek sürat 80 KIAS'tır." },
+            { soru: "%50 Load İle Düz Uçuş Sürati Kaçtır?", secenekler: ["80 KIAS", "90 KIAS", "100 KIAS", "115 KIAS"], cevap: "90 KIAS", aciklama: "%50 güç ile düz uçuş sürati ortalama 90 KIAS'tır." },
+            { soru: "1310 KG Kalkış Ağırlığı İçin Stall Sürati Kaçtır? (Up Flap)", secenekler: ["66 KIAS", "62 KIAS", "60 KIAS", "55 KIAS"], cevap: "66 KIAS", aciklama: "Maksimum ağırlıkta flaplar kapalı stall hızı 66 KIAS'tır." },
+            { soru: "1310 KG Kalkış Ağırlığı İçin Stall Sürati Kaçtır? (Take Off Flap)", secenekler: ["66 KIAS", "62 KIAS", "60 KIAS", "58 KIAS"], cevap: "62 KIAS", aciklama: "Take Off flap pozisyonunda stall hızı 62 KIAS'tır." },
+            { soru: "1310 KG Kalkış Ağırlığı İçin Stall Sürati Kaçtır? (Landing Flap)", secenekler: ["66 KIAS", "62 KIAS", "60 KIAS", "52 KIAS"], cevap: "60 KIAS", aciklama: "Tam iniş flaplarında tam yükte stall hızı 60 KIAS'tır." },
+            { soru: "Slow Flight Sürati Kaçtır? (Up Flap)", secenekler: ["85 KIAS", "80 KIAS", "75 KIAS", "90 KIAS"], cevap: "85 KIAS", aciklama: "UP flap yavaş uçuş manevra sürati 85 KIAS'tır." },
+            { soru: "Slow Flight Sürati Kaçtır? (Take Off Flap)", secenekler: ["85 KIAS", "80 KIAS", "75 KIAS", "72 KIAS"], cevap: "80 KIAS", aciklama: "Kalkış flaplı yavaş uçuş çalışma sürati 80 KIAS'tır." },
+            { soru: "Slow Flight Sürati Kaçtır? (Landing Flap)", secenekler: ["80 KIAS", "75 KIAS", "70 KIAS", "65 KIAS"], cevap: "75 KIAS", aciklama: "İniş flaplı yavaş uçuş talimi 75 KIAS'ta muhafaza edilir." },
+            { soru: "Keskin Dönüş Sürati Kaçtır?", secenekler: ["80 - 90 KIAS", "90 - 110 KIAS (İdeal Sürat 100 KIAS)", "110 - 130 KIAS", "113 KIAS"], cevap: "90 - 110 KIAS (İdeal Sürat 100 KIAS)", aciklama: "Steep turn manevrası için ideal hedef sürat 100 KIAS'tır." },
+            { soru: "Tavsiye Edilen Yaklaşma Sürati Kaçtır?(Up Flap)", secenekler: ["88 KIAS", "83 KIAS", "78 KIAS", "77 KIAS"], cevap: "83 KIAS", aciklama: "Flaps UP son yaklaşma sürati 83 KIAS'tır." },
+            { soru: "Tavsiye Edilen Yaklaşma Sürati Kaçtır?(Take Off Flap)", secenekler: ["83 KIAS", "78 KIAS", "77 KIAS", "72 KIAS"], cevap: "78 KIAS", aciklama: "Flaps T/O kademesinde tavsiye edilen yaklaşma sürati 78 KIAS'tır." },
+            { soru: "Tavsiye Edilen Yaklaşma Sürati Kaçtır?(Landing Flap)", secenekler: ["78 KIAS", "77 KIAS", "72 KIAS", "70 KIAS"], cevap: "77 KIAS", aciklama: "Landing flapları ile normal yaklaşma hızı 77 KIAS'tır." },
+            { soru: "1080 KG Kalkış Ağırlığı İçin Manevra Sürati Kaçtır?", secenekler: ["101 KIAS", "108 KIAS", "113 KIAS", "98 KIAS"], cevap: "101 KIAS", aciklama: "Hafif uçakta ani kumanda limit hızı (Va) 101 KIAS'a düşer." },
+            { soru: "1080 - 1180 KG Kalkış Ağırlığı İçin Manevra Sürati Kaçtır?", secenekler: ["101 KIAS", "108 KIAS", "113 KIAS", "105 KIAS"], cevap: "108 KIAS", aciklama: "Orta ağırlık bandında manevra sürati Va 108 KIAS'tır." },
+            { soru: "1180+ KG Kalkış Ağırlığı İçin Manevra Sürati Kaçtır?", secenekler: ["101 KIAS", "108 KIAS", "113 KIAS", "120 KIAS"], cevap: "113 KIAS", aciklama: "Tam yüklü ağır uçakta en yüksek Va limiti 113 KIAS'tır." }
         ],
-        c172: [
-            {
-                soru: "Cessna 172SP için Maksimum Kalkış Ağırlığı (MTOW) kaç lbs'tir?",
-                secenekler: ["2300 lbs", "2450 lbs", "2550 lbs", "2200 lbs"],
-                cevap: "2550 lbs",
-                aciklama: "Cessna 172SP modelinin maksimum kalkış ağırlığı 2550 lbs olarak belirlenmiştir."
-            },
-            {
-                soru: "Cessna 172'de Flaps 10 konumunda maksimum flap açma hızı (Vfe) kaç KIAS'tır?",
-                secenekler: ["85 KIAS", "110 KIAS", "100 KIAS", "95 KIAS"],
-                cevap: "110 KIAS",
-                aciklama: "İlk kademe (Flaps 10) için Vfe sürati 110 KIAS'tır. Flaps 10-FULL arası için ise 85 KIAS'tır."
-            }
+        a211: [
+            { soru: "Aquila A211 için Asla Aşılmaması Gereken Sürat (Vne) kaç knots'tır?", secenekler: ["130 kts", "165 kts", "147 kts", "115 kts"], cevap: "147 kts", aciklama: "Aquila A211 AFM'ine göre Vne hızı 147 knots'tır." },
+            { soru: "Aquila A211'in Maksimum Kalkış Ağırlığı (MTOW) kaç kg'dır?", secenekler: ["750 kg", "850 kg", "1150 kg", "650 kg"], cevap: "750 kg", aciklama: "Çok hafif bir VLA uçağı olan Aquila A211'in MTOW limiti 750 kg'dır." },
+            { soru: "Aquila A211'de kullanılan Rotax 912S motorunun maksimum sürekli gücü kaç HP'dir?", secenekler: ["80 HP", "100 HP", "135 HP", "115 HP"], cevap: "100 HP", aciklama: "Uçakta bulunan Rotax 912 S3 motoru tam olarak 100 Beygir (HP) güç üretir." },
+            { soru: "Aquila A211'de Flaps LDG (İniş) konumunda Vfe limit sürati kaç knots'tır?", secenekler: ["84 kts", "98 kts", "90 kts", "75 kts"], cevap: "84 kts", aciklama: "Tam flap (Landing) pozisyonunda maksimum hız sınırı 84 knots'tır." },
+            { soru: "Aquila A211'in toplam KULLANILABİLİR yakıt miktarı kaç litredir?", secenekler: ["120 Litre", "104 Litre", "109 Litre", "95 Litre"], cevap: "104 Litre", aciklama: "Toplam yakıt hacmi 109.6 litredir fakat bunun kullanılabilir kısmı 104 litredir." }
+        ],
+        da20: [
+            { soru: "Diamond DA20 Eclipse (Katana) uçağının asla aşılmaması gereken hızı (Vne) kaç KIAS'tır?", secenekler: ["130 KIAS", "164 KIAS", "172 KIAS", "140 KIAS"], cevap: "164 KIAS", aciklama: "DA20 uçağının Vne sürati 164 KIAS'tır." },
+            { soru: "DA20 Eclipse modelinin Maksimum Kalkış Ağırlığı kaç kg / lbs'tir?", secenekler: ["750 kg / 1653 lbs", "800 kg / 1764 lbs", "940 kg / 2072 lbs", "1150 kg / 2535 lbs"], cevap: "800 kg / 1764 lbs", aciklama: "DA20 Eclipse modeli için maksimum kalkış ağırlığı 800 kg (1764 lbs) olarak belirlenmiştir." },
+            { soru: "DA20 uçağında en iyi tırmanış oranı sürati (Vy) kaç KIAS'tır?", secenekler: ["68 KIAS", "75 KIAS", "83 KIAS", "60 KIAS"], cevap: "75 KIAS", aciklama: "Temiz konfigürasyonda en iyi tırmanış oranı sürati (Vy) 75 KIAS'tır." },
+            { soru: "DA20 elektrik sisteminde alternator kaç Amper akım sağlar?", secenekler: ["40 A", "70 A", "60 A", "50 A"], cevap: "40 A", aciklama: "DA20 Eclipse alternatörü 14 Volt DC sistem üzerinden maksimum 40 Amper yük sağlar." }
         ],
         da42: [
-            {
-                soru: "DA42'de tek motor arızasında tutulması gereken en iyi tırmanış sürati (Vyse - Blue Line) kaç KIAS'tır?",
-                secenekler: ["78 KIAS", "82 KIAS", "85 KIAS", "90 KIAS"],
-                cevap: "85 KIAS",
-                aciklama: "DA42 NG için tek motor (One Engine Inoperative) en iyi tırmanış sürati olan Vyse 85 KIAS'tır ve mavi çizgiyle gösterilir."
-            }
+            { soru: "DA42 NG uçağının Asla Aşılmaması Gereken Sürati (Vne) kaç KIAS'tır?", secenekler: ["172 KIAS", "188 KIAS", "197 KIAS", "155 KIAS"], cevap: "188 KIAS", aciklama: "Çift motorlu DA42 NG modelinde Vne sürati 188 KIAS'tır." },
+            { soru: "DA42'de tek motorun emniyetle kumanda edilebileceği minimum sürat (Vmc) kaç KIAS'tır?", secenekler: ["68 KIAS", "71 KIAS", "76 KIAS", "85 KIAS"], cevap: "71 KIAS", aciklama: "Tek motor arızasında aerodinamik kumandayı yitirmemek için düşmemeniz gereken asgari kritik sürat (Vmc) 71 KIAS'tır." },
+            { soru: "DA42 NG için Maksimum Kalkış Ağırlığı (MTOM) kaç kg'dır?", secenekler: ["1310 kg", "1785 kg", "1999 kg", "1900 kg"], cevap: "1999 kg", aciklama: "DA42 NG modelinin maksimum kalkış ağırlığı tam sınır olan 1999 kg'dır." },
+            { soru: "DA42'de iniş takımlarını açabileceğiniz maksimum sürat (Vloe) kaç KIAS'tır?", secenekler: ["110 KIAS", "130 KIAS", "188 KIAS", "152 KIAS"], cevap: "188 KIAS", aciklama: "DA42'de iniş takımını dışarıda tutma ve açma yapısal hız sınırı (Vlo) oldukça yüksektir ve 188 KIAS'tır." }
         ]
     };
 
     let activeQuestions = [];
     let currentQuestionIndex = 0;
     let score = 0;
+    let currentUser = "";
+    let selectedAircraft = "";
 
+    // DOM Elementleri
+    const loginScreen = document.getElementById('login-screen');
     const aircraftSelector = document.getElementById('aircraft-selector');
     const quizBody = document.getElementById('quiz-body');
     const resultBody = document.getElementById('result-body');
@@ -135,8 +202,57 @@
     const progressFill = document.getElementById('progress-fill');
     const progressBarContainer = document.getElementById('progress-bar-container');
     const mainTitle = document.getElementById('main-title');
+    const welcomeMsg = document.getElementById('welcome-msg');
+    const userScoreMsg = document.getElementById('user-score-msg');
+
+    // Sistem Açılış Kontrolü (Kullanıcı Var mı?)
+    window.onload = function() {
+        const storedUser = localStorage.getItem('pilot_name');
+        if (storedUser) {
+            currentUser = storedUser;
+            showMainMenu();
+        } else {
+            showLoginScreen();
+        }
+    };
+
+    function showLoginScreen() {
+        mainTitle.innerText = "Uçuş Sınav Portalı ✈️";
+        questionCounter.innerText = "Kullanıcı Kaydı Gerekli";
+        loginScreen.style.display = 'block';
+        aircraftSelector.style.display = 'none';
+        quizBody.style.display = 'none';
+    }
+
+    function saveUser() {
+        const nameInput = document.getElementById('username-input').value.trim();
+        if(nameInput === "") {
+            alert("Lütfen geçerli bir ad soyad girin!");
+            return;
+        }
+        localStorage.setItem('pilot_name', nameInput);
+        currentUser = nameInput;
+        showMainMenu();
+    }
+
+    function showMainMenu() {
+        loginScreen.style.display = 'none';
+        quizBody.style.display = 'none';
+        resultBody.style.display = 'none';
+        progressBarContainer.style.display = 'none';
+        
+        mainTitle.innerText = "Uçuş Öncesi Limit Portalı ✈️";
+        questionCounter.innerText = "Lütfen uçacağınız uçak tipini seçin";
+        questionCounter.style.display = 'block';
+        
+        welcomeMsg.innerText = `Kaptan Pilot: ${currentUser} 👩‍✈️👨‍✈️`;
+        aircraftSelector.style.display = 'block';
+        
+        drawChart(); // Grafik Çizdir
+    }
 
     function startQuiz(aircraftType) {
+        selectedAircraft = aircraftType;
         activeQuestions = allQuizzes[aircraftType];
         currentQuestionIndex = 0;
         score = 0;
@@ -146,7 +262,8 @@
         progressBarContainer.style.display = 'block';
 
         if(aircraftType === 'da40') mainTitle.innerText = "Diamond DA40 NG";
-        if(aircraftType === 'c172') mainTitle.innerText = "Cessna 172 Skyhawk";
+        if(aircraftType === 'a211') mainTitle.innerText = "Aquila A211";
+        if(aircraftType === 'da20') mainTitle.innerText = "Diamond DA20 Eclipse";
         if(aircraftType === 'da42') mainTitle.innerText = "Diamond DA42 Twin Star";
 
         loadQuestion();
@@ -162,7 +279,10 @@
 
         questionText.innerText = currentQuestion.soru;
         
-        currentQuestion.secenekler.forEach(option => {
+        // Şıkları karıştırarak ekleme (Her defasında farklı dizilim)
+        let optionsShuffled = [...currentQuestion.secenekler].sort(() => Math.random() - 0.5);
+
+        optionsShuffled.forEach(option => {
             const button = document.createElement('button');
             button.innerText = option;
             button.classList.add('btn');
@@ -195,7 +315,7 @@
         nextButton.style.display = 'block';
         
         if (currentQuestionIndex === activeQuestions.length - 1) {
-            nextButton.innerText = "Sonuçları Gör";
+            nextButton.innerText = "Sonuçları ve İstatistikleri Gör";
         } else {
             nextButton.innerText = "Sonraki Soru";
         }
@@ -216,18 +336,102 @@
         progressBarContainer.style.display = 'none';
         questionCounter.style.display = 'none';
         
+        // Skoru kaydet
+        const percentage = Math.round((score / activeQuestions.length) * 100);
+        saveHistory(selectedAircraft, percentage);
+
         resultBody.style.display = 'block';
         document.getElementById('score').innerText = score;
         document.getElementById('total').innerText = activeQuestions.length;
+        
+        userScoreMsg.innerText = `Sayın Kaptan ${currentUser}, bu testteki başarı oranınız: %${percentage}`;
     }
 
     function backToMenu() {
-        resultBody.style.display = 'none';
-        aircraftSelector.style.display = 'flex';
-        mainTitle.innerText = "Uçuş Öncesi Limit Kontrolü ✈️";
-        questionCounter.innerText = "Lütfen uçacağınız uçak tipini seçin";
-        questionCounter.style.display = 'block';
+        showMainMenu();
+    }
+
+    // İSTATİSTİK VE SKOR TAKİP FONKSİYONLARI (Local Storage)
+    function saveHistory(aircraft, pct) {
+        let history = JSON.parse(localStorage.getItem('quiz_history')) || [];
+        const newRecord = {
+            aircraft: aircraft.toUpperCase(),
+            score: pct,
+            date: new Date().toLocaleDateString('tr-TR', {hour: '2-digit', minute:'2-digit'})
+        };
+        history.push(newRecord);
+        // Son 5 kaydı tutalım grafik alanı için
+        if (history.length > 5) history.shift();
+        localStorage.setItem('quiz_history', JSON.stringify(history));
+    }
+
+    function drawChart() {
+        const history = JSON.parse(localStorage.getItem('quiz_history')) || [];
+        const canvas = document.getElementById('stats-canvas');
+        const statsPanel = document.getElementById('stats-panel');
+        
+        if (history.length === 0) {
+            statsPanel.style.display = 'none';
+            return;
+        }
+        
+        statsPanel.style.display = 'block';
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Grafik Ölçü Tanımlamaları
+        const padding = 30;
+        const chartWidth = canvas.width - padding * 2;
+        const chartHeight = canvas.height - padding * 2;
+        
+        // Eksen Çizgileri
+        ctx.beginPath();
+        ctx.strokeStyle = '#cbd5e0';
+        ctx.lineWidth = 1;
+        ctx.moveTo(padding, padding);
+        ctx.lineTo(padding, canvas.height - padding);
+        ctx.lineTo(canvas.width - padding, canvas.height - padding);
+        ctx.stroke();
+
+        // Nokta koordinat hesaplamaları
+        const points = [];
+        const stepX = history.length > 1 ? chartWidth / (history.length - 1) : chartWidth;
+
+        history.forEach((data, index) => {
+            const x = padding + (index * stepX);
+            // Y ekseni ters çalıştığı için 100% yukarıda, 0% aşağıda olacak şekilde formül:
+            const y = (canvas.height - padding) - (data.score / 100 * chartHeight);
+            points.push({x, y, label: data.aircraft, score: data.score});
+        });
+
+        // Çizgi Çizimi
+        if (points.length > 0) {
+            ctx.beginPath();
+            ctx.strokeStyle = '#328cc1';
+            ctx.lineWidth = 3;
+            ctx.moveTo(points[0].x, points[0].y);
+            for(let i=1; i<points.length; i++) {
+                ctx.lineTo(points[i].x, points[i].y);
+            }
+            ctx.stroke();
+        }
+
+        // Noktaları ve Etiketleri Basma
+        points.forEach(p => {
+            ctx.beginPath();
+            ctx.fillStyle = '#0b3c5d';
+            ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Metin ve skor yazısı
+            ctx.font = 'bold 9px Arial';
+            ctx.fillStyle = '#4a5568';
+            ctx.fillText(`%${p.score}`, p.x - 8, p.y - 10);
+            ctx.font = '8px Arial';
+            ctx.fillText(p.label, p.x - 12, canvas.height - padding + 15);
+        });
     }
 </script>
+
 </body>
 </html>
