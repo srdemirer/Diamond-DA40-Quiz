@@ -38,8 +38,19 @@
             text-align: left; color: #4a5568; transition: all 0.2s ease; -webkit-tap-highlight-color: transparent;
         }
         .btn:hover:not([disabled]) { background-color: #edf2f7; border-color: #cbd5e0; }
+        
+        /* Aktif Uçak Buton Modeli */
         .aircraft-btn { background-color: #e3fafc; border-color: #99e9f2; color: #0c8599; text-align: center; font-weight: 600;}
-        .aircraft-btn:hover { background-color: #c5f6fa !important; }
+        .aircraft-btn:hover:not([disabled]) { background-color: #c5f6fa !important; }
+        
+        /* Pasif Uçak Buton Modeli */
+        .aircraft-btn:disabled {
+            background-color: #edf2f7 !important;
+            border-color: #e2e8f0 !important;
+            color: #a0aec0 !important;
+            cursor: not-allowed !important;
+            opacity: 0.7;
+        }
         
         .correct { background-color: #c6f6d5 !important; border-color: #48bb78 !important; color: #22543d !important; font-weight: 600; }
         .wrong { background-color: #fed7d7 !important; border-color: #f56565 !important; color: #742a2a !important; font-weight: 600; }
@@ -50,7 +61,8 @@
         .nav-controls { display: flex; gap: 10px; margin-top: 20px; }
         .nav-btn { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; text-align: center; font-size: 0.95rem; }
         .prev-style { background-color: #e2e8f0; color: #4a5568; }
-        .prev-style:hover { background-color: #cbd5e0; }
+        .prev-style:hover:not([disabled]) { background-color: #cbd5e0; }
+        .prev-style:disabled { opacity: 0.5; cursor: not-allowed; }
         .pas-style { background-color: #a0aec0; color: white; }
         .pas-style:hover { background-color: #718096; }
         .next-style { background-color: #0b3c5d; color: white; box-shadow: 0 4px 6px rgba(11, 60, 93, 0.2); }
@@ -58,7 +70,7 @@
         .finish-style { background-color: #2f855a; color: white; }
         .finish-style:hover { background-color: #22543d; }
 
-        /* Soru Matrisi Kareleri */
+        /* Soru Navigasyon Matrisi */
         .matrix-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 25px; padding-top: 15px; border-top: 1px solid #e2e8f0; justify-content: center; }
         .matrix-box { width: 26px; height: 26px; border-radius: 6px; border: 1px solid #cbd5e0; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; cursor: pointer; background-color: white; user-select: none; }
         .matrix-box.active { border: 2px solid #328cc1; transform: scale(1.1); }
@@ -91,11 +103,6 @@
         .admin-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; }
         .admin-table th, .admin-table td { border: 1px solid #e2e8f0; padding: 8px; text-align: left; }
         .admin-table th { background-color: #f7fafc; }
-
-        /* Yapım Aşamasında Bölümü */
-        .construction-panel { text-align: center; padding: 30px 10px; }
-        .construction-title { font-size: 1.4rem; font-weight: bold; color: #c53030; margin-bottom: 15px; }
-        .construction-text { color: #4a5568; font-size: 1rem; margin-bottom: 25px; line-height: 1.6; }
     </style>
 </head>
 <body>
@@ -108,7 +115,6 @@
     
     <div class="progress-bar" id="progress-bar-container"><div class="progress-fill" id="progress-fill"></div></div>
 
-    <!-- 1. ADIM: İsim Giriş Ekranı -->
     <div id="login-screen" style="display: none;">
         <div class="input-group">
             <label style="font-weight: 600; color: #4a5568;">Lütfen Adınızı ve Soyadınızı Girin:</label>
@@ -117,14 +123,13 @@
         </div>
     </div>
 
-    <!-- 2. ADIM: Uçak Seçim Ekranı -->
     <div id="aircraft-selector" style="display: none;">
         <div id="welcome-msg" class="user-welcome"></div>
         <div class="options">
-            <button class="btn aircraft-btn" onclick="startQuiz('a211')">Aquila A211</button>
-            <button class="btn aircraft-btn" onclick="startQuiz('da20')">Diamond DA20 Eclipse</button>
+            <button class="btn aircraft-btn" disabled title="Yapım Aşamasındadır">Aquila A211 (Yapım Aşamasında)</button>
+            <button class="btn aircraft-btn" disabled title="Yapım Aşamasındadır">Diamond DA20 Eclipse (Yapım Aşamasında)</button>
             <button class="btn aircraft-btn" onclick="startQuiz('da40')">Diamond DA40 NG</button>
-            <button class="btn aircraft-btn" onclick="startQuiz('da42')">Diamond DA42 Twin Star</button>
+            <button class="btn aircraft-btn" disabled title="Yapım Aşamasındadır">Diamond DA42 Twin Star (Yapım Aşamasında)</button>
         </div>
         
         <div class="stats-panel" id="stats-panel" style="display: none;">
@@ -133,14 +138,6 @@
         </div>
     </div>
 
-    <!-- 2.5 ADIM: Yapım Aşamasında Ekranı -->
-    <div id="construction-body" class="construction-panel" style="display: none;">
-        <div class="construction-title">Yapım Aşamasındadır 🛠️</div>
-        <div class="construction-text">Seçtiğiniz uçak tipine ait soru havuzu güncellenmektedir. Lütfen daha sonra tekrar deneyiniz.</div>
-        <button class="restart-btn" onclick="backToMenu()">Ana Menüye Dön</button>
-    </div>
-
-    <!-- 3. ADIM: Quiz Gövdesi -->
     <div id="quiz-body" style="display: none;">
         <div class="question" id="question-text"></div>
         <div id="options-area">
@@ -149,24 +146,20 @@
         
         <div class="explanation" id="explanation-box"></div>
         
-        <!-- İleri / Geri / Pas Kontrolleri -->
         <div class="nav-controls">
             <button class="nav-btn prev-style" id="prev-btn" onclick="prevQuestion()">Önceki</button>
             <button class="nav-btn pas-style" id="pas-btn" onclick="pasQuestion()">PAS</button>
             <button class="nav-btn next-style" id="next-btn" onclick="handleNextOrFinish()">Sonraki</button>
         </div>
 
-        <!-- Soru Navigasyon Matrisi -->
         <div class="matrix-container" id="matrix-container"></div>
     </div>
 
-    <!-- 4. ADIM: Sonuç Ekranı -->
     <div id="result-body" class="score-container" style="display: none;">
         <div class="score-title">Test Tamamlandı! 🎉</div>
         <div class="score-number"><span id="score">0</span> / <span id="total">0</span></div>
         <div id="user-score-msg" style="font-weight: 600; color: #4a5568; margin-bottom: 10px;"></div>
         
-        <!-- Pasta Grafik Alanı -->
         <div style="margin: 20px 0;">
             <canvas id="pie-canvas" width="300" height="200" style="max-width:300px; margin:0 auto;"></canvas>
         </div>
@@ -197,7 +190,7 @@
     </table>
 </div>
 
-<script {
+<script>
     const allQuizzes = {
         da40: [
             { soru: "VFE Landing Flap Sürati Nedir?", secenekler: ["98 KIAS", "110 KIAS", "130 KIAS", "88 KIAS"], cevap: "98 KIAS", aciklama: "Landing flapları tam açıkken yapısal sınır 98 KIAS'tır." },
@@ -267,7 +260,6 @@
 
     const loginScreen = document.getElementById('login-screen');
     const aircraftSelector = document.getElementById('aircraft-selector');
-    const constructionBody = document.getElementById('construction-body');
     const quizBody = document.getElementById('quiz-body');
     const resultBody = document.getElementById('result-body');
     const questionText = document.getElementById('question-text');
@@ -303,7 +295,6 @@
         loginScreen.style.display = 'block';
         aircraftSelector.style.display = 'none';
         quizBody.style.display = 'none';
-        constructionBody.style.display = 'none';
     }
 
     function saveUser() {
@@ -321,7 +312,6 @@
         loginScreen.style.display = 'none';
         quizBody.style.display = 'none';
         resultBody.style.display = 'none';
-        constructionBody.style.display = 'none';
         progressBarContainer.style.display = 'none';
         
         mainTitle.innerText = "Uçak Limitleri Testi ✈️";
@@ -338,20 +328,7 @@
     function startQuiz(aircraftType) {
         selectedAircraft = aircraftType;
         
-        // Başlık Ayarlama
         if(aircraftType === 'da40') mainTitle.innerText = "Diamond DA40 NG";
-        if(aircraftType === 'a211') mainTitle.innerText = "Aquila A211";
-        if(aircraftType === 'da20') mainTitle.innerText = "Diamond DA20 Eclipse";
-        if(aircraftType === 'da42') mainTitle.innerText = "Diamond DA42 Twin Star";
-
-        // Eğer boş bir havuz seçildiyse (DA40 dışındakiler) yapım aşaması ekranını göster
-        if (allQuizzes[aircraftType].length === 0) {
-            aircraftSelector.style.display = 'none';
-            adminPanel.style.display = 'none';
-            questionCounter.style.display = 'none';
-            constructionBody.style.display = 'block';
-            return;
-        }
 
         let rawQuestions = allQuizzes[aircraftType];
         let shuffledPool = [...rawQuestions].sort(() => Math.random() - 0.5);
@@ -359,7 +336,10 @@
         
         activeQuestions = shuffledPool.map((q, index) => {
             let isTextType = index < textQuestionCount;
-            return { ...q, isText: isTextType };
+            return {
+                ...q,
+                isText: isTextType
+            };
         });
 
         activeQuestions.sort(() => Math.random() - 0.5);
@@ -371,7 +351,6 @@
         signatureClickCount = 0;
         quizBody.style.display = 'block';
         progressBarContainer.style.display = 'block';
-        questionCounter.style.display = 'block';
 
         buildMatrix();
         loadQuestion();
