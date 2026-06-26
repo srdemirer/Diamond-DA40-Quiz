@@ -3,13 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diamond DA40 Limitleri Quizi</title>
+    <title>Uçak Tipleri Limit Quizi</title>
     <style>
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             background-color: #f0f4f8;
             color: #1a202c;
             display: flex;
@@ -27,146 +25,48 @@
             max-width: 500px;
             width: 100%;
         }
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .header h1 {
-            color: #0b3c5d;
-            font-size: 1.5rem;
-            margin: 0 0 5px 0;
-        }
-        .header p {
-            color: #718096;
-            margin: 0;
-            font-size: 0.9rem;
-        }
-        .progress-bar {
-            height: 6px;
-            background-color: #e2e8f0;
-            border-radius: 3px;
-            margin-bottom: 25px;
-            overflow: hidden;
-        }
-        .progress-fill {
-            height: 100%;
-            background-color: #328cc1;
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-        .question {
-            font-size: 1.15rem;
-            font-weight: 600;
-            line-height: 1.5;
-            margin-bottom: 20px;
-            color: #2d3748;
-        }
-        .options {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
+        .header { text-align: center; margin-bottom: 20px; }
+        .header h1 { color: #0b3c5d; font-size: 1.5rem; margin: 0 0 5px 0; }
+        .header p { color: #718096; margin: 0; font-size: 0.9rem; }
+        .progress-bar { height: 6px; background-color: #e2e8f0; border-radius: 3px; margin-bottom: 25px; overflow: hidden; display: none;}
+        .progress-fill { height: 100%; background-color: #328cc1; width: 0%; transition: width 0.3s ease; }
+        .options { display: flex; flex-direction: column; gap: 12px; }
         .btn {
-            background-color: #f7fafc;
-            border: 2px solid #e2e8f0;
-            padding: 14px 18px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 500;
-            text-align: left;
-            color: #4a5568;
-            transition: all 0.2s ease;
-            -webkit-tap-highlight-color: transparent;
+            background-color: #f7fafc; border: 2px solid #e2e8f0; padding: 14px 18px;
+            border-radius: 10px; cursor: pointer; font-size: 1rem; font-weight: 500;
+            text-align: left; color: #4a5568; transition: all 0.2s ease; -webkit-tap-highlight-color: transparent;
         }
-        .btn:hover:not([disabled]) {
-            background-color: #edf2f7;
-            border-color: #cbd5e0;
-        }
-        .correct {
-            background-color: #c6f6d5 !important;
-            border-color: #48bb78 !important;
-            color: #22543d !important;
-            font-weight: 600;
-        }
-        .wrong {
-            background-color: #fed7d7 !important;
-            border-color: #f56565 !important;
-            color: #742a2a !important;
-            font-weight: 600;
-        }
-        .explanation {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #ebf8ff;
-            border-left: 4px solid #3182ce;
-            border-radius: 4px;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            color: #2b6cb0;
-            display: none;
-        }
-        .next-btn {
-            display: block;
-            width: 100%;
-            background-color: #0b3c5d;
-            color: white;
-            text-align: center;
-            padding: 14px;
-            margin-top: 20px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            display: none;
-            box-shadow: 0 4px 6px rgba(11, 60, 93, 0.2);
-        }
-        .next-btn:active {
-            background-color: #07273d;
-        }
-        .score-container {
-            text-align: center;
-            padding: 20px 0;
-        }
-        .score-title {
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: #2d3748;
-            margin-bottom: 10px;
-        }
-        .score-number {
-            font-size: 3rem;
-            font-weight: 800;
-            color: #328cc1;
-            margin-bottom: 20px;
-        }
-        .restart-btn {
-            background-color: #328cc1;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-        }
+        .btn:hover:not([disabled]) { background-color: #edf2f7; border-color: #cbd5e0; }
+        .aircraft-btn { background-color: #e3fafc; border-color: #99e9f2; color: #0c8599; text-align: center; font-weight: 600;}
+        .aircraft-btn:hover { background-color: #c5f6fa !important; }
+        .correct { background-color: #c6f6d5 !important; border-color: #48bb78 !important; color: #22543d !important; font-weight: 600; }
+        .wrong { background-color: #fed7d7 !important; border-color: #f56565 !important; color: #742a2a !important; font-weight: 600; }
+        .explanation { margin-top: 20px; padding: 15px; background-color: #ebf8ff; border-left: 4px solid #3182ce; border-radius: 4px; font-size: 0.95rem; line-height: 1.5; color: #2b6cb0; display: none; }
+        .next-btn { display: block; width: 100%; background-color: #0b3c5d; color: white; text-align: center; padding: 14px; margin-top: 20px; border: none; border-radius: 10px; cursor: pointer; font-size: 1rem; font-weight: 600; display: none; box-shadow: 0 4px 6px rgba(11, 60, 93, 0.2); }
+        .score-container { text-align: center; padding: 20px 0; }
+        .score-title { font-size: 1.4rem; font-weight: bold; color: #2d3748; margin-bottom: 10px; }
+        .score-number { font-size: 3rem; font-weight: 800; color: #328cc1; margin-bottom: 20px; }
+        .restart-btn { background-color: #328cc1; color: white; border: none; padding: 12px 25px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div class="quiz-container">
-    <div id="quiz-header" class="header">
-        <h1>DA40 Limitleri ✈️</h1>
-        <p id="question-counter">Soru 1 / 5</p>
+    <div class="header">
+        <h1 id="main-title">Uçuş Öncesi Limit Kontrolü ✈️</h1>
+        <p id="question-counter">Lütfen uçacağınız uçak tipini seçin</p>
     </div>
     
-    <div class="progress-bar" id="progress-bar-container">
-        <div class="progress-fill" id="progress-fill"></div>
+    <div class="progress-bar" id="progress-bar-container"><div class="progress-fill" id="progress-fill"></div></div>
+
+    <div id="aircraft-selector" class="options">
+        <button class="btn aircraft-btn" onclick="startQuiz('da40')">Diamond DA40 NG</button>
+        <button class="btn aircraft-btn" onclick="startQuiz('c172')">Cessna 172 Skyhawk</button>
+        <button class="btn aircraft-btn" onclick="startQuiz('da42')">Diamond DA42 Twin Star</button>
     </div>
 
-    <div id="quiz-body">
-        <div class="question" id="question-text">Soru yükleniyor...</div>
+    <div id="quiz-body" style="display: none;">
+        <div class="question" id="question-text" style="font-size: 1.15rem; font-weight: 600; margin-bottom: 20px;"></div>
         <div class="options" id="options-container"></div>
         <div class="explanation" id="explanation-box"></div>
         <button class="next-btn" id="next-button" onclick="nextQuestion()">Sonraki Soru</button>
@@ -175,66 +75,89 @@
     <div id="result-body" class="score-container" style="display: none;">
         <div class="score-title">Test Tamamlandı! 🎉</div>
         <div class="score-number"><span id="score">0</span> / <span id="total">0</span></div>
-        <button class="restart-btn" onclick="restartQuiz()">Yeniden Başlat</button>
+        <button class="restart-btn" onclick="backToMenu()">Ana Menüye Dön</button>
     </div>
 </div>
 
 <script>
-    // Uçuş okulundaki uçağın el kitabına (AFM) göre buradaki değerleri güncelleyebilirsin.
-    const quizData = [
-      {
-        soru: "DA40 NG için Maksimum Kalkış Ağırlığı (MTOM) kaç kg'dır?",
-        secenekler: ["1150 kg", "1280 kg", "1310 kg", "1200 kg"],
-        cevap: "1310 kg",
-        aciklama: "DA40 NG için maksimum kalkış ağırlığı 1310 kg'dır. Eski model TDI (TAE) motorlarda bu limit genelde 1150 kg'dır."
-      },
-      {
-        soru: "Uçağın asla aşılmaması gereken hızı (Vne) kaç KIAS'tır?",
-        secenekler: ["164 KIAS", "172 KIAS", "178 KIAS", "152 KIAS"],
-        cevap: "172 KIAS",
-        aciklama: "Vne (Never Exceed Speed) DA40 için 172 KIAS'tır ve hava sürat göstergesinde radyal kırmızı çizgi ile işaretlenmiştir."
-      },
-      {
-        soru: "Maksimum Flaplı Uçuş Hızı (Vfe) Flaps LDG (Full Flap) konumunda kaç KIAS'tır?",
-        secenekler: ["91 KIAS", "98 KIAS", "108 KIAS", "110 KIAS"],
-        cevap: "98 KIAS",
-        aciklama: "Flaps LDG (İniş Flapı) pozisyonunda maksimum hız limitiniz 98 KIAS'tır. Flaps T/O (Kalkış Flapı) pozisyonunda ise limit 108 KIAS'tır."
-      },
-      {
-        soru: "DA40'ın maksimum deklare edilen yan rüzgar (Demonstrated Crosswind) limiti kaç knots'tır?",
-        secenekler: ["15 kts", "20 kts", "25 kts", "30 kts"],
-        cevap: "25 kts",
-        aciklama: "Diamond DA40 için test edilmiş ve onaylanmış maksimum yan rüzgar bileşeni 25 knots'tır."
-      },
-      {
-        soru: "Austro Engine E4-A motorunda maksimum sürekli güç (Max Continuous Power) yüzde kaçtır?",
-        secenekler: ["%92", "%100", "%75", "%95"],
-        cevap: "%100",
-        aciklama: "EECU kontrollü Austro Engine motorlarda %100 güç, motor limitleri aşılmadığı sürece sürekli olarak kullanılabilir."
-      }
-    ];
+    // TÜM UÇAKLARIN SORU HAVUZU BURASI
+    const allQuizzes = {
+        da40: [
+            {
+                soru: "DA40 NG için Maksimum Kalkış Ağırlığı (MTOM) kaç kg'dır?",
+                secenekler: ["1150 kg", "1280 kg", "1310 kg", "1200 kg"],
+                cevap: "1310 kg",
+                aciklama: "DA40 NG için maksimum kalkış ağırlığı 1310 kg'dır."
+            },
+            {
+                soru: "DA40'ın maksimum demo yan rüzgar (Demonstrated Crosswind) limiti kaç knots'tır?",
+                secenekler: ["15 kts", "20 kts", "25 kts", "30 kts"],
+                cevap: "25 kts",
+                aciklama: "Diamond DA40 için maksimum yan rüzgar bileşeni 25 knots'tır."
+            }
+        ],
+        c172: [
+            {
+                soru: "Cessna 172SP için Maksimum Kalkış Ağırlığı (MTOW) kaç lbs'tir?",
+                secenekler: ["2300 lbs", "2450 lbs", "2550 lbs", "2200 lbs"],
+                cevap: "2550 lbs",
+                aciklama: "Cessna 172SP modelinin maksimum kalkış ağırlığı 2550 lbs olarak belirlenmiştir."
+            },
+            {
+                soru: "Cessna 172'de Flaps 10 konumunda maksimum flap açma hızı (Vfe) kaç KIAS'tır?",
+                secenekler: ["85 KIAS", "110 KIAS", "100 KIAS", "95 KIAS"],
+                cevap: "110 KIAS",
+                aciklama: "İlk kademe (Flaps 10) için Vfe sürati 110 KIAS'tır. Flaps 10-FULL arası için ise 85 KIAS'tır."
+            }
+        ],
+        da42: [
+            {
+                soru: "DA42'de tek motor arızasında tutulması gereken en iyi tırmanış sürati (Vyse - Blue Line) kaç KIAS'tır?",
+                secenekler: ["78 KIAS", "82 KIAS", "85 KIAS", "90 KIAS"],
+                cevap: "85 KIAS",
+                aciklama: "DA42 NG için tek motor (One Engine Inoperative) en iyi tırmanış sürati olan Vyse 85 KIAS'tır ve mavi çizgiyle gösterilir."
+            }
+        ]
+    };
 
+    let activeQuestions = [];
     let currentQuestionIndex = 0;
     let score = 0;
 
+    const aircraftSelector = document.getElementById('aircraft-selector');
+    const quizBody = document.getElementById('quiz-body');
+    const resultBody = document.getElementById('result-body');
     const questionText = document.getElementById('question-text');
     const optionsContainer = document.getElementById('options-container');
     const explanationBox = document.getElementById('explanation-box');
     const nextButton = document.getElementById('next-button');
-    const quizBody = document.getElementById('quiz-body');
-    const resultBody = document.getElementById('result-body');
     const questionCounter = document.getElementById('question-counter');
     const progressFill = document.getElementById('progress-fill');
-    const quizHeader = document.getElementById('quiz-header');
     const progressBarContainer = document.getElementById('progress-bar-container');
+    const mainTitle = document.getElementById('main-title');
+
+    function startQuiz(aircraftType) {
+        activeQuestions = allQuizzes[aircraftType];
+        currentQuestionIndex = 0;
+        score = 0;
+
+        aircraftSelector.style.display = 'none';
+        quizBody.style.display = 'block';
+        progressBarContainer.style.display = 'block';
+
+        if(aircraftType === 'da40') mainTitle.innerText = "Diamond DA40 NG";
+        if(aircraftType === 'c172') mainTitle.innerText = "Cessna 172 Skyhawk";
+        if(aircraftType === 'da42') mainTitle.innerText = "Diamond DA42 Twin Star";
+
+        loadQuestion();
+    }
 
     function loadQuestion() {
         resetState();
-        let currentQuestion = quizData[currentQuestionIndex];
+        let currentQuestion = activeQuestions[currentQuestionIndex];
         
-        // Sayaç ve Progress Bar Güncelleme
-        questionCounter.innerText = `Soru ${currentQuestionIndex + 1} / ${quizData.length}`;
-        const progressPercent = ((currentQuestionIndex) / quizData.length) * 100;
+        questionCounter.innerText = `Soru ${currentQuestionIndex + 1} / ${activeQuestions.length}`;
+        const progressPercent = (currentQuestionIndex / activeQuestions.length) * 100;
         progressFill.style.width = `${progressPercent}%`;
 
         questionText.innerText = currentQuestion.soru;
@@ -258,9 +181,7 @@
         const buttons = optionsContainer.querySelectorAll('.btn');
         buttons.forEach(btn => {
             btn.disabled = true; 
-            if(btn.innerText === correctAnswer) {
-                btn.classList.add('correct'); 
-            }
+            if(btn.innerText === correctAnswer) btn.classList.add('correct'); 
         });
 
         if (selectedButton.innerText === correctAnswer) {
@@ -273,8 +194,7 @@
         explanationBox.style.display = 'block';
         nextButton.style.display = 'block';
         
-        // Son soruda butonu güncelle
-        if (currentQuestionIndex === quizData.length - 1) {
+        if (currentQuestionIndex === activeQuestions.length - 1) {
             nextButton.innerText = "Sonuçları Gör";
         } else {
             nextButton.innerText = "Sonraki Soru";
@@ -283,7 +203,7 @@
 
     function nextQuestion() {
         currentQuestionIndex++;
-        if (currentQuestionIndex < quizData.length) {
+        if (currentQuestionIndex < activeQuestions.length) {
             loadQuestion();
         } else {
             showResult();
@@ -298,22 +218,16 @@
         
         resultBody.style.display = 'block';
         document.getElementById('score').innerText = score;
-        document.getElementById('total').innerText = quizData.length;
+        document.getElementById('total').innerText = activeQuestions.length;
     }
 
-    function restartQuiz() {
-        currentQuestionIndex = 0;
-        score = 0;
-        quizBody.style.display = 'block';
-        progressBarContainer.style.display = 'block';
-        questionCounter.style.display = 'block';
+    function backToMenu() {
         resultBody.style.display = 'none';
-        loadQuestion();
+        aircraftSelector.style.display = 'flex';
+        mainTitle.innerText = "Uçuş Öncesi Limit Kontrolü ✈️";
+        questionCounter.innerText = "Lütfen uçacağınız uçak tipini seçin";
+        questionCounter.style.display = 'block';
     }
-
-    // İlk başlatma
-    loadQuestion();
 </script>
-
 </body>
 </html>
