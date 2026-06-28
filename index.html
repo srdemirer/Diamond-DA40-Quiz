@@ -220,7 +220,7 @@
     <div id="aircraft-selector" style="display: none;">
         <div id="welcome-msg" class="user-welcome"></div>
         <div class="options">
-            <button class="btn aircraft-btn" disabled title="Yapım Aşamasındadır">Aquila A211 (Yapım Aşamasında)</button>
+            <button class="btn aircraft-btn" onclick="startQuiz('a211')">Aquila A211</button>
             <button class="btn aircraft-btn" disabled title="Yapım Aşamasındadır">Diamond DA20 Eclipse (Yapım Aşamasında)</button>
             <button class="btn aircraft-btn" onclick="startQuiz('da40')">Diamond DA40 NG</button>
             <button class="btn aircraft-btn" disabled title="Yapım Aşamasındadır">Diamond DA42 Twin Star (Yapım Aşamasında)</button>
@@ -295,65 +295,104 @@
 </div>
 
 <script>
-    // Yeni Güncel Google Apps Script URL adresi buraya tanımlandı:
     const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbxvMwUIjw_8HTz4bXkw_1SJLejsaWBV7_oL9CBE2g1gIfhadnhmeuivV4tPDSO4Klnj/exec";
 
     const allQuizzes = {
         da40: [
-            { soru: "VFE Landing Flap Sürati Nedir?", secenekler: ["98 KIAS", "110 KIAS", "130 KIAS", "88 KIAS"], cevap: "98 KIAS", aciklama: "Landing flapları tam açıkken yapısal sınır 98 KIAS'tır.", cat: "Hız Limitleri" },
-            { soru: "VFE Take Off Flap Sürati Nedir?", secenekler: ["98 KIAS", "110 KIAS", "120 KIAS", "108 KIAS"], cevap: "110 KIAS", aciklama: "Kalkış (Take Off) kademesinde maksimum flap sürati 110 KIAS'tır.", cat: "Hız Limitleri" },
-            { soru: "VNO (Maximum Structural Cruise Speed) Sürati Nedir?", secenekler: ["172 KIAS", "130 KIAS", "113 KIAS", "140 KIAS"], cevap: "130 KIAS", aciklama: "Yapısal seyir hız sınırı 130 KIAS'tır.", cat: "Hız Limitleri" },
-            { soru: "VNE (Never Exceed Speed) Sürati Nedir?", secenekler: ["130 KIAS", "164 KIAS", "172 KIAS", "180 KIAS"], cevap: "172 KIAS", aciklama: "Asla aşılmaması gereken hız limitidir, göstergede kırmızı çizgedir.", cat: "Hız Limitleri" },
-            { soru: "Best Glide Angle Speed Sürati Nedir?", secenekler: ["73 KIAS", "83 KIAS", "88 KIAS", "92 KIAS"], cevap: "88 KIAS", aciklama: "En iyi süzülüş süzülme açısı sürati maks ağırlıkta 88 KIAS'tır.", cat: "Hız Limitleri" },
-            { soru: "Engine Failure Durumunda İdeal İniş Sürati Nedir? (UP Flap)", secenekler: ["88 KIAS", "83 KIAS", "78 KIAS", "77 KIAS"], cevap: "83 KIAS", aciklama: "Flaplar UP konumdayken motor arızası iniş yaklaşma sürati 83 KIAS'tır.", cat: "Manevra & Operasyon" },
-            { soru: "Engine Failure Durumunda İdeal İniş Sürati Nedir? (Take OFF Flap)", secenekler: ["83 KIAS", "78 KIAS", "77 KIAS", "72 KIAS"], cevap: "78 KIAS", aciklama: "Take Off flap kademesinde motor arızası iniş sürati 78 KIAS'tır.", cat: "Manevra & Operasyon" },
-            { soru: "Engine Failure Durumunda İdeal İniş Sürati Nedir? (Landing Flap)", secenekler: ["78 KIAS", "77 KIAS", "75 KIAS", "60 KIAS"], cevap: "77 KIAS", aciklama: "Landing tam flap ile motor arızası iniş sürati 77 KIAS'tır.", cat: "Manevra & Operasyon" },
-            { soru: "Pervane Çapı Nedir?", secenekler: ["180 CM", "185 CM", "190 CM", "195 CM"], cevap: "190 CM", aciklama: "Uçağın MT-Propeller pervanesinin çapı 190 CM'dir.", cat: "Motor & Sistem" },
-            { soru: "Normal Yağ Basıncı Kaç Bar?(Green Arc)", secenekler: ["1.5 - 5 Bar", "2.5 - 6 Bar", "2.0 - 5.5 Bar", "3.0 - 6.5 Bar"], cevap: "2.5 - 6 Bar", aciklama: "Normal yeşil sektör aralığı 2.5 ile 6 bar arasındadır.", cat: "Motor & Sistem" },
-            { soru: "Maksimum Yağ Basıncı Kaç Bar?(Red Arc)", secenekler: ["6.0 Bar", "6.5 Bar +", "7.0 Bar +", "5.5 Bar"], cevap: "6.5 Bar +", aciklama: "6.5 bar ve üzeri yüksek yağ basıncı kırmızı limitidir.", cat: "Motor & Sistem" },
-            { soru: "Normal Yağ Sıcaklığı Kaç Santigrat Derecedir? (Green Arc)", secenekler: ["50 - 135 C", "60 - 120 C", "40 - 130 C", "50 - 125 C"], cevap: "50 - 135 C", aciklama: "Yağ sıcaklığı yeşil çalışma sektörü 50-135°C arasıdır.", cat: "Motor & Sistem" },
-            { soru: "Maksimum Yağ Sıcaklığı Kaç Santigrat Derecedir? (Red Arc)", secenekler: ["130 C", "135 C", "140 C +", "145 C"], cevap: "140 C +", aciklama: "140°C ve üzeri tehlikeli kırmızı limit bölgesidir.", cat: "Motor & Sistem" },
-            { soru: "Normal Sıvı Soğutma Sıcaklığı Kaç Santigrat Derecedir? (Green Arc)", secenekler: ["50 - 90 C", "60 - 95 C", "60 - 105 C", "70 - 100 C"], cevap: "60 - 95 C", aciklama: "Motor soğutma sıvısı (Coolant) yeşil aralığı 60-95°C'dir.", cat: "Motor & Sistem" },
-            { soru: "Maksimum Sıvı Soğutma Sıcaklığı Kaç Santigrat Derecedir? (Red Arc)", secenekler: ["95 C", "100 C", "105 C +", "110 C"], cevap: "105 C +", aciklama: "105°C ve üzeri aşırı hararet kırmızı limitidir.", cat: "Motor & Sistem" },
-            { soru: "Normal Gear Box Sıcaklığı Kaç Santigrat Derecedir? (Green Arc)", secenekler: ["35 -115 C", "50 - 120 C", "40 - 110 C", "35 - 120 C"], cevap: "35 -115 C", aciklama: "Pervane dişli kutusu yeşil sıcaklık sektörü 35-115°C arasıdır.", cat: "Motor & Sistem" },
-            { soru: "Maksimum Gear Box Sıcaklığı Kaç Santigrat Derecedir? (Red Arc)", secenekler: ["115 C", "120 C +", "125 C", "130 C"], cevap: "120 C +", aciklama: "Gear Box sıcaklığında kırmızı çizgi limiti 120°C'dir.", cat: "Motor & Sistem" },
-            { soru: "Normal Yakıt Sıcaklığı Kaç Santigrat Derecedir? (Green Arc)", secenekler: ["-30 / 40 C", "-20 / 50 C", "0 / 60 C", "-10 / 50 C"], cevap: "-20 / 50 C", aciklama: "Yakıt sıcaklığı emniyetli yeşil çalışma aralığı -20°C ile 50°C arasıdır.", cat: "Motor & Sistem" },
-            { soru: "Maksimum Yakıt Sıcaklığı Kaç Santigrat Derecedir? (Red Arc)", secenekler: ["50 C", "55 C", "60 C", "65 C"], cevap: "60 C", aciklama: "Yakıt sıcaklığı 60°C üst limit kırmızı çizgidir.", cat: "Motor & Sistem" },
-            { soru: "Normal Voltmetre Çalışma Aralığı Kaç Volttur? (Green Arc)", secenekler: ["12 - 14 V", "24 - 28 V", "25 - 30 V", "28 - 32 V"], cevap: "25 - 30 V", aciklama: "Ana DC barası normal şarj voltajı yeşil aralığı 25-30 Volttur.", cat: "Motor & Sistem" },
-            { soru: "Maksimum Voltmetre Çalışma Voltajı Kaçtır? (RedArc)", secenekler: ["30 V", "32 V", "34 V", "28 V"], cevap: "32 V", aciklama: "Aşırı voltaj kırmızı çizgisi 32 Volttur.", cat: "Motor & Sistem" },
-            { soru: "Yakıt Deposu Toplam Kaç Galondur?", secenekler: ["2 x 19.5 Galon", "2 x 20.5 Galon (41 Galon) / 2 x 77.6 Litre", "2 x 25 Galon", "40 Galon"], cevap: "2 x 20.5 Galon (41 Galon) / 2 x 77.6 Litre", aciklama: "Fiziksel toplam yakıt deposu hacmi 41 galondur.", cat: "Ağırlık & Denge" },
-            { soru: "Kullnılabilir Yakıt Kaç Galondur?", secenekler: ["41 Galon", "2 x 19.5 Galon (39 Galon) / 2 x 73.8 Litre", "38 Galon", "35 Galon"], cevap: "2 x 19.5 Galon (39 Galon) / 2 x 73.8 Litre", aciklama: "Uçuşta motor tarafından çekilebilen emniyetli yakıt miktarı 39 galondur.", cat: "Ağırlık & Denge" },
-            { soru: "İki Yakıt Tankı Arasındaki İzin Verilen Yakıt Farkı Kaç Galondur?", secenekler: ["5 Galon", "7 Galon", "9 Galon ( 34 Litre )", "12 Galon"], cevap: "9 Galon ( 34 Litre )", aciklama: "Maksimum kanat yakıt dengesizlik (imbalance) limiti 9 galondur.", cat: "Ağırlık & Denge" },
-            { soru: "Maksimum Kalkış Ağırlığı Kaç Kilogramdır?", secenekler: ["1150 KG", "1200 KG", "1280 - 1310 KG", "1350 KG"], cevap: "1280 - 1310 KG", aciklama: "Modifikasyon durumuna bağlı olarak MTOM 1280-1310 kg arasındadır.", cat: "Ağırlık & Denge" },
-            { soru: "Maksimum İniş Ağırlığı Kaç Kilogramdır?", secenekler: ["1310 KG", "1280 KG", "1200 KG", "1150 KG"], cevap: "1280 KG", aciklama: "Yapısal maksimum iniş ağırlığı sınırı 1280 kg'dır.", cat: "Ağırlık & Denge" },
-            { soru: "Minimum Uçuş Ağırlığı Kaç Kilogramdır?", secenekler: ["900 KG", "940 KG", "1000 KG", "850 KG"], cevap: "940 KG", aciklama: "Ağırlık merkezi dengesi için asgari uçuş kütlesi 940 kg'dır.", cat: "Ağırlık & Denge" },
-            { soru: "İzin Verilen Maksimum Pozitif G Kuvveti Kaçtır? (UP Flap)", secenekler: ["2.0 G", "3.8 G", "4.4 G", "1.52 G"], cevap: "3.8 G", aciklama: "Temiz konfigürasyonda maksimum pozitif yük faktörü +3.8 G'dir.", cat: "Ağırlık & Denge" },
-            { soru: "İzin Verilen Maksimum Pozitif G Kuvveti Kaçtır? (Take Off - Landing Flap)", secenekler: ["3.8 G", "2", "4 G", "1.5 G"], cevap: "2", aciklama: "Flaplar açıkken uçağın taşıyabileceği maksimum pozitif yük faktörü +2 G'dir.", cat: "Ağırlık & Denge" },
-            { soru: "İzin Verilen Maksimum Negatif G Kuvveti Kaçtır? (UP Flap)", secenekler: ["-1.52 G", "0.0 G", "-1.0 G", "-2.0 G"], cevap: "-1.52 G", aciklama: "Flaplar kapalıyken ters yükleme limiti -1.52 G'dir.", cat: "Ağırlık & Denge" },
-            { soru: "İzin Verilen Maksimum Negatif G Kuvveti Kaçtır? (Take Off - Landing Flap)", secenekler: ["-1.52 G", "-1.0 G", "0", "0.5 G"], cevap: "0", aciklama: "Flaplar açıkken hiçbir negatif yüklemeye izin verilmez (0 G).", cat: "Ağırlık & Denge" },
-            { soru: "ECU Test Yapılmadan Önce Gear Box Sıcaklığı Minimum Kaç Santigrat Derece Olmalıdır?", secenekler: ["35 C", "38 C", "50 C", "60 C"], cevap: "38 C", aciklama: "Motor testi öncesi dişli kutusunun en az 38°C olması gerekir.", cat: "Motor & Sistem" },
+            { soru: "VFE Landing Flap Sürati Kaçtır?", secenekler: ["98 KIAS", "110 KIAS", "130 KIAS", "88 KIAS"], cevap: "98 KIAS", aciklama: "Landing flapları tam açıkken yapısal sınır 98 KIAS'tır.", cat: "Hız Limitleri" },
+            { soru: "VFE Take Off Flap Sürati Kaçtır?", secenekler: ["98 KIAS", "110 KIAS", "120 KIAS", "108 KIAS"], cevap: "110 KIAS", aciklama: "Kalkış (Take Off) kademesinde maksimum flap sürati 110 KIAS'tır.", cat: "Hız Limitleri" },
+            { soru: "VNO (Maximum Structural Cruise Speed) Sürati Kaçtır?", secenekler: ["172 KIAS", "130 KIAS", "113 KIAS", "140 KIAS"], cevap: "130 KIAS", aciklama: "Yapısal seyir hız sınırı 130 KIAS'tır.", cat: "Hız Limitleri" },
+            { soru: "VNE (Never Exceed Speed) Sürati Kaçtır?", secenekler: ["130 KIAS", "164 KIAS", "172 KIAS", "180 KIAS"], cevap: "172 KIAS", aciklama: "Asla aşılmaması gereken hız limitidir, göstergede kırmızı çizgedir.", cat: "Hız Limitleri" },
+            { soru: "Best Glide Angle Speed Sürati Kaçtır?", secenekler: ["73 KIAS", "83 KIAS", "88 KIAS", "92 KIAS"], cevap: "88 KIAS", aciklama: "En iyi süzülüş süzülme açısı sürati maks ağırlıkta 88 KIAS'tır.", cat: "Hız Limitleri" },
             { soru: "Take Off Flap Tırmanma Sürati Kaçtır?", secenekler: ["67 KIAS", "72 KIAS", "88 KIAS", "80 KIAS"], cevap: "72 KIAS", aciklama: "Kalkış flap kademesinde en iyi tırmanış oranı sürati (Vy) 72 KIAS'tır.", cat: "Hız Limitleri" },
             { soru: "UP Flap Tırmanma Sürati Kaçtır?", secenekler: ["72 KIAS", "78 KIAS", "85 KIAS", "88 KIAS"], cevap: "88 KIAS", aciklama: "Temiz konfigürasyonda tırmanış sürati (Vy) 88 KIAS'tır.", cat: "Hız Limitleri" },
             { soru: "1100 KG Kalkış Ağırlığı İçin Rotate Sürati Kaçtır?", secenekler: ["61 KIAS", "65 KIAS", "67 KIAS", "55 KIAS"], cevap: "61 KIAS", aciklama: "1100 kg ağırlık için tekerlek kesme sürati 61 KIAS'tır.", cat: "Hız Limitleri" },
             { soru: "1200 KG Kalkış Ağırlığı İçin Rotate Sürati Kaçtır?", secenekler: ["61 KIAS", "65 KIAS", "67 KIAS", "70 KIAS"], cevap: "65 KIAS", aciklama: "1200 kg ağırlık için Rotate hızı 65 KIAS'dır.", cat: "Hız Limitleri" },
             { soru: "1280+ KG Kalkış Ağırlığı İçin Rotate Sürati Kaçtır?", secenekler: ["61 KIAS", "65 KIAS", "67 KIAS", "72 KIAS"], cevap: "67 KIAS", aciklama: "Maksimum ağırlıkta Rotate hızı 67 KIAS'tır.", cat: "Hız Limitleri" },
-            { soru: "%30 Load ile Alçalma Sürati Kaçtır?", secenekler: ["80 KIAS", "90 KIAS", "100 KIAS", "110 KIAS"], cevap: "80 KIAS", aciklama: "%30 yük ile alçalırken muhafaza edilecek sürat 80 KIAS'tır.", cat: "Manevra & Operasyon" },
-            { soru: "%50 Load İle Düz Uçuş Sürati Kaçtır?", secenekler: ["80 KIAS", "90 KIAS", "100 KIAS", "115 KIAS"], cevap: "90 KIAS", aciklama: "%50 güç ile düz uçuş sürati ortalama 90 KIAS'tır.", cat: "Manevra & Operasyon" },
             { soru: "1310 KG Kalkış Ağırlığı İçin Stall Sürati Kaçtır? (Up Flap)", secenekler: ["66 KIAS", "62 KIAS", "60 KIAS", "55 KIAS"], cevap: "66 KIAS", aciklama: "Maksimum ağırlıkta flaplar kapalı stall hızı 66 KIAS'tır.", cat: "Hız Limitleri" },
             { soru: "1310 KG Kalkış Ağırlığı İçin Stall Sürati Kaçtır? (Take Off Flap)", secenekler: ["66 KIAS", "62 KIAS", "60 KIAS", "58 KIAS"], cevap: "62 KIAS", aciklama: "Take Off flap pozisyonunda stall hızı 62 KIAS'tır.", cat: "Hız Limitleri" },
             { soru: "1310 KG Kalkış Ağırlığı İçin Stall Sürati Kaçtır? (Landing Flap)", secenekler: ["66 KIAS", "62 KIAS", "60 KIAS", "52 KIAS"], cevap: "60 KIAS", aciklama: "Tam iniş flaplarında tam yükte stall hızı 60 KIAS'tır.", cat: "Hız Limitleri" },
-            { soru: "Slow Flight Sürati Kaçtır? (Up Flap)", secenekler: ["85 KIAS", "80 KIAS", "75 KIAS", "90 KIAS"], cevap: "85 KIAS", aciklama: "UP flap yavaş uçuş manevra sürati 85 KIAS'tır.", cat: "Manevra & Operasyon" },
-            { soru: "Slow Flight Sürati Kaçtır? (Take Off Flap)", secenekler: ["85 KIAS", "80 KIAS", "75 KIAS", "72 KIAS"], cevap: "80 KIAS", aciklama: "Kalkış flaplı yavaş uçuş çalışma sürati 80 KIAS'tır.", cat: "Manevra & Operasyon" },
-            { soru: "Slow Flight Sürati Kaçtır? (Landing Flap)", secenekler: ["80 KIAS", "75 KIAS", "70 KIAS", "65 KIAS"], cevap: "75 KIAS", aciklama: "İniş flaplı yavaş uçuş talimi 75 KIAS'ta muhafaza edilir.", cat: "Manevra & Operasyon" },
-            { soru: "Keskin Dönüş Sürati Kaçtır?", secenekler: ["80 - 90 KIAS", "90 - 110 KIAS (İdeal Sürat 100 KIAS)", "110 - 130 KIAS", "113 KIAS"], cevap: "90 - 110 KIAS (İdeal Sürat 100 KIAS)", aciklama: "Steep turn manevrası için ideal hedef sürat 100 KIAS'tır.", cat: "Manevra & Operasyon" },
             { soru: "Tavsiye Edilen Yaklaşma Sürati Kaçtır?(Up Flap)", secenekler: ["88 KIAS", "83 KIAS", "78 KIAS", "77 KIAS"], cevap: "83 KIAS", aciklama: "Flaps UP son yaklaşma sürati 83 KIAS'tır.", cat: "Hız Limitleri" },
             { soru: "Tavsiye Edilen Yaklaşma Sürati Kaçtır?(Take Off Flap)", secenekler: ["83 KIAS", "78 KIAS", "77 KIAS", "72 KIAS"], cevap: "78 KIAS", aciklama: "Flaps T/O kademesinde tavsiye edilen yaklaşma sürati 78 KIAS'tır.", cat: "Hız Limitleri" },
             { soru: "Tavsiye Edilen Yaklaşma Sürati Kaçtır?(Landing Flap)", secenekler: ["78 KIAS", "77 KIAS", "72 KIAS", "70 KIAS"], cevap: "77 KIAS", aciklama: "Landing flapları ile normal yaklaşma hızı 77 KIAS'tır.", cat: "Hız Limitleri" },
             { soru: "1080 KG Kalkış Ağırlığı İçin Manevra Sürati Kaçtır?", secenekler: ["101 KIAS", "108 KIAS", "113 KIAS", "98 KIAS"], cevap: "101 KIAS", aciklama: "Hafif uçakta ani kumanda limit hızı (Va) 101 KIAS'a düşer.", cat: "Hız Limitleri" },
             { soru: "1080 - 1180 KG Kalkış Ağırlığı İçin Manevra Sürati Kaçtır?", secenekler: ["101 KIAS", "108 KIAS", "113 KIAS", "105 KIAS"], cevap: "108 KIAS", aciklama: "Orta ağırlık bandında manevra sürati Va 108 KIAS'tır.", cat: "Hız Limitleri" },
-            { soru: "1180+ KG Kalkış Ağırlığı İçin Manevra Sürati Kaçtır?", secenekler: ["101 KIAS", "108 KIAS", "113 KIAS", "120 KIAS"], cevap: "113 KIAS", aciklama: "Tam yüklü ağır uçakta en yüksek Va limiti 113 KIAS'tır.", cat: "Hız Limitleri" }
+            { soru: "1180+ KG Kalkış Ağırlığı İçin Manevra Sürati Kaçtır?", secenekler: ["101 KIAS", "108 KIAS", "113 KIAS", "120 KIAS"], cevap: "113 KIAS", aciklama: "Tam yüklü ağır uçakta en yüksek Va limiti 113 KIAS'tır.", cat: "Hız Limitleri" },
+            { soru: "Pervane Çapı Nedir?", secenekler: ["180 CM", "185 CM", "190 CM", "195 CM"], cevap: "190 CM", aciklama: "Uçağın MT-Propeller pervanesinin çapı 190 CM'dir.", cat: "Motor & Sistem" },
+            { soru: "Normal Yağ Basıncı Kaç Bar?(Green Arc)", secenekler: ["1.5-5", "2.5-6", "2.0-5.5", "3.0-6.5"], cevap: "2.5-6", aciklama: "Normal yeşil sektör aralığı 2.5 ile 6 bar arasındadır.", cat: "Motor & Sistem" },
+            { soru: "Maksimum Yağ Basıncı Kaç Bar?(Red Arc)", secenekler: ["6.0", "6.5", "7.0", "5.5"], cevap: "6.5", aciklama: "6.5 bar yüksek yağ basıncı kırmızı limitidir.", cat: "Motor & Sistem" },
+            { soru: "Normal Yağ Sıcaklığı Kaç Santigrat Derecedir? (Green Arc)", secenekler: ["50-135", "60-120", "40-130", "50-125"], cevap: "50-135", aciklama: "Yağ sıcaklığı yeşil çalışma sektörü 50-135°C arasıdır.", cat: "Motor & Sistem" },
+            { soru: "Maksimum Yağ Sıcaklığı Kaç Santigrat Derecedir? (Red Arc)", secenekler: ["130", "135", "140", "145"], cevap: "140", aciklama: "140°C tehlikeli kırmızı limit bölgesidir.", cat: "Motor & Sistem" },
+            { soru: "Normal Sıvı Soğutma Sıcaklığı Kaç Santigrat Derecedir? (Green Arc)", secenekler: ["50-90", "60-95", "60-105", "70-100"], cevap: "60-95", aciklama: "Motor soğutma sıvısı (Coolant) yeşil aralığı 60-95°C'dir.", cat: "Motor & Sistem" },
+            { soru: "Maksimum Sıvı Soğutma Sıcaklığı Kaç Santigrat Derecedir? (Red Arc)", secenekler: ["95", "100", "105", "110"], cevap: "105", aciklama: "105°C aşırı hararet kırmızı limitidir.", cat: "Motor & Sistem" },
+            { soru: "Normal Gear Box Sıcaklığı Kaç Santigrat Derecedir? (Green Arc)", secenekler: ["35 -115", "50-120", "40-110", "30-110"], cevap: "35 -115", aciklama: "Pervane dişli kutusu yeşil sıcaklık sektörü 35-115°C arasıdır.", cat: "Motor & Sistem" },
+            { soru: "Maksimum Gear Box Sıcaklığı Kaç Santigrat Derecedir? (Red Arc)", secenekler: ["115", "120", "125", "130"], cevap: "120", aciklama: "Gear Box sıcaklığında kırmızı çizgi limiti 120°C'dir.", cat: "Motor & Sistem" },
+            { soru: "Normal Yakıt Sıcaklığı Kaç Santigrat Derecedir? (Green Arc)", secenekler: ["-30/40", "-20/50", "0/60", "-10/50"], cevap: "-20/50", aciklama: "Yakıt sıcaklığı emniyetli yeşil çalışma aralığı -20°C ile 50°C arasıdır.", cat: "Motor & Sistem" },
+            { soru: "Maksimum Yakıt Sıcaklığı Kaç Santigrat Derecedir? (Red Arc)", secenekler: ["50", "55", "60", "65"], cevap: "60", aciklama: "Yakıt sıcaklığı 60°C üst limit kırmızı çizgidir.", cat: "Motor & Sistem" },
+            { soru: "Normal Voltmetre Çalışma Aralığı Kaç Volttur? (Green Arc)", secenekler: ["12-14", "24-28", "25-30", "28-32"], cevap: "25-30", aciklama: "Ana DC barası normal şarj voltajı yeşil aralığı 25-30 Volttur.", cat: "Motor & Sistem" },
+            { soru: "Maksimum Voltmetre Çalışma Voltajı Kaçtır? (RedArc)", secenekler: ["30", "32", "34", "28"], cevap: "32", aciklama: "Aşırı voltaj kırmızı çizgisi 32 Volttur.", cat: "Motor & Sistem" },
+            { soru: "ECU Test Yapılmadan Önce Gear Box Sıcaklığı Minimum Kaç Santigrat Derece Olmalıdır?", secenekler: ["35", "38", "50", "60"], cevap: "38", aciklama: "Motor testi öncesi dişli kutusunun en az 38°C olması gerekir.", cat: "Motor & Sistem" },
+            { soru: "Yakıt Deposu Toplam Kaç Galondur?", secenekler: ["2 x 19.5 Galon", "2 x 20.5 Galon", "2 x 25 Galon", "40 Galon"], cevap: "2 x 20.5 Galon", aciklama: "Fiziksel toplam yakıt deposu hacmi 2 x 20.5 galondur.", cat: "Ağırlık & Denge" },
+            { soru: "Kullanılabilir Yakıt Kaç Galondur?", secenekler: ["41 Galon", "2 x 19.5 Galon", "38 Galon", "35 Galon"], cevap: "2 x 19.5 Galon", aciklama: "Uçuşta motor tarafından çekilebilen emniyetli kullanılabilir yakıt miktarı 2 x 19.5 galondur.", cat: "Ağırlık & Denge" },
+            { soru: "İki Yakıt Tankı Arasındaki İzin Verilen Yakıt Farkı Kaç Galondur?", secenekler: ["5 Galon", "7 Galon", "9 Galon", "12 Galon"], cevap: "9 Galon", aciklama: "Maksimum kanat yakıt dengesizlik (imbalance) limiti 9 galondur.", cat: "Ağırlık & Denge" },
+            { soru: "Maksimum Kalkış Ağırlığı Kaç Kilogramdır?", secenekler: ["1150", "1200", "1280-1310", "1350"], cevap: "1280-1310", aciklama: "Modifikasyon durumuna bağlı olarak MTOM 1280-1310 kg arasındadır.", cat: "Ağırlık & Denge" },
+            { soru: "Maksimum İniş Ağırlığı Kaç Kilogramdır?", secenekler: ["1310", "1280", "1200", "1150"], cevap: "1280", aciklama: "Yapısal maksimum iniş ağırlığı sınırı 1280 kg'dır.", cat: "Ağırlık & Denge" },
+            { soru: "Minimum Uçuş Ağırlığı Kaç Kilogramdır?", secenekler: ["900", "940", "1000", "850"], cevap: "940", aciklama: "Ağırlık merkezi dengesi için asgari uçuş kütlesi 940 kg'dır.", cat: "Ağırlık & Denge" },
+            { soru: "İzin Verilen Maksimum Pozitif G Kuvveti Kaçtır? (UP Flap)", secenekler: ["2.0", "3.8", "4.4", "1.52"], cevap: "3.8", aciklama: "Temiz konfigürasyonda maksimum pozitif yük faktörü +3.8 G'dir.", cat: "Ağırlık & Denge" },
+            { soru: "İzin Verilen Maksimum Pozitif G Kuvveti Kaçtır? (Take Off - Landing Flap)", secenekler: ["3.8", "2", "4", "1.5"], cevap: "2", aciklama: "Flaplar açıkken uçağın taşıyabileceği maksimum pozitif yük faktörü +2 G'dir.", cat: "Ağırlık & Denge" },
+            { soru: "İzin Verilen Maksimum Negatif G Kuvveti Kaçtır? (UP Flap)", secenekler: ["-1.52 G", "0.0", "-1.0", "-2.0"], cevap: "-1.52 G", aciklama: "Flaplar kapalıyken ters yükleme limiti -1.52 G'dir.", cat: "Ağırlık & Denge" },
+            { soru: "İzin Verilen Maksimum Negatif G Kuvveti Kaçtır? (Take Off - Landing Flap)", secenekler: ["-1.52 G", "-1.0", "0", "0.5"], cevap: "0", aciklama: "Flaplar açıkken hiçbir negatif yüklemeye izin verilmez (0 G).", cat: "Ağırlık & Denge" },
+            { soru: "Engine Failure Durumunda İdeal İniş Sürati Nedir? (UP Flap)", secenekler: ["88 KIAS", "83 KIAS", "78 KIAS", "77 KIAS"], cevap: "83 KIAS", aciklama: "Flaplar UP konumdayken motor arızası iniş yaklaşma sürati 83 KIAS'tır.", cat: "Hız Limitleri" },
+            { soru: "Engine Failure Durumunda İdeal İniş Sürati Nedir? (Take OFF Flap)", secenekler: ["83 KIAS", "78 KIAS", "77 KIAS", "72 KIAS"], cevap: "78 KIAS", aciklama: "Take Off flap kademesinde motor arızası iniş sürati 78 KIAS'tır.", cat: "Hız Limitleri" },
+            { soru: "Engine Failure Durumunda İdeal İniş Sürati Nedir? (Landing Flap)", secenekler: ["78 KIAS", "77 KIAS", "75 KIAS", "60 KIAS"], cevap: "77 KIAS", aciklama: "Landing tam flap ile motor arızası iniş sürati 77 KIAS'tır.", cat: "Hız Limitleri" },
+            { soru: "%30 Load ile Alçalma Sürati Kaçtır?", secenekler: ["80 KIAS", "90 KIAS", "100 KIAS", "110 KIAS"], cevap: "80 KIAS", aciklama: "%30 yük ile alçalırken muhafaza edilecek sürat 80 KIAS'tır.", cat: "Hız Limitleri" },
+            { soru: "%50 Load İle Düz Uçuş Sürati Kaçtır?", secenekler: ["80 KIAS", "90 KIAS", "100 KIAS", "115 KIAS"], cevap: "90 KIAS", aciklama: "%50 güç ile düz uçuş sürati ortalama 90 KIAS'tır.", cat: "Hız Limitleri" },
+            { soru: "Slow Flight Sürati Kaçtır? (Up Flap)", secenekler: ["85 KIAS", "80 KIAS", "75 KIAS", "90 KIAS"], cevap: "85 KIAS", aciklama: "UP flap yavaş uçuş manevra sürati 85 KIAS'tır.", cat: "Hız Limitleri" },
+            { soru: "Slow Flight Sürati Kaçtır? (Take Off Flap)", secenekler: ["85 KIAS", "80 KIAS", "75 KIAS", "72 KIAS"], cevap: "80 KIAS", aciklama: "Kalkış flaplı yavaş uçuş çalışma sürati 80 KIAS'tır.", cat: "Hız Limitleri" },
+            { soru: "Slow Flight Sürati Kaçtır? (Landing Flap)", secenekler: ["80 KIAS", "75 KIAS", "70 KIAS", "65 KIAS"], cevap: "75 KIAS", aciklama: "İniş flaplı yavaş uçuş talimi 75 KIAS'ta muhafaza edilir.", cat: "Hız Limitleri" },
+            { soru: "Keskin Dönüş Sürati Kaçtır?", secenekler: ["80-90 KIAS", "90-110 KIAS", "110-130 KIAS", "113 KIAS"], cevap: "90-110 KIAS", aciklama: "Steep turn manevrası için ideal hedef sürat 90-110 KIAS arasıdır.", cat: "Hız Limitleri" }
         ],
-        a211: [],
+        a211: [
+            { soru: "VFE Landing Flap Sürati Kaçtır?", secenekler: ["80 KIAS", "85 KIAS", "90 KIAS", "95 KIAS"], cevap: "90 KIAS", aciklama: "Sorular.xlsx tablosuna göre Aquila A211 Landing Flap hızı 90 KIAS'tır.", cat: "Hız Limitleri" },
+            { soru: "VFE Take Off Flap Sürati Kaçtır?", secenekler: ["85 KIAS", "90 KIAS", "95 KIAS", "100 KIAS"], cevap: "90 KIAS", aciklama: "Sorular.xlsx tablosuna göre Aquila A211 Take Off Flap hızı 90 KIAS'tır.", cat: "Hız Limitleri" },
+            { soru: "VNO (Maximum Structural Cruise Speed) Sürati Kaçtır?", secenekler: ["120 KIAS", "125 KIAS", "130 KIAS", "135 KIAS"], cevap: "130 KIAS", aciklama: "Sorular.xlsx tablosuna göre Aquila A211 yapısal seyir sürati 130 KIAS'tır.", cat: "Hız Limitleri" },
+            { soru: "VNE (Never Exceed Speed) Sürati Kaçtır?", secenekler: ["150 KIAS", "155 KIAS", "160 KIAS", "165 KIAS"], cevap: "165 KIAS", aciklama: "Sorular.xlsx tablosuna göre asla aşılmaması gereken hız sınırı 165 KIAS'tır.", cat: "Hız Limitleri" },
+            { soru: "Best Glide Angle Speed Sürati Kaçtır?", secenekler: ["70 KIAS", "75 KIAS", "78 KIAS", "82 KIAS"], cevap: "78 KIAS", aciklama: "Sorular.xlsx tablosuna göre en iyi süzülüş açısı sürati 78 KIAS'tır.", cat: "Hız Limitleri" },
+            { soru: "Take Off Flap Tırmanma Sürati Kaçtır?", secenekler: ["60 KIAS", "65 KIAS", "70 KIAS", "75 KIAS"], cevap: "65 KIAS", aciklama: "Sorular.xlsx tablosuna göre tırmanış sürati 65 KIAS'tır.", cat: "Hız Limitleri" },
+            { soru: "UP Flap Tırmanma Sürati Kaçtır?", secenekler: ["70 KIAS", "75 KIAS", "80 KIAS", "85 KIAS"], cevap: "75 KIAS", aciklama: "Sorular.xlsx tablosuna göre temiz konfigürasyon tırmanış hızı 75 KIAS'tır.", cat: "Hız Limitleri" },
+            { soru: "Rotate Sürati Kaçtır?", secenekler: ["45 KIAS", "50 KIAS", "55 KIAS", "60 KIAS"], cevap: "50 KIAS", aciklama: "Sorular.xlsx tablosuna göre teker kesme (Rotate) hızı 50 KIAS'tır.", cat: "Hız Limitleri" },
+            { soru: "Stall Sürati Kaçtır? (Up Flap)", secenekler: ["45 KIS", "49 KIS", "52 KIS", "55 KIS"], cevap: "49 KIS", aciklama: "Sorular.xlsx tablosuna göre kanatlar topluyken stall hızı 49 KIS'tir.", cat: "Hız Limitleri" },
+            { soru: "Stall Sürati Kaçtır? (Take Off Flap)", secenekler: ["40 KIAS", "42 KIAS", "45 KIAS", "48 KIAS"], cevap: "45 KIAS", aciklama: "Sorular.xlsx tablosuna göre kalkış kademesinde stall hızı 45 KIAS'tır.", cat: "Hız Limitleri" },
+            { soru: "Stall Sürati Kaçtır? (Landing Flap)", secenekler: ["35 KIAS", "39 KIAS", "42 KIAS", "45 KIAS"], cevap: "39 KIAS", aciklama: "Sorular.xlsx tablosuna göre iniş tam flapta stall hızı 39 KIAS'tır.", cat: "Hız Limitleri" },
+            { soru: "Maksimum Manevra Sürati Kaçtır?", secenekler: ["105 KIAS", "110 KIAS", "112 KIAS", "115 KIAS"], cevap: "112 KIAS", aciklama: "Sorular.xlsx tablosuna göre uçağın maksimum manevra hızı 112 KIAS'tır.", cat: "Hız Limitleri" },
+            { soru: "Pervane Çapı Nedir?", secenekler: ["160 CM", "165 CM", "170 CM", "175 CM"], cevap: "170 CM", aciklama: "Sorular.xlsx tablosuna göre pervane çapı 170 CM'dir.", cat: "Motor & Sistem" },
+            { soru: "Normal Yağ Basıncı Kaç Bar?(Green Arc)", secenekler: ["1-4", "2-5", "1.5-5", "2.5-6"], cevap: "2-5", aciklama: "Sorular.xlsx tablosuna göre normal çalışma yağ basıncı yeşil aralığı 2-5 bar arasıdır.", cat: "Motor & Sistem" },
+            { soru: "Maksimum Yağ Basıncı Kaç Bar?(Red Arc)", secenekler: ["5", "6", "7", "8"], cevap: "7", aciklama: "Sorular.xlsx tablosuna göre üst yağ basıncı limiti 7 bardır.", cat: "Motor & Sistem" },
+            { soru: "Normal Yağ Sıcaklığı Kaç Santigrat Derecedir? (Green Arc)", secenekler: ["40-100", "50-110", "60-120", "50-130"], cevap: "50-110", aciklama: "Sorular.xlsx tablosuna göre normal yağ sıcaklığı 50-110°C arasıdır.", cat: "Motor & Sistem" },
+            { soru: "Maksimum Yağ Sıcaklığı Kaç Santigrat Derecedir? (Red Arc)", secenekler: ["110", "120", "130", "140"], cevap: "130", aciklama: "Sorular.xlsx tablosuna göre kırmızı çizgi yağ sıcaklık limiti 130°C'dir.", cat: "Motor & Sistem" },
+            { soru: "Maksimum Silindir Kafa Sıcaklığı Kaç Santigrat Derecedir? (CHT Red Arc)", secenekler: ["110", "115", "120", "125"], cevap: "120", aciklama: "Sorular.xlsx tablosuna göre silindir kafa sıcaklığı üst sınırı 120°C'dir.", cat: "Motor & Sistem" },
+            { soru: "Normal Voltmetre Çalışma Aralığı Kaç Volttur? (Green Arc)", secenekler: ["10-11", "11-12", "12-14", "13-15"], cevap: "11-12", aciklama: "Sorular.xlsx tablosuna göre voltmetre yeşil aralığı 11-12 Volttur.", cat: "Motor & Sistem" },
+            { soru: "Aquila A211 Uçağında Hangi Motor Kullanılmaktadır?", secenekler: ["Rotax 912 S3", "Lycoming IO-360", "Continental CD-135", "Austro Engine AE300"], cevap: "Rotax 912 S3", aciklama: "Sorular.xlsx verisine göre Aquila A211 modelinde Rotax 912 S3 motoru kullanılmaktadır.", cat: "Motor & Sistem" },
+            { soru: "Maksimum Voltmetre Çalışma Voltajı Kaçtır? (RedArc)", secenekler: ["13-14", "14-15", "15-16", "16-17"], cevap: "15-16", aciklama: "Sorular.xlsx tablosuna göre üst sınır voltajı 15-16 Volttur.", cat: "Motor & Sistem" },
+            { soru: "Yakıt Deposu Toplam Kaç Litredir?", secenekler: ["100", "110", "120", "130"], cevap: "120", aciklama: "Sorular.xlsx tablosuna göre uçağın toplam yakıt kapasitesi 120 litredir.", cat: "Ağırlık & Denge" },
+            { soru: "Kullanılabilir Yakıt Kaç Litredir?", secenekler: ["100", "105", "110", "115"], cevap: "110", aciklama: "Sorular.xlsx tablosuna göre motorun çekebileceği kullanılabilir yakıt 110 litredir.", cat: "Ağırlık & Denge" },
+            { soru: "Kaç Dakikada Bir Kez Aktif Yakıt Deposu Değiştirilmelidir?", secenekler: ["15", "20", "30", "45"], cevap: "30", aciklama: "Sorular.xlsx tablosuna göre kanat dengesi için depoyu 30 dakikada bir değiştirmek gerekir.", cat: "Ağırlık & Denge" },
+            { soru: "Maksimum Kalkış Ağırlığı Kaç Kilogramdır?", secenekler: ["650", "700", "750", "800"], cevap: "750", aciklama: "Sorular.xlsx tablosuna göre uçağın MTOM ağırlığı 750 kg'dır.", cat: "Ağırlık & Denge" },
+            { soru: "Maksimum İniş Ağırlığı Kaç Kilogramdır?", secenekler: ["650", "700", "750", "800"], cevap: "750", aciklama: "Sorular.xlsx tablosuna göre yapısal maksimum iniş ağırlığı sınırı 750 kg'dır.", cat: "Ağırlık & Denge" },
+            { soru: "İzin Verilen Maksimum Pozitif G Kuvveti Kaçtır? (UP Flap)", secenekler: ["3.8", "4", "4.4", "2"], cevap: "4", aciklama: "Sorular.xlsx tablosuna göre uçağın UP flap pozitif yük limiti +4 G'dir.", cat: "Ağırlık & Denge" },
+            { soru: "İzin Verilen Maksimum Pozitif G Kuvveti Kaçtır? (Take Off - Landing Flap)", secenekler: ["1.5", "2", "2.5", "3"], cevap: "2", aciklama: "Sorular.xlsx tablosuna göre flaplar açıkken maksimum pozitif yük faktörü +2 G'dir.", cat: "Ağırlık & Denge" },
+            { soru: "İzin Verilen Maksimum Negatif G Kuvveti Kaçtır? (UP Flap)", secenekler: ["-1", "-1.5", "-2", "0"], cevap: "-2", aciklama: "Sorular.xlsx tablosuna göre uçağın UP flap negatif yük limiti -2 G'dir.", cat: "Ağırlık & Denge" },
+            { soru: "İzin Verilen Maksimum Negatif G Kuvveti Kaçtır? (Take Off - Landing Flap)", secenekler: ["-1", "-0.5", "0", "0.5"], cevap: "0", aciklama: "Sorular.xlsx tablosuna göre flaplar açıkken negatif yüklemeye izin verilmez (0 G).", cat: "Ağırlık & Denge" },
+            { soru: "Engine Failure Durumunda İdeal İniş Sürati Nedir? (UP Flap)", secenekler: ["65 KIAS", "70 KIAS", "75 KIAS", "78 KIAS"], cevap: "70 KIAS", aciklama: "Sorular.xlsx tablosuna göre motor arızasında temiz iniş sürati 70 KIAS'tır.", cat: "Hız Limitleri" },
+            { soru: "Engine Failure Durumunda İdeal İniş Sürati Nedir? (Take OFF Flap)", secenekler: ["60 KIAS", "65 KIAS", "70 KIAS", "72 KIAS"], cevap: "65 KIAS", aciklama: "Sorular.xlsx tablosuna göre motor arızasında T/O iniş sürati 65 KIAS'tır.", cat: "Hız Limitleri" },
+            { soru: "Engine Failure Durumunda İdeal İniş Sürati Nedir? (Landing Flap)", secenekler: ["55 KIAS", "60 KIAS", "65 KIAS", "68 KIAS"], cevap: "60 KIAS", aciklama: "Sorular.xlsx tablosuna göre motor arızasında tam iniş flapı hızı 60 KIAS'tır.", cat: "Hız Limitleri" },
+            { soru: "15 Manifold ile Alçalma Sürati Kaçtır?", secenekler: ["70 KIAS", "75 KIAS", "80 KIAS", "85 KIAS"], cevap: "80 KIAS", aciklama: "Sorular.xlsx tablosuna göre 15 manifold ile alçalma hızı 80 KIAS'tır.", cat: "Hız Limitleri" },
+            { soru: "21-22 Manifold İle Düz Uçuş Sürati Kaçtır?", secenekler: ["80 KIAS", "85 KIAS", "90 KIAS", "95 KIAS"], cevap: "90 KIAS", aciklama: "Sorular.xlsx tablosuna göre 21-22 manifold seyir hızı 90 KIAS'tır.", cat: "Hız Limitleri" },
+            { soru: "Slow Flight Sürati Kaçtır? (Up Flap)", secenekler: ["65 KIAS", "70 KIAS", "75 KIAS", "80 KIAS"], cevap: "70 KIAS", aciklama: "Sorular.xlsx tablosuna göre yavaş uçuş temiz sürati 70 KIAS'tır.", cat: "Hız Limitleri" },
+            { soru: "Slow Flight Sürati Kaçtır? (Take Off Flap)", secenekler: ["60 KIAS", "65 KIAS", "70 KIAS", "75 KIAS"], cevap: "65 KIAS", aciklama: "Sorular.xlsx tablosuna göre yavaş uçuş kalkış flapı sürati 65 KIAS'tır.", cat: "Hız Limitleri" },
+            { soru: "Slow Flight Sürati Kaçtır? (Landing Flap)", secenekler: ["55 KIAS", "60 KIAS", "65 KIAS", "70 KIAS"], cevap: "60 KIAS", aciklama: "Sorular.xlsx tablosuna göre yavaş uçuş iniş tam flap sürati 60 KIAS'tır.", cat: "Hız Limitleri" },
+            { soru: "Keskin Dönüş Sürati Kaçtır?", secenekler: ["80 KIAS", "85 KIAS", "90 KIAS", "95 KIAS"], cevap: "90 KIAS", aciklama: "Sorular.xlsx tablosuna göre keskin dönüş (steep turn) hızı 90 KIAS'tır.", cat: "Hız Limitleri" }
+        ],
         da20: [],
         da42: []
     };
@@ -548,6 +587,7 @@
     function startQuiz(aircraftType) {
         selectedAircraft = aircraftType;
         if(aircraftType === 'da40') mainTitle.innerText = "Diamond DA40 NG";
+        else if(aircraftType === 'a211') mainTitle.innerText = "Aquila A211";
 
         let rawQuestions = allQuizzes[aircraftType];
         activeQuestions = [...rawQuestions].sort(() => Math.random() - 0.5);
@@ -723,7 +763,6 @@
         const testDate = new Date().toLocaleDateString('tr-TR', {hour: '2-digit', minute:'2-digit'});
         saveHistory(selectedAircraft, percentage);
 
-        // BULUT TABLOSUNA VERİ GÖNDERİMİ
         sendDataToCloud(currentName, currentSurname, currentGender, currentSchool, selectedAircraft.toUpperCase(), percentage, testDate);
 
         resultBody.style.display = 'block';
@@ -798,7 +837,7 @@
         ctx.fillStyle = '#ffffff';
         ctx.font = '16px Arial';
         ctx.fillText(`Kurum: ${currentSchool}`, 400, 310);
-        ctx.fillText(`adlı pilotun, ${selectedAircraft.toUpperCase()} NG uçağının tüm yapısal sınırlarını,`, 400, 350);
+        ctx.fillText(`adlı pilotun, ${selectedAircraft.toUpperCase()} uçağının tüm yapısal sınırlarını,`, 400, 350);
         ctx.fillText(`hız, motor ve sistem limitlerini tam emniyetle bildiğini kanıtladığı için`, 400, 380);
         
         ctx.fillStyle = '#48bb78';
