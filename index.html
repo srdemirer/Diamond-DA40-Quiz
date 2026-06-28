@@ -78,11 +78,6 @@
         .matrix-box.m-wrong { background-color: #f56565; color: white; border-color: #e53e3e; }
         .matrix-box.m-pas { background-color: #a0aec0; color: white; border-color: #718096; }
 
-        /* Boşluk Doldurma Düzeni */
-        .text-input-container { display: flex; flex-direction: column; gap: 10px; margin: 15px 0; }
-        .text-answer-input { width: 100%; padding: 14px; border: 2px solid #cbd5e0; border-radius: 10px; font-size: 1.05rem; font-weight: 500; }
-        .text-answer-submit { background-color: #328cc1; color: white; border: none; padding: 12px; border-radius: 10px; font-weight: bold; cursor: pointer; }
-
         .score-container { text-align: center; padding: 10px 0; }
         .score-title { font-size: 1.4rem; font-weight: bold; color: #2d3748; margin-bottom: 10px; }
         .score-number { font-size: 3rem; font-weight: 800; color: #328cc1; margin-bottom: 20px; }
@@ -196,7 +191,7 @@
             { soru: "VFE Landing Flap Sürati Nedir?", secenekler: ["98 KIAS", "110 KIAS", "130 KIAS", "88 KIAS"], cevap: "98 KIAS", aciklama: "Landing flapları tam açıkken yapısal sınır 98 KIAS'tır." },
             { soru: "VFE Take Off Flap Sürati Nedir?", secenekler: ["98 KIAS", "110 KIAS", "120 KIAS", "108 KIAS"], cevap: "110 KIAS", aciklama: "Kalkış (Take Off) kademesinde maksimum flap sürati 110 KIAS'tır." },
             { soru: "VNO (Maximum Structural Cruise Speed) Sürati Nedir?", secenekler: ["172 KIAS", "130 KIAS", "113 KIAS", "140 KIAS"], cevap: "130 KIAS", aciklama: "Yapısal seyir hız sınırı 130 KIAS'tır." },
-            { soru: "VNE (Never Exceed Speed) Sürati Nedir?", secenekler: ["130 KIAS", "164 KIAS", "172 KIAS", "180 KIAS"], cevap: "172 KIAS", aciklama: "Asla aşılmaması gereken hız limitidir, göstergede kırmızı çizgidir." },
+            { soru: "VNE (Never Exceed Speed) Sürati Nedir?", secenekler: ["130 KIAS", "164 KIAS", "172 KIAS", "180 KIAS"], cevap: "172 KIAS", aciklama: "Asla aşılmaması gereken hız limitidir, göstergede kırmızı çizgedir." },
             { soru: "Best Glide Angle Speed Sürati Nedir?", secenekler: ["73 KIAS", "83 KIAS", "88 KIAS", "92 KIAS"], cevap: "88 KIAS", aciklama: "En iyi süzülüş süzülme açısı sürati maks ağırlıkta 88 KIAS'tır." },
             { soru: "Engine Failure Durumunda İdeal İniş Sürati Nedir? (UP Flap)", secenekler: ["88 KIAS", "83 KIAS", "78 KIAS", "77 KIAS"], cevap: "83 KIAS", aciklama: "Flaplar UP konumdayken motor arızası iniş yaklaşma sürati 83 KIAS'tır." },
             { soru: "Engine Failure Durumunda İdeal İniş Sürati Nedir? (Take OFF Flap)", secenekler: ["83 KIAS", "78 KIAS", "77 KIAS", "72 KIAS"], cevap: "78 KIAS", aciklama: "Take Off flap kademesinde motor arızası iniş sürati 78 KIAS'tır." },
@@ -220,7 +215,7 @@
             { soru: "Maksimum Kalkış Ağırlığı Kaç Kilogramdır?", secenekler: ["1150 KG", "1200 KG", "1280 - 1310 KG", "1350 KG"], cevap: "1280 - 1310 KG", aciklama: "Modifikasyon durumuna bağlı olarak MTOM 1280-1310 kg arasındadır." },
             { soru: "Maksimum İniş Ağırlığı Kaç Kilogramdır?", secenekler: ["1310 KG", "1280 KG", "1200 KG", "1150 KG"], cevap: "1280 KG", aciklama: "Yapısal maksimum iniş ağırlığı sınırı 1280 kg'dır." },
             { soru: "Minimum Uçuş Ağırlığı Kaç Kilogramdır?", secenekler: ["900 KG", "940 KG", "1000 KG", "850 KG"], cevap: "940 KG", aciklama: "Ağırlık merkezi dengesi için asgari uçuş kütlesi 940 kg'dır." },
-            { soru: "İzin Verilen Maksimum Pozitif G Kuvveti Kaçtır? (UP Flap)", secenekler: ["2.0 G", "3.8 G", "4.4 G", "1.52 G"], cevap: "3.8 G", aciklama: "Temiz konfigürasyonda maksimum pozitif yük faktörü +3.8 G'dir." },
+            { tree: "İzin Verilen Maksimum Pozitif G Kuvveti Kaçtır? (UP Flap)", soru: "İzin Verilen Maksimum Pozitif G Kuvveti Kaçtır? (UP Flap)", secenekler: ["2.0 G", "3.8 G", "4.4 G", "1.52 G"], cevap: "3.8 G", aciklama: "Temiz konfigürasyonda maksimum pozitif yük faktörü +3.8 G'dir." },
             { soru: "İzin Verilen Maksimum Pozitif G Kuvveti Kaçtır? (Take Off - Landing Flap)", secenekler: ["3.8 G", "2", "4 G", "1.5 G"], cevap: "2", aciklama: "Flaplar açıkken uçağın taşıyabileceği maksimum pozitif yük faktörü +2 G'dir." },
             { soru: "İzin Verilen Maksimum Negatif G Kuvveti Kaçtır? (UP Flap)", secenekler: ["-1.52 G", "0.0 G", "-1.0 G", "-2.0 G"], cevap: "-1.52 G", aciklama: "Flaplar kapalıyken ters yükleme limiti -1.52 G'dir." },
             { soru: "İzin Verilen Maksimum Negatif G Kuvveti Kaçtır? (Take Off - Landing Flap)", secenekler: ["-1.52 G", "-1.0 G", "0", "0.5 G"], cevap: "0", aciklama: "Flaplar açıkken hiçbir negatif yüklemeye izin verilmez (0 G)." },
@@ -331,18 +326,9 @@
         if(aircraftType === 'da40') mainTitle.innerText = "Diamond DA40 NG";
 
         let rawQuestions = allQuizzes[aircraftType];
-        let shuffledPool = [...rawQuestions].sort(() => Math.random() - 0.5);
-        let textQuestionCount = Math.min(10, shuffledPool.length);
+        // Tüm havuzu karıştırıp doğrudan atıyoruz (artık isText mantığı yok)
+        activeQuestions = [...rawQuestions].sort(() => Math.random() - 0.5);
         
-        activeQuestions = shuffledPool.map((q, index) => {
-            let isTextType = index < textQuestionCount;
-            return {
-                ...q,
-                isText: isTextType
-            };
-        });
-
-        activeQuestions.sort(() => Math.random() - 0.5);
         questionStates = activeQuestions.map(() => ({ status: 'unanswered', userA: '' }));
         
         currentQuestionIndex = 0;
@@ -403,63 +389,30 @@
         const progressPercent = (answeredCount / activeQuestions.length) * 100;
         progressFill.style.width = `${progressPercent}%`;
 
-        questionText.innerHTML = currentQuestion.soru + (currentQuestion.isText ? " <br><small style='color:#328cc1;'>(Lütfen cevabı klavyeyle yazın)</small>" : "");
+        questionText.innerHTML = currentQuestion.soru;
         
-        if (currentQuestion.isText) {
-            const container = document.createElement('div');
-            container.classList.add('text-input-container');
+        // Sadece Çoktan Seçmeli Buton Yapısı Çalışacak
+        currentQuestion.secenekler.forEach(option => {
+            const button = document.createElement('button');
+            button.innerText = option;
+            button.classList.add('btn');
             
-            const input = document.createElement('input');
-            input.type = "text";
-            input.placeholder = "Cevabınızı girin (Örn: 98 KIAS veya 190 CM)";
-            input.classList.add('text-answer-input');
-            input.id = "text-reply";
-            
-            if(state.status !== 'unanswered') {
-                input.value = state.userA;
-                input.disabled = true;
-            }
-            
-            const submitBtn = document.createElement('button');
-            submitBtn.innerText = "Cevabı Onayla";
-            submitBtn.classList.add('text-answer-submit');
-            submitBtn.onclick = () => checkTextAnswer(input.value);
-            
-            if(state.status !== 'unanswered') {
-                submitBtn.style.display = 'none';
-            }
-
-            container.appendChild(input);
-            container.appendChild(submitBtn);
-            optionsContainer.appendChild(container);
-            
-            if(state.status !== 'unanswered') {
-                showExplanationStatic(state.status === 'correct', currentQuestion.cevap, currentQuestion.aciklama);
-            }
-        } 
-        else {
-            currentQuestion.secenekler.forEach(option => {
-                const button = document.createElement('button');
-                button.innerText = option;
-                button.classList.add('btn');
-                
-                if (state.status === 'unanswered') {
-                    button.addEventListener('click', () => checkMultipleChoice(button, option, currentQuestion.cevap, currentQuestion.aciklama));
-                } else {
-                    button.disabled = true;
-                    if (option === currentQuestion.cevap) {
-                        button.classList.add('correct');
-                    }
-                    if (state.status === 'wrong' && option === state.userA) {
-                        button.classList.add('wrong');
-                    }
+            if (state.status === 'unanswered') {
+                button.addEventListener('click', () => checkMultipleChoice(button, option, currentQuestion.cevap, currentQuestion.aciklama));
+            } else {
+                button.disabled = true;
+                if (option === currentQuestion.cevap) {
+                    button.classList.add('correct');
                 }
-                optionsContainer.appendChild(button);
-            });
-
-            if(state.status !== 'unanswered') {
-                showExplanationStatic(state.status === 'correct', currentQuestion.cevap, currentQuestion.aciklama);
+                if (state.status === 'wrong' && option === state.userA) {
+                    button.classList.add('wrong');
+                }
             }
+            optionsContainer.appendChild(button);
+        });
+
+        if(state.status !== 'unanswered') {
+            showExplanationStatic(state.status === 'correct', currentQuestion.cevap, currentQuestion.aciklama);
         }
 
         prevBtn.disabled = (currentQuestionIndex === 0);
@@ -494,33 +447,6 @@
         }
 
         showExplanationStatic(state.status === 'correct', correctAnswer, aciklama);
-        updateMatrixUI();
-    }
-
-    function checkTextAnswer(userInput) {
-        let cleanInput = userInput.trim().toLowerCase().replace(/\s+/g, '');
-        let currentQuestion = activeQuestions[currentQuestionIndex];
-        let cleanAnswer = currentQuestion.cevap.trim().toLowerCase().replace(/\s+/g, '');
-        
-        if(cleanInput === "") {
-            alert("Lütfen bir yanıt metni giriniz!");
-            return;
-        }
-
-        let state = questionStates[currentQuestionIndex];
-        state.userA = userInput;
-
-        if(cleanInput === cleanAnswer) {
-            state.status = 'correct';
-        } else {
-            state.status = 'wrong';
-        }
-
-        document.getElementById('text-reply').disabled = true;
-        const submitBtn = optionsContainer.querySelector('.text-answer-submit');
-        if(submitBtn) submitBtn.style.display = 'none';
-
-        showExplanationStatic(state.status === 'correct', currentQuestion.cevap, currentQuestion.aciklama);
         updateMatrixUI();
     }
 
@@ -660,7 +586,7 @@
             return;
         }
 
-        [...history].reverse().forEach(log => {
+         [...history].reverse().forEach(log => {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td style="font-weight:600;">${log.pilot || 'Bilinmeyen'}</td>
