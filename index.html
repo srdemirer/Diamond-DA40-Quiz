@@ -187,9 +187,48 @@
         .admin-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; }
         .admin-table th, .admin-table td { border: 1px solid #e2e8f0; padding: 8px; text-align: left; }
         .admin-table th { background-color: #f7fafc; }
+
+        /* Yeni Pop-up (Modal) Tasarımı */
+        .custom-modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6); display: flex; justify-content: center;
+            align-items: center; z-index: 9999; opacity: 0; pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .custom-modal-overlay.show { opacity: 1; pointer-events: auto; }
+        .custom-modal {
+            background: white; color: #1a202c; border-radius: 16px; padding: 25px;
+            max-width: 420px; width: 90%; text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            transform: scale(0.8); transition: transform 0.3s ease;
+            border: 3px solid #328cc1;
+        }
+        .custom-modal-overlay.show .custom-modal { transform: scale(1); }
+        .custom-modal-title { font-size: 1.25rem; font-weight: bold; margin-bottom: 12px; color: #0b3c5d; }
+        .custom-modal-text { font-size: 1rem; line-height: 1.5; margin-bottom: 20px; font-weight: 500; }
+        .custom-modal-btn {
+            background: var(--primary-color); color: white; border: none;
+            padding: 10px 24px; border-radius: 8px; font-weight: bold;
+            cursor: pointer; font-size: 0.95rem; width: 100%; transition: background 0.2s;
+        }
+        [data-theme="exam"] .custom-modal {
+            background: #2d3748; color: #edf2f7; border-color: #e53e3e;
+            box-shadow: 0 0 20px rgba(229, 62, 92, 0.4);
+        }
+        [data-theme="exam"] .custom-modal-title { color: #fc8181; }
+        [data-theme="exam"] .custom-modal-btn { background: #e53e3e; color: white; }
     </style>
 </head>
 <body>
+
+<!-- Özel İkaz Pop-up Yapısı -->
+<div class="custom-modal-overlay" id="troll-modal-overlay">
+    <div class="custom-modal">
+        <div class="custom-modal-title" id="troll-modal-title">🚨 KOKPİT İKAZI 🚨</div>
+        <div class="custom-modal-text" id="troll-modal-text">Yükleniyor...</div>
+        <button class="custom-modal-btn" onclick="closeTrollModal()">Anlaşıldı, Devam Et 🧑‍✈️</button>
+    </div>
+</div>
 
 <div class="quiz-container">
     <div class="top-buttons">
@@ -427,6 +466,11 @@
     let questionStates = []; 
     let quizTimerInterval = null;
     let timeLeft = 900; 
+    
+    // Esprili Durum Sayaçları
+    let consecutiveCorrect = 0;
+    let consecutiveWrong = 0;
+    let maydayTriggered = false;
 
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function playBeep(freq, type, duration) {
@@ -470,6 +514,11 @@
     const pasBtn = document.getElementById('pas-btn');
     const nextBtn = document.getElementById('next-btn');
 
+    // Pop-up DOM Elemanları
+    const trollModalOverlay = document.getElementById('troll-modal-overlay');
+    const trollModalTitle = document.getElementById('troll-modal-title');
+    const trollModalText = document.getElementById('troll-modal-text');
+
     window.onload = function() {
         const storedName = localStorage.getItem('p_name');
         if (storedName) {
@@ -483,6 +532,16 @@
             showLoginScreen();
         }
     };
+
+    function openTrollModal(title, text) {
+        trollModalTitle.innerText = title;
+        trollModalText.innerText = text;
+        trollModalOverlay.classList.add('show');
+    }
+
+    function closeTrollModal() {
+        trollModalOverlay.classList.remove('show');
+    }
 
     function toggleTheme() {
         const currentTheme = document.documentElement.getAttribute('data-theme');
@@ -597,12 +656,21 @@
 
     function startTimer() {
         timeLeft = 900; 
+        maydayTriggered = false;
         quizTimerView.style.display = 'inline-block';
         updateTimerDisplay();
         
         quizTimerInterval = setInterval(() => {
             timeLeft--;
             updateTimerDisplay();
+            
+            // Son 120 saniye kaldığında esprili Mayday pop-up tetiklemesi
+            if (timeLeft === 120 && !maydayTriggered) {
+                maydayTriggered = true;
+                playBeep(600, 'sine', 0.4);
+                openTrollModal("🚨 MAYDAY! ACİL DURUM 🚨", "Mayday Mayday! Yakıt kritiğe girdi, kule acil iniş izni verdi ama sen hala sorudasın! Azıcık gaz aç! ⏱️");
+            }
+            
             if (timeLeft <= 30 && timeLeft % 2 === 0) playBeep(880, 'sine', 0.1);
             if (timeLeft <= 0) {
                 clearInterval(quizTimerInterval);
@@ -629,6 +697,8 @@
         questionStates = activeQuestions.map(() => ({ status: 'unanswered', userA: '' }));
         
         currentQuestionIndex = 0;
+        consecutiveCorrect = 0;
+        consecutiveWrong = 0;
         aircraftSelector.style.display = 'none';
         adminPanel.style.display = 'none'; 
         signatureClickCount = 0;
@@ -728,16 +798,34 @@
             state.status = 'correct';
             selectedBtn.classList.add('correct');
             playBeep(1200, 'sine', 0.15);
+            
+            consecutiveWrong = 0;
+            consecutiveCorrect++;
+            
+            // 20 Peş peşe doğru tetiklemesi
+            if (consecutiveCorrect === 20) {
+                openTrollModal("😎 KAPTAN MODU AKTİF 😎", "20 Peşpeşe Doğru! Kaptan Pilot gibi uçuyorsun! Motor sıcaklığı stabil, rüzgar tam karşıdan. Şov yapma, emniyetle devam et! 😎");
+            }
+            
         } else {
             state.status = 'wrong';
             selectedBtn.classList.add('wrong');
             buttons.forEach(btn => {
-                // Şıkların önündeki "A) " kısmını ayıklayarak doğru şıkkı bulur
                 const optionTextWithoutPrefix = btn.innerText.substring(3);
                 if(optionTextWithoutPrefix === correctAnswer) btn.classList.add('correct');
             });
             playBeep(250, 'square', 0.3);
             logCategoryError(currentQuestion.cat);
+            
+            consecutiveCorrect = 0;
+            consecutiveWrong++;
+            
+            // Esprili Yanlış Pop-up Tetiklemeleri
+            if (consecutiveWrong === 2) {
+                openTrollModal("⚠️ KOKPİT İKAZI ⚠️", "Arka Arkaya 2 Yanlış! Unutma Hugo'nun bile 3 Hakkı vardı! Sanırım telefonunun dokunmatiği bozuldu, sürekli yanlış tıklıyorsun... Yoksa Stall'a mı giriyoruz kaptan? ✈️");
+            } else if (consecutiveWrong === 3) {
+                openTrollModal("🚨 MASTER CAUTION 🚨", "Maşallah Soluksuz 3 Yanlış! Kuleyle irtibat kesildi! SHGM lisans dosyana uzaktan bakıyor şu an. Lütfen acilen SOP'a geri dön! Anlaşılan hiç okumamışsın! 🚨");
+            }
         }
         showExplanationStatic(state.status === 'correct', correctAnswer, aciklama);
         updateMatrixUI();
@@ -774,6 +862,8 @@
         if(state.status === 'unanswered' || state.status === 'flagged') {
             state.status = 'pas';
             state.userA = '';
+            consecutiveCorrect = 0;
+            consecutiveWrong = 0;
         }
         handleNextOrFinish();
     }
@@ -896,10 +986,6 @@
             document.getElementById('review-toggle-btn').innerText = "Hataları İncele 🔍";
         }
     }
-
-    document.addEventListener("DOMContentLoaded", function() {
-        // Fonksiyonların bağlanma güvencesi
-    });
 
     function renderPieChart(correct, wrong, pas) {
         const canvas = document.getElementById('pie-canvas');
@@ -1104,18 +1190,18 @@
         ctx.fillStyle = '#ffffff';
         ctx.font = '15px Arial';
         
-        const mainText = `Bu belge, operasyonel havacılık limitleri testini başarıyla tamamlayan yukarıda adı yazılı teorik dehaya; seçmiş olduğu ${selectedAircraft.toUpperCase()} uçağının motorunu yakmadan, kanatlarını eline almadan, uçağın gear box sıcaklığını kokpitte çay demleyecek kadar yükseltmeden ve kokpitteki Master Caution ışıklarını pavyon şovuna çevirmeden uçabileceğini gösterir. Uçuş okulunun bu belgeden haberi yoktur; uçağı limitlerinde emniyetle uçurmanız tamamen kendi hayatta kalma içgüdünüzle ve crosswind inişlerde edeceğiniz duaların gücüyle alakalıdır.`;
+        const mainText = `Bu belge, uçak limitleri testini başarıyla tamamlayan yukarıda adı yazılı teorik dehaya; seçmiş olduğu ${selectedAircraft.toUpperCase()} uçağının motorunu yakmadan, kanatlarını eline almadan, uçağın yağ sıcaklığını kokpitte çay demleyecek kadar yükseltmeden ve kokpitteki Master Caution ışıklarını yakıp uçağı Yılbaşı Ağacına çevirmeden uçabileceğini gösterir. Uçuş okulunun bu belgeden haberi yoktur; uçağı limitlerinde emniyetle uçurmanız tamamen kendi hayatta kalma içgüdünüzle ve inişlerde edeceğiniz duaların gücüyle alakalıdır.`;
         
         let lastY = wrapText(ctx, mainText, 425, 240, 680, 24);
 
         ctx.fillStyle = '#d4af37';
         ctx.font = 'bold 24px Arial';
-        ctx.fillText(`${pilotEmoji}   P I L O T   B R Ö V E S İ   ${pilotEmoji}`, 425, lastY + 50);
+        ctx.fillText(`${pilotEmoji}   BAŞARI BELGESİ   ${pilotEmoji}`, 425, lastY + 50);
 
         ctx.fillStyle = '#fc8181';
         ctx.font = 'bold 11px Arial';
         
-        const disclaimerText = `⚠️ YASAL UYARI: Bu belge tamamen eğlence ve ego tatmini amacıyla üretilmiştir. Kulenin veya SHGM kontrolörünün önünde klerans beklerken sallamanız durumunda lisansınızın askıya alınması, hava sahasından men edilmeniz veya en hafifinden "bunu kim yazdı?" bakışlarına maruz kalmanız tamamen kendi sorumluluğunuzdadır. Resmi hiçbir geçerliliği olmayıp sadece WhatsApp gruplarında hava atmaya yarar.`;
+        const disclaimerText = `⚠️ YASAL UYARI: Bu belge tamamen eğlence ve ego tatmini amacıyla üretilmiştir. Kulenin veya Öğretmenlerinizin önünde beklerken sallamanız durumunda lisansınızın askıya alınması, hava sahasından men edilmeniz veya en hafifinden "Yazık KAFANA" bakışlarına maruz kalmanız tamamen kendi sorumluluğunuzdadır. Resmi hiçbir geçerliliği olmayıp sadece WhatsApp gruplarında hava atmaya yarar.`;
         
         wrapText(ctx, disclaimerText, 425, lastY + 100, 700, 16);
 
