@@ -458,14 +458,14 @@
         { soru: "What is the Up Flap Climb Speed for Aquila A211?", secenekler: ["70 KIAS", "73 KIAS", "75 KIAS", "78 KIAS"], cevap: "75 KIAS", aciklama: "Flaplar tamamen toplandıktan sonraki standart tırmanış sürati 75 KIAS'tır.", cat: "Indicated Airspeeds" },
         { soru: "What is the Stall Speed (Up Flap) for Aquila A211?", secenekler: ["45 KIAS", "47 KIAS", "49 KIAS", "52 KIAS"], cevap: "49 KIAS", aciklama: "Temiz konfigürasyonda uçağın havada tutunabileceği asgari stall sürati 49 KIAS'tır.", cat: "Indicated Airspeeds" },
         { soru: "What is the Stall Speed (Take Off Flap) for Aquila A211?", secenekler: ["42 KIAS", "45 KIAS", "47 KIAS", "49 KIAS"], cevap: "45 KIAS", aciklama: "Kalkış flap pozisyonunda uçağın stall sürat değeri 45 KIAS'tır.", cat: "Indicated Airspeeds" },
-        { soru: "What is the Stall Speed (Landing Flap) for Aquila A211?", secenekler: ["40 KIAS", "43 KIAS", "45 KIAS", "47 KIAS"], cevap: "43 KIAS", aciklama: "Full iniş konfigürasyonunda uçağın minimum stall limit sürati 43 KIAS'tır.", cat: "Indicated Airspeeds" },
+        { soru: "What is the Stall Speed (Landing Flap) for Aquila A211?", secenekler: ["40 KIAS", "39 KIAS", "45 KIAS", "47 KIAS"], cevap: "39 KIAS", aciklama: "Full iniş konfigürasyonunda uçağın minimum stall limit sürati 39 KIAS'tır.", cat: "Indicated Airspeeds" },
 
         // === BÖLÜM 2: Maneuvering (5 Soru) ===
         { soru: "What is the Maximum Positive Load Factor - Up Flap (G) for Aquila A211?", secenekler: ["3.8 G", "4.0 G", "4.4 G", "2.0 G"], cevap: "4.0 G", aciklama: "Temiz konfigürasyonda izin verilen yapısal maksimum pozitif yük faktörü +4.0 G'dir.", cat: "Maneuvering" },
         { soru: "What is the Maximum Positive Load Factor - TO / LDG Flap (G) for Aquila A211?", secenekler: ["2.0 G", "3.8 G", "4.0 G", "0 G"], cevap: "2.0 G", aciklama: "Flaplar açık pozisyondayken maksimum yapısal pozitif yük limiti +2.0 G'dir.", cat: "Maneuvering" },
         { soru: "What is the Maximum Negative Load Factor - Up Flap (G) for Aquila A211?", secenekler: ["-1.52 G", "-1.76 G", "-2.0 G", "0 G"], cevap: "-2.0 G", aciklama: "Temiz konfigürasyonda müsaade edilen maksimum negatif yük faktörü -2.0 G'dir.", cat: "Maneuvering" },
         { soru: "What is the Maximum Negative Load Factor - TO / LDG Flap (G) for Aquila A211?", secenekler: ["-1.0 G", "-0.5 G", "0 G", "0.5 G"], cevap: "0 G", aciklama: "Flaplar açıkken uçak yapısal olarak negatif yüklemeye maruz bırakılamaz; limit tam 0 G'dir.", cat: "Maneuvering" },
-        { soru: "What is the Steep Turn Speed for Aquila A211?", secenekler: ["85 KIAS", "90 KIAS", "95 KIAS", "100 KIAS"], cevap: "95 KIAS", aciklama: "Keskin dönüş (Steep turn) manevraları için planlanan hedef sürat 95 KIAS'tır.", cat: "Maneuvering" },
+        { soru: "What is Maximum Bank Angle for Aquila A211?", secenekler: ["60", "90", "30", "45"], cevap: "60", aciklama: "İzin verilen maksimum yatış açısı 60 Derecedir..", cat: "Maneuvering" },
 
         // === BÖLÜM 3: Weight And Balance (2 Soru) ===
         { soru: "What is the Maximum Take Off Mass (Kilogram) for Aquila A211?", secenekler: ["750 kg", "800 kg", "850 kg", "940 kg"], cevap: "750 kg", aciklama: "Aquila A211 için yapısal maksimum kalkış kütlesi (MTOM) 750 kg'dır.", cat: "Weight And Balance" },
@@ -488,7 +488,7 @@
 
         // === BÖLÜM 5: Fuel Quantity (2 Soru) ===
         { soru: "What is the Total Fuel Quantity (Litre) for Aquila A211?", secenekler: ["100 Litre", "110 Litre", "120 Litre", "155 Litre"], cevap: "120 Litre", aciklama: "Aquila A211 uçağının fiziki toplam yakıt deposu hacmi 120 litredir.", cat: "Fuel Quantity" },
-        { soru: "What is the Usable Fuel Quantity (Litre) for Aquila A211?", secenekler: ["104 Litre", "108 Litre", "114 Litre", "120 Litre"], cevap: "108 Litre", aciklama: "Uçağın motor tarafından emniyetle çekilebilen kullanılabilir yakıt hacmi 108 litredir.", cat: "Fuel Quantity" }
+        { soru: "What is the Usable Fuel Quantity (Litre) for Aquila A211?", secenekler: ["104 Litre", "108 Litre", "110 Litre", "120 Litre"], cevap: "110 Litre", aciklama: "Uçağın motor tarafından emniyetle çekilebilen kullanılabilir yakıt hacmi 110 litredir.", cat: "Fuel Quantity" }
     ];
 
     let activeQuestions = [];
