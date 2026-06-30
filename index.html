@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Uçak Limitleri Sınav Merkezi</title>
+    <title>Uçak Limitleri</title>
     <style>
         * { box-sizing: border-box; }
         
@@ -238,7 +238,7 @@
     </div>
 
     <div class="header">
-        <h1 id="main-title">Uçak Limitleri Sınav Merkezi ✈️</h1>
+        <h1 id="main-title">Uçak Limitleri ✈️</h1>
         <p id="question-counter">Sistem Başlatılıyor...</p>
         <div id="quiz-timer" class="timer-badge" style="display: none;">15:00</div>
     </div>
@@ -597,7 +597,7 @@
 
     function shareSystem() {
         const shareData = {
-            title: 'Uçak Limitleri Sınav Merkezi',
+            title: 'Uçak Limitleri',
             text: 'Pilotlar için özel geliştirilmiş uçak limitleri sınav sistemini incele ve kendini test et!',
             url: window.location.href
         };
@@ -611,7 +611,7 @@
     }
 
     function showLoginScreen() {
-        mainTitle.innerText = "Uçak Limitleri Sınav Merkezi ✈️";
+        mainTitle.innerText = "Uçak Limitleri ✈️";
         questionCounter.innerText = "Kullanıcı Kaydı Gerekli";
         loginScreen.style.display = 'block';
         aircraftSelector.style.display = 'none';
@@ -626,7 +626,7 @@
         const schoolInput = document.getElementById('userschool-input').value;
         
         if(nameInput === "" || surnameInput === "" || genderInput === "" || schoolInput === "") {
-            alert("Lütfen tüm alanları eksiksiz bir şekilde doldurun!");
+            alert("Başarı Belgesi için Lütfen Bilgileri Doldurunuz!");
             return;
         }
 
@@ -655,7 +655,7 @@
         certDownloadBtn.style.display = 'none';
         clearInterval(quizTimerInterval);
         
-        mainTitle.innerText = "Uçak Limitleri Sınav Merkezi ✈️";
+        mainTitle.innerText = "Uçak Limitleri ✈️";
         questionCounter.innerText = "Lütfen Uçak Tipini Seçiniz";
         questionCounter.style.display = 'block';
         
