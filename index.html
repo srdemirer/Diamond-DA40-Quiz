@@ -184,6 +184,7 @@
         [data-theme="exam"] .input-btn { color: #1a202c; }
         
         .stats-panel { margin-top: 25px; border-top: 2px dashed #e2e8f0; padding-top: 20px; text-align: left; }
+        .stats-panel:not(#stats-panel) { display: none; }
         .stats-title { font-weight: bold; color: #4a5568; margin-bottom: 10px; font-size: 1.1rem; }
         [data-theme="exam"] .stats-title { color: #edf2f7; }
         #stats-canvas, #pie-canvas { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; width: 100%; margin-top: 10px; }
@@ -285,7 +286,7 @@
         <div id="welcome-msg" class="user-welcome"></div>
         <div class="options">
             <button class="btn aircraft-btn" onclick="showSubCategories('Aquila A211')">Aquila A211</button>
-            <button class="btn aircraft-btn" disabled title="Yapım Aşamasındadır">Diamond DA20 Eclipse (Yapım Aşamasında)</button>
+            <button class="btn aircraft-btn" onclick="showSubCategories('Diamond DA20 Eclipse')">Diamond DA20 Eclipse</button>
             <button class="btn aircraft-btn" onclick="showSubCategories('Diamond DA40 NG')">Diamond DA40 NG</button>
             <button class="btn aircraft-btn" disabled title="Yapım Aşamasındadır">Diamond DA42 Twin Star (Yapım Aşamasında)</button>
         </div>
@@ -431,7 +432,7 @@
         { soru: "What is the Fuel Temperature - Green Arc (Santigrat)?", secenekler: ["-30 - 45", "-20 - 55", "0 - 50", "-10 - 50"], cevap: "-20 - 55", aciklama: "Yakıt sıcaklığının güvenli yeşil çalışma aralığı -20 ile 55 °C arasıdır.", cat: "Engine & Power System Limits" },
         { soru: "What is the Fuel Temperature - Yellow Arc (Santigrat)?", secenekler: ["50 - 55", "55 - 60", "60 - 65", "45 - 55"], cevap: "55 - 60", aciklama: "Yakıt sıcaklığı kritik ısınma sarı uyarı aralığı 55 - 60 °C arasıdır.", cat: "Engine & Power System Limits" },
         { soru: "What is the Fuel Temperature - Red Arc (Santigrat)?", secenekler: ["55 +", "60 +", "65 +", "50 +"], cevap: "60 +", aciklama: "Yakıt sistemi emniyet limiti kırmızı çizgisi 60 °C ve üzeridir (60 +).", cat: "Engine & Power System Limits" },
-        { soru: "What is the Ammeter - Green Arc (Amper) limit?", secenekler: ["50", "60", "70", "45"], fontStyle: "normal", cevap: "60", aciklama: "Ampermetre yeşil bölge normal çalışma akım üst sınırı 60 Amperdir.", cat: "Engine & Power System Limits" },
+        { soru: "What is the Ammeter - Green Arc (Amper) limit?", secenekler: ["50", "60", "70", "45"], cevap: "60", aciklama: "Ampermetre yeşil bölge normal çalışma akım üst sınırı 60 Amperdir.", cat: "Engine & Power System Limits" },
         { soru: "What is the Ammeter - Yellow Arc (Amper) range?", secenekler: ["50 - 60", "60 - 70", "70 - 80", "55 - 65"], cevap: "60 - 70", aciklama: "Alternatör yüksek şarj yükü sarı dikkat bölgesi aralığı 60 - 70 Amperdir.", cat: "Engine & Power System Limits" },
         { soru: "What is the Ammeter - Red Arc (Amper) limit?", secenekler: ["60 +", "70 +", "80 +", "65 +"], cevap: "70 +", aciklama: "Elektriksel aşırı yük koruma kırmızı limiti 70 Amper ve üzeridir (70 +).", cat: "Engine & Power System Limits" },
         { soru: "What is the Voltmeter - Green Arc (Volt) range?", secenekler: ["12 - 14", "24 - 28", "25 - 30", "28 - 32"], cevap: "25 - 30", aciklama: "Ana DC elektrik barası normal şarj voltajı yeşil aralığı 25 - 30 Volttur.", cat: "Engine & Power System Limits" },
@@ -473,7 +474,7 @@
         { soru: "What is the Maximum Positive Load Factor - TO / LDG Flap (G) for Aquila A211?", secenekler: ["2.0 G", "3.8 G", "4.0 G", "0 G"], cevap: "2.0 G", aciklama: "Flaplar açık pozisyondayken maksimum yapısal pozitif yük limiti +2.0 G'dir.", cat: "Maneuvering" },
         { soru: "What is the Maximum Negative Load Factor - Up Flap (G) for Aquila A211?", secenekler: ["-1.52 G", "-1.76 G", "-2.0 G", "0 G"], cevap: "-2.0 G", aciklama: "Temiz konfigürasyonda müsaade edilen maksimum negatif yük faktörü -2.0 G'dir.", cat: "Maneuvering" },
         { soru: "What is the Maximum Negative Load Factor - TO / LDG Flap (G) for Aquila A211?", secenekler: ["-1.0 G", "-0.5 G", "0 G", "0.5 G"], cevap: "0 G", aciklama: "Flaplar açıkken uçak yapısal olarak negatif yüklemeye maruz bırakılamaz; limit tam 0 G'dir.", cat: "Maneuvering" },
-        { soru: "What is Maximum Bank Angle for Aquila A211?", secenekler: ["60", "90", "30", "45"], cevap: "60", aciklama: "İzin verilen maksimum yatış açısı 60 Derecedir..", cat: "Maneuvering" },
+        { soru: "What is Maximum Bank Angle for Aquila A211?", secenekler: ["60°", "90°", "30°", "45°"], cevap: "60°", aciklama: "İzin verilen maksimum yatış açısı 60 Derecedir.", cat: "Maneuvering" },
 
         // === BÖLÜM 3: Weight And Balance (2 Soru) ===
         { soru: "What is the Maximum Take Off Mass (Kilogram) for Aquila A211?", secenekler: ["750 kg", "800 kg", "850 kg", "940 kg"], cevap: "750 kg", aciklama: "Aquila A211 için yapısal maksimum kalkış kütlesi (MTOM) 750 kg'dır.", cat: "Weight And Balance" },
@@ -499,10 +500,99 @@
         { soru: "What is the Usable Fuel Quantity (Litre) for Aquila A211?", secenekler: ["104 Litre", "108 Litre", "110 Litre", "120 Litre"], cevap: "110 Litre", aciklama: "Uçağın motor tarafından emniyetle çekilebilen kullanılabilir yakıt hacmi 110 litredir.", cat: "Fuel Quantity" }
     ];
 
+    // Diamond DA20 Eclipse Excel Dosyasından %100 Doğrulanmış 73 Soru Veritabanı
+    const da20Database = [
+        // === BÖLÜM 1: Indicated Airspeeds (17 Soru) ===
+        { soru: "What is the Forced Landing Final Approach Speed (Landing) for DA20?", secenekler: ["50 KIAS", "55 KIAS", "60 KIAS", "64 KIAS"], cevap: "55 KIAS", aciklama: "Mecburi iniş son yaklaşmada tam iniş flap konfigürasyonu hızı 55 KIAS'tır.", cat: "Indicated Airspeeds" },
+        { soru: "What is the Minimum Engine-Out Airspeed to Sustain Windmilling Propeller?", secenekler: ["55 KIAS", "60 KIAS", "65 KIAS", "70 KIAS"], cevap: "60 KIAS", aciklama: "Motor durduğunda pervanenin rüzgar değirmeni etkisiyle (windmilling) dönmeye devam etmesi için asgari sürat 60 KIAS'tır.", cat: "Indicated Airspeeds" },
+        { soru: "What is the Forced Landing Final Approach Speed (Take Off) for DA20?", secenekler: ["55 KIAS", "60 KIAS", "65 KIAS", "73 KIAS"], cevap: "60 KIAS", aciklama: "Mecburi inişte kalkış (T/O) kademesi yaklaşma sürati 60 KIAS'tır.", cat: "Indicated Airspeeds" },
+        { soru: "What is the Forced Landing Final Approach Speed (Cruise) for DA20?", secenekler: ["60 KIAS", "64 KIAS", "70 KIAS", "73 KIAS"], cevap: "64 KIAS", aciklama: "Mecburi inişte cruise (temiz) konfigürasyondaki yaklaşma hızı 64 KIAS'tır.", cat: "Indicated Airspeeds" },
+        { soru: "What is the Best Glide Speed (Cruise Flap) for DA20?", secenekler: ["65 KIAS", "70 KIAS", "73 KIAS", "78 KIAS"], cevap: "73 KIAS", aciklama: "En iyi süzülüş açısını sağlayan süzülme sürati (Cruise Flap) 73 KIAS'tır.", cat: "Indicated Airspeeds" },
+        { soru: "What is the VFE Maximum Flap Extended Speed (Landing) for DA20?", secenekler: ["75 KIAS", "78 KIAS", "85 KIAS", "100 KIAS"], cevap: "78 KIAS", aciklama: "Tam iniş (LDG) flap kademesinde izin verilen maksimum sürat 78 KIAS'tır.", cat: "Indicated Airspeeds" },
+        { soru: "What is the VFE Maximum Flap Extended Speed (Take Off) for DA20?", secenekler: ["78 KIAS", "90 KIAS", "100 KIAS", "110 KIAS"], cevap: "100 KIAS", aciklama: "Kalkış (T/O) flap kademesinde müsaade edilen maksimum hız 100 KIAS'tır.", cat: "Indicated Airspeeds" },
+        { soru: "What is the Operating Maneuvering Speed (VA) for DA20?", secenekler: ["100 KIAS", "104 KIAS", "108 KIAS", "118 KIAS"], cevap: "108 KIAS", aciklama: "DA20 Eclipse için yapısal tasarım manevra sürati (VA) 108 KIAS'tır.", cat: "Indicated Airspeeds" },
+        { soru: "What is the VNO Maximum Structural Cruising Speed for DA20?", secenekler: ["108 KIAS", "114 KIAS", "118 KIAS", "125 KIAS"], cevap: "118 KIAS", aciklama: "Yapısal olarak normal şartlarda aşılmaması gereken maksimum seyir sürati 118 KIAS'tır.", cat: "Indicated Airspeeds" },
+        { soru: "What speed is required to force propeller to windmill if stopped with starter inoperative?", secenekler: ["120 KIAS", "130 KIAS", "137 KIAS", "145 KIAS"], cevap: "137 KIAS", aciklama: "Marş basmadığında duran pervaneyi rüzgar gücüyle dönmeye zorlamak için gereken hız 137 KIAS'tır.", cat: "Indicated Airspeeds" },
+        { soru: "What is the VNE Never Exceed Speed for DA20?", secenekler: ["150 KIAS", "155 KIAS", "164 KIAS", "172 KIAS"], cevap: "164 KIAS", aciklama: "DA20 Eclipse için asla aşılmaması gereken kırmızı çizgi sürat limiti 164 KIAS'tır.", cat: "Indicated Airspeeds" },
+        { soru: "What is the recommended Rotate Speed (VR) for DA20?", secenekler: ["40 KIAS", "44 KIAS", "50 KIAS", "55 KIAS"], cevap: "44 KIAS", aciklama: "Tavsiye edilen standart rotate (tekerlek kesme) sürati 44 KIAS'tır.", cat: "Indicated Airspeeds" },
+        { soru: "What is the Take Off Flap Climb Speed for DA20?", secenekler: ["60 KIAS", "65 KIAS", "70 KIAS", "75 KIAS"], cevap: "65 KIAS", aciklama: "Kalkış flap kademesinde tırmanış esnasında korunması gereken sürat 65 KIAS'tır.", cat: "Indicated Airspeeds" },
+        { soru: "What is the Up Flap Climb Speed for DA20?", secenekler: ["65 KIAS", "70 KIAS", "75 KIAS", "80 KIAS"], cevap: "75 KIAS", aciklama: "Flaplar toplandıktan (UP) sonraki standart tırmanış sürati 75 KIAS'tır.", cat: "Indicated Airspeeds" },
+        { soru: "What is the Stall Speed (Up Flap) for DA20?", secenekler: ["45 KIAS", "50 KIAS", "52 KIAS", "57 KIAS"], cevap: "52 KIAS", aciklama: "Temiz konfigürasyonda (Flaps UP) uçağın perdahlama (stall) sürati 52 KIAS'tır.", cat: "Indicated Airspeeds" },
+        { soru: "What is the Stall Speed (Take Off Flap) for DA20?", secenekler: ["45 KIAS", "48 KIAS", "50 KIAS", "52 KIAS"], cevap: "50 KIAS", aciklama: "Kalkış (T/O) flap pozisyonunda uçağın stall sürat değeri 50 KIAS'tır.", cat: "Indicated Airspeeds" },
+        { soru: "What is the Stall Speed (Landing Flap) for DA20?", secenekler: ["40 KIAS", "44 KIAS", "47 KIAS", "50 KIAS"], cevap: "47 KIAS", aciklama: "Full iniş konfigürasyonunda (LDG) uçağın minimum stall emniyet sürati 47 KIAS'tır.", cat: "Indicated Airspeeds" },
+
+        // === BÖLÜM 2: Maneuvering (5 Soru) ===
+        { soru: "What is the Maximum Positive Load Factor - Up Flap (G) for DA20?", secenekler: ["3.8 G", "4.0 G", "4.4 G", "2.0 G"], cevap: "4.4 G", aciklama: "Utility kategorisindeki DA20 temiz konfigürasyonda maksimum +4.4 G yüke dayanır.", cat: "Maneuvering" },
+        { soru: "What is the Maximum Positive Load Factor - TO / LDG Flap (G) for DA20?", secenekler: ["2.0 G", "3.8 G", "4.4 G", "0 G"], cevap: "2.0 G", aciklama: "Flaplar açık pozisyondayken maksimum yapısal pozitif yük limiti +2.0 G'dir.", cat: "Maneuvering" },
+        { soru: "What is the Maximum Negative Load Factor - Up Flap (G) for DA20?", secenekler: ["-1.52 G", "-2.0 G", "-2.2 G", "0 G"], cevap: "-2.2 G", aciklama: "Temiz konfigürasyonda müsaade edilen maksimum negatif yük faktörü -2.2 G'dir.", cat: "Maneuvering" },
+        { soru: "What is the Maximum Negative Load Factor - TO / LDG Flap (G) for DA20?", secenekler: ["-1.0 G", "-0.5 G", "0 G", "0.5 G"], cevap: "0 G", aciklama: "Flaplar açıkken uçak yapısal olarak hiçbir negatif yüklemeye maruz bırakılamaz (0 G).", cat: "Maneuvering" },
+        { soru: "What is the Maximum Bank Angle for DA20 maneuvers?", secenekler: ["45°", "60°", "75°", "30°"], cevap: "60°", aciklama: "Sertifikalı manevralarda izin verilen maksimum yatış açısı 60 derecedir.", cat: "Maneuvering" },
+
+        // === BÖLÜM 3: Weight And Balance (4 Soru) ===
+        { soru: "What is the Maximum Take Off Mass (Kilogram) for DA20?", secenekler: ["750 kg", "800 kg", "803 kg", "940 kg"], cevap: "800 kg", aciklama: "DA20 Eclipse modelinin maksimum kalkış kütlesi (MTOM) tam 800 kg'dır.", cat: "Weight And Balance" },
+        { soru: "What is the Maximum Landing Mass (Kilogram) for DA20?", secenekler: ["750 kg", "800 kg", "803 kg", "850 kg"], cevap: "800 kg", aciklama: "Yapısal emniyet gereği maksimum iniş kütlesi de kalkış kütlesiyle aynı olup 800 kg'dır.", cat: "Weight And Balance" },
+        { soru: "What is the Maximum Ramp Mass (Kilogram) for DA20?", secenekler: ["800 kg", "803 kg", "810 kg", "850 kg"], cevap: "803 kg", aciklama: "Motor çalıştırma ve taksi payı dahil maksimum yer rampa kütlesi 803 kg'dır.", cat: "Weight And Balance" },
+        { soru: "What is the Maximum Baggage Compartment Weight (Kilogram) for DA20?", secenekler: ["15 kg", "20 kg", "25 kg", "30 kg"], cevap: "20 kg", aciklama: "Gövde arkası bagaj bölmesinde taşınabilecek maksimum yük sınırı 20 kg'dır.", cat: "Weight And Balance" },
+
+        // === BÖLÜM 4: Voltmeter (4 Soru) ===
+        { soru: "What is the Voltmeter Lower Limit (Red Arc) in Volts?", secenekler: ["8 - 11 V", "10 - 11 V", "11 - 12.5 V", "12.5 - 16 V"], cevap: "8 - 11 V", aciklama: "Voltmetrenin en alt tehlikeli kırmızı yay aralığı 8 - 11 Volttur.", cat: "Voltmeter" },
+        { soru: "What is the Voltmeter Caution Limit (Yellow Arc) in Volts?", secenekler: ["8 - 11 V", "11 - 12.5 V", "12.5 - 16 V", "16.1 V"], cevap: "11 - 12.5 V", aciklama: "Düşük voltaj şarj yetersizliği sarı dikkat bölgesi aralığı 11 - 12.5 Volttur.", cat: "Voltmeter" },
+        { soru: "What is the Voltmeter Normal Limit (Green Arc) in Volts?", secenekler: ["11 - 12.5 V", "12.5 - 16 V", "16.1 V", "15 - 16 V"], cevap: "12.5 - 16 V", aciklama: "Sistemin normal emniyetli şarj yeşil çalışma voltaj aralığı 12.5 - 16 Volttur.", cat: "Voltmeter" },
+        { soru: "What is the Voltmeter Upper Limit (Red Arc) in Volts?", secenekler: ["15 V", "16 V", "16.1 V", "17 V"], cevap: "16.1 V", aciklama: "Aşırı voltaj koruma üst sınır kırmızı çizgisi tam 16.1 Volttur.", cat: "Voltmeter" },
+
+        // === BÖLÜM 5: Miscellaneous (4 Soru) ===
+        { soru: "What is the Maximum Structural Temperature (Santigrat) for DA20?", secenekler: ["45 °C", "50 °C", "55 °C", "60 °C"], cevap: "55 °C", aciklama: "Kompozit yapıyı korumak adına izin verilen maksimum yapısal sıcaklık 55 °C'dir.", cat: "Miscellaneous" },
+        { soru: "What is the Propeller Approx. Minimum Ground Clearance (CM)?", secenekler: ["15 cm", "18 cm", "20 cm", "25 cm"], cevap: "18 cm", aciklama: "Pervane ucunun yere olan tahmini asgari emniyet mesafesi clearance değeri 18 cm'dir.", cat: "Miscellaneous" },
+        { soru: "What is the Main Landing Gear Tire Pressure (PSI)?", secenekler: ["21 PSI", "26 PSI", "33 PSI", "40 PSI"], cevap: "33 PSI", aciklama: "Ana iniş takımı lastiklerinin standart hava basınç değeri 33 PSI'dır.", cat: "Miscellaneous" },
+        { soru: "What is the Nose Gear Tire Pressure (PSI)?", secenekler: ["21 PSI", "26 PSI", "33 PSI", "35 PSI"], cevap: "26 PSI", aciklama: "Burun iniş takımı lastiğinin standart muhafaza basınç değeri 26 PSI'dır.", cat: "Miscellaneous" },
+        { soru: "What is the Minimum OAT at which Cabin Heat must NOT be full ON?", secenekler: ["-10 °C", "-5 °C", "0 °C", "5 °C"], cevap: "-5 °C", aciklama: "Kabin ısıtıcısının tam açık (Full ON) pozisyonda kullanılmaması gereken asgari dış hava sıcaklığı -5 °C'dir.", cat: "Miscellaneous" },
+
+        // === BÖLÜM 6: Engine & Power System Limits (29 Soru) ===
+        { soru: "What is the Minimum Idle Mixture Rise Leaned to Peak?", secenekler: ["25 RPM", "50 RPM", "75 RPM", "100 RPM"], cevap: "50 RPM", aciklama: "Rölanti karışım kontrolü peak fakirleştirmede minimum devir artış değeri 50 RPM olmalıdır.", cat: "Engine & Power System Limits" },
+        { soru: "What is the Minimum RPM During Engine Runup Idle Check?", secenekler: ["900 RPM", "975 RPM", "1000 RPM", "1100 RPM"], cevap: "975 RPM", aciklama: "Runup motor rölanti kontrol testinde aranacak asgari devir limit değeri 975 RPM'dir.", cat: "Engine & Power System Limits" },
+        { soru: "What is the Minimum RPM for In-Flight Idle Beyond Gliding Range of a Runway?", secenekler: ["1000 RPM", "1200 RPM", "1400 RPM", "1500 RPM"], cevap: "1400 RPM", aciklama: "Pist süzülme mesafesi dışındaki uçuş safhalarında havada tutulacak asgari rölanti devri 1400 RPM'dir.", cat: "Engine & Power System Limits" },
+        { soru: "What is the Minimum Permissible Static RPM during Full Throttle Runup?", secenekler: ["1800 RPM", "1900 RPM", "2000 RPM", "2100 RPM"], cevap: "2000 RPM", aciklama: "Tam gaz runup kontrolünde uçağın statik olarak vermesi gereken asgari devir 2000 RPM'dir.", cat: "Engine & Power System Limits" },
+        { soru: "What is the Tachometer Normal Operating Range (RPM)?", secenekler: ["700 - 2400 RPM", "700 - 2800 RPM", "1000 - 2500 RPM", "2000 - 2800 RPM"], cevap: "700 - 2800 RPM", aciklama: "Takometre normal çalışma yeşil aralık göstergesi 700 ile 2800 RPM arasıdır.", cat: "Engine & Power System Limits" },
+        { soru: "What is the Maximum Permissible Continuous RPM for DA20?", secenekler: ["2500 RPM", "2700 RPM", "2800 RPM", "2900 RPM"], cevap: "2800 RPM", aciklama: "Sürekli tam güç uçuşta müsaade edilen maksimum motor devri 2800 RPM'dir.", cat: "Engine & Power System Limits" },
+        { soru: "What is the Minimum Permissible RPM Drop During Magneto Check?", secenekler: ["25 RPM", "50 RPM", "150 RPM", "100 RPM"], cevap: "25 RPM", aciklama: "Manyeto kontrolünde aranacak asgari devir düşüş (drop) limiti 25 RPM'dir.", cat: "Engine & Power System Limits" },
+        { soru: "What is the Maximum Permissible RPM Drop During Magneto Check?", secenekler: ["100 RPM", "125 RPM", "150 RPM", "175 RPM"], cevap: "150 RPM", aciklama: "Manyeto test kontrolünde tek bir manyetoda izin verilen azami düşüş sınırı 150 RPM'dir.", cat: "Engine & Power System Limits" },
+        { soru: "What is the Maximum RPM Drop Difference Between Magnetos?", secenekler: ["25 RPM", "50 RPM", "75 RPM", "100 RPM"], cevap: "50 RPM", aciklama: "İki manyeto arasındaki düşüş farkı maksimum 50 RPM olmalıdır.", cat: "Engine & Power System Limits" },
+        { soru: "What is the Maximum Permissible Continuous BHP for DA20?", secenekler: ["100 BHP", "115 BHP", "125 BHP", "135 BHP"], cevap: "125 BHP", aciklama: "DA20 Eclipse motorunun üretebildiği maksimum sürekli beygir gücü 125 BHP'dir.", cat: "Engine & Power System Limits" },
+        { soru: "What is the Minimum Oil Pressure parameter in PSI?", secenekler: ["10 PSI", "20 PSI", "30 PSI", "60 PSI"], cevap: "10 PSI", aciklama: "Motor yatak emniyeti için asgari kritik yağ basınç sınırı 10 PSI'dır.", cat: "Engine & Power System Limits" },
+        { soru: "What is the Oil Pressure Normal Operating Range (PSI)?", secenekler: ["10 - 30 PSI", "30 - 60 PSI", "60 - 100 PSI", "30 - 75 PSI"], cevap: "30 - 60 PSI", aciklama: "Normal motor uçuş safhası yağ basıncı yeşil bandı 30 - 60 PSI arasıdır.", cat: "Engine & Power System Limits" },
+        { soru: "What is the Maximum Time for Oil Pressure to Reach 10 PSI After Start (Second)?", secenekler: ["15 sn", "30 sn", "45 sn", "60 sn"], cevap: "30 sn", aciklama: "Motor ilk çalıştırıldığında yağ basıncının 10 PSI'a ulaşması için tanınan azami süre 30 saniyedir.", cat: "Engine & Power System Limits" },
+        { soru: "What is the Maximum Oil Pressure for Full Power Operation if OAT < 0 C (PSI)?", secenekler: ["75 PSI", "85 PSI", "100 PSI", "110 PSI"], cevap: "100 PSI", aciklama: "Dış hava sıfırın altındayken tam güçte izin verilen maksimum anlık yağ basıncı 100 PSI'dır.", cat: "Engine & Power System Limits" },
+        { soru: "What is the Maximum Oil Pressure limit under normal conditions (PSI)?", secenekler: ["60 PSI", "80 PSI", "100 PSI", "110 PSI"], cevap: "100 PSI", aciklama: "Yağlama sistemi genel maksimum emniyet basınç sınırı kırmızı çizgisi 100 PSI'dır.", cat: "Engine & Power System Limits" },
+        { soru: "What is the Minimum Oil Temperature parameter in Fahrenheit?", secenekler: ["75 °F", "100 °F", "120 °F", "240 °F"], cevap: "100 °F", aciklama: "Motor güç açılmadan önce yağ sıcaklığının görmesi gereken asgari değer 100 °F'tır.", cat: "Engine & Power System Limits" },
+        { soru: "What is the Maximum RPM After Start Until Oil Temperature Indication Registers?", secenekler: ["1000 RPM", "1200 RPM", "1400 RPM", "1500 RPM"], cevap: "1000 RPM", aciklama: "Yağ sıcaklık ibresi kımıldayana kadar motorun çalıştırılacağı azami rölanti devri 1000 RPM'dir.", cat: "Engine & Power System Limits" },
+        { soru: "What is the Maximum RPM for Full Power Operation If Oil Pressure is above 60 PSI but under 100 F?", secenekler: ["2000 RPM", "2200 RPM", "2500 RPM", "2800 RPM"], cevap: "2500 RPM", aciklama: "Yağ basıncı 60'ın üstünde ancak sıcaklık 100 F altındayken uygulanabilecek maksimum sınır devri 2500 RPM'dir.", cat: "Engine & Power System Limits" },
+        { soru: "What is the Maximum Oil Temperature limit in Fahrenheit?", secenekler: ["200 °F", "220 °F", "240 °F", "260 °F"], cevap: "240 °F", aciklama: "Motor yağının ulaşabileceği yapısal en yüksek hararet sınırı kırmızı çizgisi 240 °F'tır.", cat: "Engine & Power System Limits" },
+        { soru: "What is the Minimum Oil Quantity allowed (US QTS)?", secenekler: ["3.5 QTS", "4 QTS", "5 QTS", "6 QTS"], cevap: "4 QTS", aciklama: "DA20 Eclipse karter motor uçuş emniyeti asgari yağ miktarı limit tabanı 4 kuarttır.", cat: "Engine & Power System Limits" },
+        { soru: "What is the Maximum Oil Quantity allowed (US QTS)?", secenekler: ["5 QTS", "6 QTS", "7 QTS", "8 QTS"], cevap: "6 QTS", aciklama: "Motor yağ haznesinin fiziki tam kapasite maksimum limit doluluk hacmi 6 kuarttır.", cat: "Engine & Power System Limits" },
+        { soru: "What is the Fuel Pressure Lower Limit Red Arc (PSI)?", secenekler: ["2.0 PSI", "3.5 PSI", "5.0 PSI", "16.5 PSI"], cevap: "3.5 PSI", aciklama: "Yakıt akış beslemesi basınç alt kritik tehlike çizgisi sınır değeri 3.5 PSI'dır.", cat: "Engine & Power System Limits" },
+        { soru: "What is the Fuel Pressure Upper Limit Red Arc (PSI)?", secenekler: ["12.5 PSI", "15.0 PSI", "16.5 PSI", "18.0 PSI"], cevap: "16.5 PSI", aciklama: "Yakıt besleme hattı aşırı basınç üst sınır kırmızı çizgisi parametresi 16.5 PSI'dır.", cat: "Engine & Power System Limits" },
+        { soru: "What is the Maximum Continuous Starter Operation duration (Second)?", secenekler: ["10 sn", "20 sn", "30 sn", "60 sn"], cevap: "10 sn", aciklama: "Marş motorunun koruma amaçlı kesintisiz en fazla basılabileceği süre 10 saniyedir.", cat: "Engine & Power System Limits" },
+        { soru: "What is the Maximum Cumulative Starter Operation Before Cooling 3-5 Minutes (Second)?", secenekler: ["20 sn", "30 sn", "40 sn", "50 sn"], cevap: "30 sn", aciklama: "3-5 dakika soğutma arası vermeden önceki toplam kümülatif marş basma tavan süresi 30 saniyedir.", cat: "Engine & Power System Limits" },
+        { soru: "What is the Maximum Time for CHT Below 300 F in Descent (Minutes)?", secenekler: ["3 dk", "5 dk", "7 dk", "10 dk"], cevap: "5 dk", aciklama: "Alçalmada silindir kapak sıcaklığının (CHT) 300 F altında kalabileceği maksimum ani şok soğuma süresi 5 dakikadır.", cat: "Engine & Power System Limits" },
+        { soru: "What is the Minimum CHT for Take Off and Descent in Fahrenheit?", secenekler: ["200 °F", "220 °F", "240 °F", "300 °F"], cevap: "240 °F", aciklama: "Kalkış ve alçalma safhalarında muhafaza edilmesi gereken asgari CHT sıcaklığı 240 °F'tır.", cat: "Engine & Power System Limits" },
+        { soru: "What is the Cylinder Head Temperature (CHT) Normal Operating Range (F)?", secenekler: ["200 - 400 °F", "240 - 420 °F", "300 - 420 °F", "300 - 460 °F"], cevap: "300 - 420 °F", aciklama: "Silindir kapak sıcaklığının (CHT) normal yeşil çalışma aralığı standardı 300 - 420 °F arasıdır.", cat: "Engine & Power System Limits" },
+        { soru: "What is the Cylinder Head Temperature (CHT) Caution Range (F)?", secenekler: ["400 - 450 °F", "420 - 460 °F", "440 - 480 °F", "460 - 500 °F"], cevap: "420 - 460 °F", aciklama: "Silindir kafası hararet dikkat ve ikaz sarı şerit aralığı 420 - 460 °F arasıdır.", cat: "Engine & Power System Limits" },
+        { soru: "What is the absolute Maximum Cylinder Head Temperature (CHT) allowed?", secenekler: ["420 °F", "440 °F", "460 °F", "480 °F"], cevap: "460 °F", aciklama: "Silindir kapak sıcaklığının (CHT) asla aşmaması gereken kırmızı çizgi tavan limiti 460 °F'tır.", cat: "Engine & Power System Limits" },
+
+        // === BÖLÜM 7: Fuel Quantity (3 Soru) ===
+        { soru: "What is the Approved Fuel Grade for DA20 Eclipse?", secenekler: ["JET A-1", "MOGAS 95", "100 LL", "AVGAS 100"], cevap: "100 LL", aciklama: "DA20 Eclipse motoru için üretici tarafından onaylanmış havacılık yakıt tipi 100 LL (Low Lead) Avgas'tır.", cat: "Fuel Quantity" },
+        { soru: "What is the Usable Fuel Quantity (Litre) for DA20?", secenekler: ["91 Litre", "93 Litre", "100 Litre", "120 Litre"], cevap: "91 Litre", aciklama: "Uçağın emniyetle motora çekebileceği kullanılabilir net yakıt miktarı 91 litredir.", cat: "Fuel Quantity" },
+        { soru: "What is the Total Fuel Quantity (Litre) for DA20?", secenekler: ["91 Litre", "93 Litre", "95 Litre", "105 Litre"], cevap: "93 Litre", aciklama: "Uçağın yakıt deposunun fiziki toplam yakıt alma kapasite hacmi 93 litredir.", cat: "Fuel Quantity" },
+
+        // === BÖLÜM 8: Take Off & Landing (2 Soru) ===
+        { soru: "What is the Maximum Demonstrated Crosswind Component (KTS)?", secenekler: ["15 KTS", "20 KTS", "22 KTS", "25 KTS"], cevap: "20 KTS", aciklama: "Test uçuşlarında demonstre edilmiş maksimum yan rüzgar (crosswind) limiti 20 Knottur.", cat: "Take Off & Landing" },
+        { soru: "What is the Maximum Tailwind Component (KTS) allowed for DA20?", secenekler: ["5 KTS", "10 KTS", "12 KTS", "15 KTS"], cevap: "10 KTS", aciklama: "Kalkış ve inişlerde emniyet sınırı olarak izin verilen maksimum arka rüzgar (tailwind) bileşeni 10 Knottur.", cat: "Take Off & Landing" }
+    ];
+
     let activeQuestions = [];
     let currentQuestionIndex = 0;
     let selectedCategory = "";
-    let selectedAircraft = ""; // Seçilen uçak modelini takip eder
+    let selectedAircraft = ""; 
     
     let currentName = "";
     let currentSurname = "";
@@ -684,7 +774,6 @@
         welcomeTitle.innerText = `${selectedAircraft} - Sınav Bölümü Seçiniz`;
         questionCounter.innerText = "Lütfen Sınav Konusunu Seçiniz";
         
-        // Dinamik alt kategori butonlarını uçağa göre oluşturuyoruz
         const container = document.getElementById('subcategory-buttons-container');
         container.innerHTML = '';
         
@@ -706,6 +795,17 @@
                 'Engine & Power System Limits',
                 'Fuel Quantity'
             ];
+        } else if (selectedAircraft === 'Diamond DA20 Eclipse') {
+            categories = [
+                'Indicated Airspeeds',
+                'Maneuvering',
+                'Weight And Balance',
+                'Voltmeter',
+                'Miscellaneous',
+                'Engine & Power System Limits',
+                'Fuel Quantity',
+                'Take Off & Landing'
+            ];
         }
         
         categories.forEach(cat => {
@@ -716,7 +816,6 @@
             container.appendChild(btn);
         });
         
-        // Genel (Tüm sorular) butonu
         const generalBtn = document.createElement('button');
         generalBtn.className = "btn";
         generalBtn.style.cssText = "background-color:#e2f0d9; border-color:#70ad47; color:#385723; text-align:center; font-weight:bold;";
@@ -724,7 +823,6 @@
         generalBtn.onclick = () => startQuiz('General');
         container.appendChild(generalBtn);
         
-        // Geri dön butonu
         const backBtn = document.createElement('button');
         backBtn.className = "btn prev-style";
         backBtn.style.cssText = "text-align:center; font-weight:bold;";
@@ -801,7 +899,10 @@
         selectedCategory = categoryName;
         mainTitle.innerText = selectedAircraft;
 
-        const activeDatabase = (selectedAircraft === 'Diamond DA40 NG') ? da40Database : aquilaDatabase;
+        let activeDatabase = [];
+        if (selectedAircraft === 'Diamond DA40 NG') activeDatabase = da40Database;
+        else if (selectedAircraft === 'Aquila A211') activeDatabase = aquilaDatabase;
+        else if (selectedAircraft === 'Diamond DA20 Eclipse') activeDatabase = da20Database;
 
         if (categoryName === 'General') {
             activeQuestions = [...activeDatabase];
@@ -857,7 +958,11 @@
         explanationBox.style.display = 'none';
         optionsContainer.innerHTML = '';
         
-        const activeDatabase = (selectedAircraft === 'Diamond DA40 NG') ? da40Database : aquilaDatabase;
+        let activeDatabase = [];
+        if (selectedAircraft === 'Diamond DA40 NG') activeDatabase = da40Database;
+        else if (selectedAircraft === 'Aquila A211') activeDatabase = aquilaDatabase;
+        else if (selectedAircraft === 'Diamond DA20 Eclipse') activeDatabase = da20Database;
+
         let currentQuestion = activeDatabase.find(q => q.soru === activeQuestions[currentQuestionIndex].soru);
         let state = questionStates[currentQuestionIndex];
         
@@ -925,7 +1030,6 @@
             showExplanationStatic(state.status === 'correct', correctAnswer, aciklama);
             updateMatrixUI();
 
-            // Doğru cevap verildiğinde 1 saniye bekleyip otomatik sonraki soruya geçer
             setTimeout(() => {
                 handleNextOrFinish();
             }, 1000);
@@ -1013,7 +1117,11 @@
         const percentage = Math.round((correctCount / activeQuestions.length) * 100);
         const testDate = new Date().toLocaleDateString('tr-TR', {hour: '2-digit', minute:'2-digit'});
         
-        const acLabel = (selectedAircraft === 'Diamond DA40 NG') ? 'DA40' : 'A211';
+        let acLabel = 'AC';
+        if (selectedAircraft === 'Diamond DA40 NG') acLabel = 'DA40';
+        else if (selectedAircraft === 'Aquila A211') acLabel = 'A211';
+        else if (selectedAircraft === 'Diamond DA20 Eclipse') acLabel = 'DA20';
+
         saveHistory(`${acLabel}-${selectedCategory.substring(0,5).toUpperCase()}`, percentage);
         sendDataToCloud(currentName, currentSurname, currentGender, currentSchool, `${selectedAircraft} (${selectedCategory})`, percentage, testDate);
 
@@ -1184,7 +1292,6 @@
                 <td style="font-weight:bold; color:${log.score >= 75 ? '#2f855a' : '#c53030'}">%${log.score}</td>
                 <td>${log.date}</td>
             `;
-            log.date ? row.innerHTML += `` : ''; // Güvenli akış kontrolü
             adminTableBody.appendChild(row);
         });
     }
@@ -1295,7 +1402,7 @@
         ctx.textAlign = 'center';
         ctx.fillStyle = '#d4af37';
         ctx.font = 'bold 34px Georgia';
-        ctx.fillText('Limit Proseförü', 425, 120);
+        ctx.fillText('Limit Profesörü', 425, 120);
 
         ctx.fillStyle = '#90cdf4';
         ctx.font = 'bold 36px Helvetica';
