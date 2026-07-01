@@ -619,7 +619,7 @@
         { soru: "What is the Maximum Negative Load Factor - Up Flap (G) for DA42 NG?", secenekler: ["-1.52 G", "0 G", "-2.0 G", "-1.0 G"], cevap: "-1.52 G", aciklama: "Temiz konfigürasyonda uçağın yapısal izin verilen azami negatif yük faktörü -1.52 G'dir.", cat: "Maneuvering" },
         { soru: "What is the Maximum Negative Load Factor - TO / LDG Flap (G) for DA42 NG?", secenekler: ["-1.52 G", "-1.0 G", "0 G", "-0.5 G"], cevap: "0 G", aciklama: "Flaplar açıkken DA42 NG hiçbir negatif yüklemeye maruz bırakılamaz; limit tam 0 G'dir.", cat: "Maneuvering" },
 
-        // --- 3. Engine & Power System Limits (32 Soru) ---
+        // --- 3. Engine & Power System Limits (26 Soru) ---
         { soru: "What is the RPM Limits - Green Arc for DA42 NG?", secenekler: ["2100", "2300", "1800", "2200"], cevap: "2100", aciklama: "Göstergedeki normal sürekli çalışma yeşil üst sınırı 2100 RPM'dir.", cat: "Engine & Power System Limits" },
         { soru: "What is the RPM Limits - Yellow Arc for DA42 NG?", secenekler: ["2100 - 2300", "2300 +", "1800 - 2100", "2200 - 2300"], cevap: "2100 - 2300", aciklama: "Takometre üzerindeki sarı dikkat ikaz şeridi aralığı 2100 ile 2300 RPM arasıdır.", cat: "Engine & Power System Limits" },
         { soru: "What is the RPM Limits - Red Arc for DA42 NG?", secenekler: ["2100 +", "2300 +", "2500 +", "2400 +"], cevap: "2300 +", aciklama: "Mekanik hasar sınırı kırmızı çizgisi 2300 RPM ve üzeridir (2300 +).", cat: "Engine & Power System Limits" },
@@ -646,20 +646,11 @@
         { soru: "What is the Voltmeter - Green Arc (Volt) for DA42 NG?", secenekler: ["24 - 28", "25 - 30", "30 - 32", "32 +"], cevap: "25 - 30", aciklama: "Ana DC elektrik barası normal şarj voltajı yeşil aralığı 25 - 30 Volttur.", cat: "Engine & Power System Limits" },
         { soru: "What is the Voltmeter - Yellow Arc (Volt) for DA42 NG?", secenekler: ["25 - 30", "30 - 32", "32 +", "22 - 25"], cevap: "30 - 32", aciklama: "Yüksek voltaj uyarı sarı dikkat aralığı 30 ile 32 Volt arasıdır.", cat: "Engine & Power System Limits" },
         { soru: "What is the Voltmeter - Red Arc (Volt) for DA42 NG?", secenekler: ["30 +", "32 +", "34 +", "28 +"], cevap: "32 +", aciklama: "Sistem koruma aşırı voltaj kırmızı çizgisi 32 Volt ve üzeridir (32 +).", cat: "Engine & Power System Limits" },
-        { soru: "What is the Minimum Landing Gear Tire Pressure (Main) (PSI) for DA42 NG?", secenekler: ["65", "44", "33", "50"], cevap: "65", aciklama: "Ana iniş takımı lastiklerinin muhafaza edilmesi gereken standart basıncı 65 PSI'dır.", cat: "Engine & Power System Limits" },
-        { soru: "What is the Minimum Landing Gear Tire Pressure (Nose) (PSI) for DA42 NG?", secenekler: ["65", "44", "26", "35"], cevap: "44", aciklama: "Burun iniş takımı lastiğinin standart hava basınç değeri 44 PSI'dır.", cat: "Engine & Power System Limits" },
-        { soru: "What is the Minimum Engine-Out Airspeed for Propeller Feathering (KIAS)?", secenekler: ["80 KIAS", "76 KIAS", "73 KIAS", "84 KIAS"], cevap: "80 KIAS", aciklama: "Havada motor durduğunda pervane hatve sabitleme (feathering) için gereken asgari hız 80 KIAS'tır.", cat: "Engine & Power System Limits" },
-        { soru: "What is the Maximum Altitude for Restart (Un-Feathering) (FT) for DA42 NG?", secenekler: ["14000 FT", "16400 FT", "18000 FT", "10000 FT"], cevap: "14000 FT", aciklama: "Havada motoru rüzgar gücüyle (un-feathering) yeniden çalıştırmak için izin verilen azami irtifa 14000 FT'tir.", cat: "Engine & Power System Limits" },
-        { soru: "What is the Restart Speed Range (KIAS) for DA42 NG?", secenekler: ["80 - 120 KIAS", "100 - 110 KIAS", "90 - 115 KIAS", "86 - 133 KIAS"], cevap: "80 - 120 KIAS", aciklama: "Havada starter kullanmadan motoru yeniden çalıştırma emniyetli sürat aralığı 80 - 120 KIAS'tır.", cat: "Engine & Power System Limits" },
-        { soru: "What is the Minimum Engine-Out Safe Climb Speed (V_YSE) (KIAS)?", secenekler: ["80 KIAS", "84 KIAS", "86 KIAS", "76 KIAS"], cevap: "84 KIAS", aciklama: "Tek motorla tırmanışta en iyi tırmanış oranı hızı (Blue Line - V_YSE) 84 KIAS'tır.", cat: "Engine & Power System Limits" },
 
         // --- 4. Fuel Quantity (2 Soru) ---
-        { soru: "What is the Total Fuel Quantity (USG) for DA42 NG Main Tanks?", secenekler: ["52 USG", "50 USG", "51.8 USG", "26 USG"], cevap: "51.8 USG", aciklama: "DA42 NG ana depolarının fiziki toplam yakıt hacmi 2 x 25.9 = 51.8 galondur.", cat: "Fuel Quantity" },
+        { soru: "What is the Total Fuel Quantity (USG) for DA42 NG Main Tanks?", secenekler: ["56 USG", "50 USG", "52 USG", "26 USG"], cevap: "52 USG", aciklama: "DA42 NG ana depolarının fiziki toplam yakıt hacmi 2 x 25.9 = 51.8 galondur.", cat: "Fuel Quantity" },
         { soru: "What is the Usable Fuel Quantity (USG) for DA42 NG Main Tanks?", secenekler: ["50 USG", "51.8 USG", "48 USG", "45 USG"], cevap: "50 USG", aciklama: "Ana depolardan motorlar tarafından çekilebilen net emniyetli kullanılabilir yakıt miktarı 2 x 25 = 50 galondur.", cat: "Fuel Quantity" },
 
-        // --- 5. Stall Speed (2 Soru) ---
-        { soru: "What is the Stall Speed (Landing Flap) for DA42 NG?", secenekler: ["62 KIAS", "66 KIAS", "69 KIAS", "60 KIAS"], cevap: "62 KIAS", aciklama: "İniş takımları aşağıda ve full iniş flap konfigürasyonunda uçağın stall sürati 62 KIAS'tır.", cat: "Stall Speed" },
-        { soru: "What is the Maximum Bank Angle for Standard Maneuvers in DA42 NG?", secenekler: ["60°", "45°", "30°", "90°"], cevap: "60°", aciklama: "DA42 NG ile sertifikalı normal manevralarda müsaade edilen maksimum yatış açısı 60 derecedir.", cat: "Stall Speed" }
     ];
 
     let activeQuestions = [];
