@@ -2,10 +2,11 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Uçak Limitleri</title>
     <style>
         * { box-sizing: border-box; }
+        
         :root {
             --bg-color: #f0f4f8;
             --container-bg: #ffffff;
@@ -38,7 +39,6 @@
             margin: 0;
             padding: 15px;
             transition: all 0.3s ease;
-            overflow-x: hidden;
         }
         .quiz-container {
             background-color: var(--container-bg);
@@ -48,7 +48,9 @@
             max-width: 550px;
             width: 100%;
             position: relative;
+            overflow: hidden; /* Swipe taşmalarını önlemek için */
         }
+        
         .top-buttons {
             position: absolute;
             top: 15px;
@@ -56,10 +58,11 @@
             right: 0;
             display: flex;
             justify-content: center;
-            gap: 8px;
             flex-wrap: wrap;
+            gap: 8px;
+            padding: 0 10px;
         }
-        .top-buttons button {
+        .theme-switch, .share-btn, .home-btn, .logout-btn {
             background: var(--accent-color);
             color: white;
             border: none;
@@ -70,10 +73,15 @@
             font-weight: bold;
             transition: opacity 0.2s;
         }
+        
         .share-btn { background: #2f855a; }
         .home-btn { background: #4a5568; }
         .logout-btn { background: #e53e3e; }
-        .top-buttons button:hover { opacity: 0.9; }
+        
+        .theme-switch:hover, .share-btn:hover, .home-btn:hover, .logout-btn:hover {
+            opacity: 0.9;
+        }
+        
         .timer-badge {
             font-size: 1.1rem;
             font-weight: 800;
@@ -84,28 +92,31 @@
             border: 2px solid #fed7d7;
             display: inline-block;
             margin-top: 5px;
+            transition: all 0.3s ease;
         }
         [data-theme="exam"] .timer-badge {
             background: #742a2a;
             border-color: #e53e3e;
             color: #fff5f5;
         }
-        .header { text-align: center; margin-bottom: 20px; padding-top: 25px; }
+        .header { text-align: center; margin-bottom: 20px; padding-top: 35px; }
         .header h1 { color: var(--primary-color); font-size: 1.5rem; margin: 0 0 5px 0; }
         .header p { color: #718096; margin: 0; font-size: 0.9rem; }
         .progress-bar { height: 6px; background-color: #e2e8f0; border-radius: 3px; margin-bottom: 25px; overflow: hidden; display: none;}
         .progress-fill { height: 100%; background-color: var(--accent-color); width: 0%; transition: width 0.3s ease; }
         .options { display: flex; flex-wrap: wrap; gap: 12px; flex-direction: column; }
+        
         .btn {
             background-color: var(--btn-bg); border: 2px solid var(--btn-border); padding: 14px 18px;
             border-radius: 10px; cursor: pointer; font-size: 1rem; font-weight: 500;
             text-align: left; color: var(--btn-text); transition: all 0.2s ease; -webkit-tap-highlight-color: transparent;
-            min-height: 48px;
         }
         .btn:hover:not([disabled]) { background-color: #edf2f7; border-color: #cbd5e0; }
         [data-theme="exam"] .btn:hover:not([disabled]) { background-color: #718096; }
+        
         .aircraft-btn { background-color: #e3fafc; border-color: #99e9f2; color: #0c8599; text-align: center; font-weight: 600;}
         .aircraft-btn:hover:not([disabled]) { background-color: #c5f6fa !important; }
+        
         .subcat-btn { background-color: #fff9db; border-color: #ffe066; color: #f08c00; text-align: center; font-weight: 600; }
         .subcat-btn:hover:not([disabled]) { background-color: #fff3bf !important; }
         .aircraft-btn:disabled {
@@ -115,18 +126,14 @@
             cursor: not-allowed !important;
             opacity: 0.7;
         }
+        
         .correct { background-color: #c6f6d5 !important; border-color: #48bb78 !important; color: #22543d !important; font-weight: 600; }
         .wrong { background-color: #fed7d7 !important; border-color: #f56565 !important; color: #742a2a !important; font-weight: 600; }
-        .explanation {
-            margin-top: 20px; padding: 15px; background-color: #ebf8ff; border-left: 4px solid #3182ce;
-            border-radius: 4px; font-size: 0.95rem; line-height: 1.5; color: #2b6cb0; display: none;
-        }
+        
+        .explanation { margin-top: 20px; padding: 15px; background-color: #ebf8ff; border-left: 4px solid #3182ce; border-radius: 4px; font-size: 0.95rem; line-height: 1.5; color: #2b6cb0; display: none; }
         [data-theme="exam"] .explanation { background-color: #2b6cb0; color: white; border-left-color: #90cdf4; }
-        .nav-controls { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
-        .nav-btn {
-            flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: 600; cursor: pointer;
-            text-align: center; font-size: 0.95rem; min-height: 48px;
-        }
+        .nav-controls { display: flex; gap: 10px; margin-top: 20px; }
+        .nav-btn { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; text-align: center; font-size: 0.95rem; }
         .prev-style { background-color: #e2e8f0; color: #4a5568; }
         .prev-style:hover:not([disabled]) { background-color: #cbd5e0; }
         .prev-style:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -137,51 +144,47 @@
         .next-style { background-color: var(--primary-color); color: white; box-shadow: 0 4px 6px rgba(11, 60, 93, 0.2); }
         [data-theme="exam"] .next-style { color: #1a202c; }
         .finish-style { background-color: #2f855a; color: white; }
-        .matrix-container {
-            display: flex; flex-wrap: wrap; gap: 6px; margin-top: 25px; padding-top: 15px;
-            border-top: 1px solid #e2e8f0; justify-content: center;
-        }
-        .matrix-box {
-            width: 32px; height: 32px; border-radius: 6px; border: 1px solid #cbd5e0;
-            display: flex; align-items: center; justify-content: center; font-size: 0.75rem;
-            font-weight: 600; cursor: pointer; background-color: white; color: #1a202c;
-            user-select: none; transition: all 0.15s;
-        }
-        .matrix-box.active { border: 2px solid var(--accent-color); transform: scale(1.1); }
+        
+        /* Matris Boyutları Büyütüldü (Mobil Uyumlu) */
+        .matrix-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 25px; padding-top: 15px; border-top: 1px solid #e2e8f0; justify-content: center; }
+        .matrix-box { width: 32px; height: 32px; border-radius: 6px; border: 1px solid #cbd5e0; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 600; cursor: pointer; background-color: white; color: #1a202c; user-select: none; transition: transform 0.1s;}
+        .matrix-box.active { border: 2px solid var(--accent-color); transform: scale(1.15); }
         .matrix-box.m-correct { background-color: #48bb78; color: white; border-color: #38a169; }
         .matrix-box.m-wrong { background-color: #f56565; color: white; border-color: #e53e3e; }
         .matrix-box.m-pas { background-color: #a0aec0; color: white; border-color: #718096; }
         .matrix-box.m-flag { background-color: #ed8936; color: white; border-color: #dd6b20; }
+        
         .score-container { text-align: center; padding: 10px 0; }
         .score-title { font-size: 1.4rem; font-weight: bold; margin-bottom: 10px; }
         .score-number { font-size: 3rem; font-weight: 800; color: var(--accent-color); margin-bottom: 20px; }
-        .restart-btn, .retry-wrong-btn {
-            background-color: var(--accent-color); color: white; border: none;
-            padding: 12px 25px; border-radius: 8px; font-size: 1rem; font-weight: 600;
-            cursor: pointer; margin-top: 10px; width: 100%;
-        }
-        .retry-wrong-btn { background-color: #ed8936; }
+        .restart-btn { background-color: var(--accent-color); color: white; border: none; padding: 12px 25px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 15px; width: 100%;}
         .review-btn { background-color: #ed8936; color: white; border: none; padding: 12px 25px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 10px; width: 100%; }
+        
         .cert-btn { background-color: #2b6cb0; color: white; border: none; padding: 12px 25px; border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer; margin-top: 10px; width: 100%; display: none; box-shadow: 0 4px 6px rgba(43, 108, 176, 0.3); }
         .category-breakdown { margin-top: 20px; padding: 15px; background: #f7fafc; border-radius: 10px; text-align: left; border: 1px solid #e2e8f0; }
         [data-theme="exam"] .category-breakdown { background: #4a5568; border-color: #718096; }
         .category-item { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem; font-weight: 500; }
+        
         .review-list { max-height: 300px; overflow-y: auto; text-align: left; margin-top: 15px; padding: 10px; background: #fffaf0; border-radius: 8px; border: 1px dashed #dd6b20; }
         [data-theme="exam"] .review-list { background: #2d3748; color: #edf2f7; }
         .review-item { padding: 10px 0; border-bottom: 1px solid #e2e8f0; font-size: 0.9rem; }
         .insight-badge { background: #fffaf0; border: 1px solid #feebc8; color: #c05621; padding: 12px; border-radius: 10px; margin-top: 15px; font-size: 0.85rem; line-height: 1.4; font-weight: 500; display: none; }
         [data-theme="exam"] .insight-badge { background: #7b341e; border-color: #c05621; color: #fffaf0; }
         .input-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; text-align: left;}
-        .input-control { padding: 14px; border-radius: 10px; border: 2px solid #e2e8f0; font-size: 1rem; width: 100%; background: white; color: #1a202c; min-height: 48px; }
-        .input-btn { background-color: var(--primary-color); color: white; border: none; font-weight: bold; cursor: pointer; margin-top: 5px; }
+        .input-control { padding: 14px; border-radius: 10px; border: 2px solid #e2e8f0; font-size: 1rem; width: 100%; background: white; color: #1a202c;}
+        .input-btn { background-color: var(--primary-color); color: white; border: none; font-weight: bold; cursor: pointer; margin-top: 5px;}
         [data-theme="exam"] .input-btn { color: #1a202c; }
+        
         .stats-panel { margin-top: 25px; border-top: 2px dashed #e2e8f0; padding-top: 20px; text-align: left; }
+        .stats-panel:not(#stats-panel) { display: none; }
         .stats-title { font-weight: bold; color: #4a5568; margin-bottom: 10px; font-size: 1.1rem; }
         [data-theme="exam"] .stats-title { color: #edf2f7; }
         #stats-canvas, #pie-canvas { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; width: 100%; margin-top: 10px; }
         .user-welcome { font-size: 0.95rem; margin-bottom: 15px; font-weight: 600; text-align: center; }
+        
         .question { font-size: 1.15rem; font-weight: 600; margin-bottom: 24px; padding-bottom: 12px; }
         .footer-signature { font-size: 0.75rem; color: #a0aec0; margin-top: 25px; text-align: center; user-select: none; cursor: pointer; }
+        
         .admin-panel { background: white; border-radius: 12px; padding: 15px; margin-top: 15px; width: 100%; max-width: 550px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: none; color: #1a202c;}
         .admin-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; }
         .admin-table th, .admin-table td { border: 1px solid #e2e8f0; padding: 8px; text-align: left; }
@@ -214,12 +217,6 @@
         }
         [data-theme="exam"] .custom-modal-title { color: #fc8181; }
         [data-theme="exam"] .custom-modal-btn { background: #e53e3e; color: white; }
-        .shuffle-toggle {
-            background: #805ad5; color: white; border: none; padding: 8px 16px;
-            border-radius: 20px; font-weight: 600; cursor: pointer; margin: 5px 0;
-            font-size: 0.85rem;
-        }
-        .shuffle-toggle.active { background: #6b46c1; }
     </style>
 </head>
 <body>
@@ -230,26 +227,24 @@
         <button class="custom-modal-btn" onclick="closeTrollModal()">Anlaşıldı, Devam Et 🧑‍✈️</button>
     </div>
 </div>
-
 <div class="quiz-container">
     <div class="top-buttons">
         <button class="home-btn" onclick="backToMenu()">Ana Sayfa 🏠</button>
         <button class="share-btn" onclick="shareSystem()">Paylaş 🔗</button>
         <button class="theme-switch" onclick="toggleTheme()" id="theme-toggle-btn">Koyu Mod 🌙</button>
-        <button class="logout-btn" onclick="logoutUser()">Çıkış Yap 🚪</button>
+        <button class="logout-btn" onclick="logoutUser()">Çıkış 🚪</button>
     </div>
     <div class="header">
         <h1 id="main-title">Uçak Limitleri ✈️</h1>
         <p id="question-counter">Sistem Başlatılıyor...</p>
-        <div id="quiz-timer" class="timer-badge" style="display: none;">00:00</div>
+        <div id="quiz-timer" class="timer-badge" style="display: none;">30 Sn</div>
     </div>
     
     <div class="progress-bar" id="progress-bar-container"><div class="progress-fill" id="progress-fill"></div></div>
-
     <div id="login-screen" style="display: none;">
         <div class="input-group">
             <label style="font-weight: 600;">Adınız:</label>
-            <input type="text" id="username-input" class="input-control" placeholder="Örn: Ahmet" autofocus>
+            <input type="text" id="username-input" class="input-control" placeholder="Örn: Ahmet">
         </div>
         <div class="input-group">
             <label style="font-weight: 600;">Soyadınız:</label>
@@ -263,9 +258,8 @@
                 <option value="Kadın">Kadın</option>
             </select>
         </div>
-        <button class="input-control input-btn" id="login-btn">Sınav Sistemine Giriş Yap</button>
+        <button class="input-control input-btn" onclick="saveUser()">Sınav Sistemine Giriş Yap</button>
     </div>
-
     <div id="aircraft-selector" style="display: none;">
         <div id="welcome-msg" class="user-welcome"></div>
         <div class="options">
@@ -274,27 +268,31 @@
             <button class="btn aircraft-btn" onclick="showSubCategories('Diamond DA40 NG')">Diamond DA40 NG</button>
             <button class="btn aircraft-btn" onclick="showSubCategories('Diamond DA42 NG')">Diamond DA42 NG</button>
         </div>
+        
         <div class="insight-badge" id="weakness-insight-box"></div>
         <div class="stats-panel" id="stats-panel" style="display: none;">
             <div class="stats-title">📊 Son 5 Test Performans Grafiğiniz (%)</div>
             <canvas id="stats-canvas" height="150"></canvas>
         </div>
     </div>
-
     <div id="subcategory-selector" style="display: none;">
         <div id="subcategory-welcome-title" class="user-welcome" style="font-weight:700; color:var(--primary-color);">Sınav Bölümü Seçiniz</div>
-        <div style="text-align:center; margin: 8px 0;">
-            <button class="shuffle-toggle" id="shuffle-toggle-btn" onclick="toggleShuffle()">🔀 Karıştır (Kapalı)</button>
+        
+        <!-- Karıştırma Butonu -->
+        <div style="text-align: center; margin-bottom: 15px;">
+            <button id="shuffle-toggle-btn" class="btn" style="background-color: #f6ad55; color: white; border: none; border-radius: 20px; padding: 8px 20px; font-size: 0.85rem;" onclick="toggleShuffle()">Soruları Karıştır: KAPALI 🔀</button>
         </div>
+
         <div class="options" id="subcategory-buttons-container"></div>
     </div>
-
     <div id="quiz-body" style="display: none;">
         <div class="question" id="question-text"></div>
         <div id="options-area">
             <div class="options" id="options-container"></div>
         </div>
+        
         <div class="explanation" id="explanation-box"></div>
+        
         <div class="nav-controls">
             <button class="nav-btn prev-style" id="prev-btn" onclick="prevQuestion()">Önceki</button>
             <button class="nav-btn pas-style" id="pas-btn" onclick="pasQuestion()">Pas</button>
@@ -303,23 +301,22 @@
         </div>
         <div class="matrix-container" id="matrix-container"></div>
     </div>
-
     <div id="result-body" class="score-container" style="display: none;">
         <div class="score-title">Sınav Raporu 📋</div>
         <div class="score-number"><span id="score">0</span> / <span id="total">0</span></div>
         <div id="user-score-msg" style="font-weight: 600; margin-bottom: 10px;"></div>
+        
         <div style="margin: 20px 0;">
             <canvas id="pie-canvas" width="300" height="200" style="max-width:300px; margin:0 auto;"></canvas>
         </div>
         <div class="category-breakdown" id="category-breakdown-box"></div>
         <button class="cert-btn" id="cert-download-btn" onclick="generateCertificate()">🎖️ Başarı Brövesi & Sertifikasını İndir</button>
         <button class="review-btn" id="review-toggle-btn" onclick="toggleReviewList()">Hataları İncele 🔍</button>
+        <button class="review-btn" style="background-color: #3182ce;" id="retry-wrong-btn" onclick="retryWrongQuestions()">Yanlışları Tekrar Çöz 🔄</button>
         <div class="review-list" id="review-list-box" style="display:none;"></div>
-        <button class="retry-wrong-btn" id="retry-wrong-btn" onclick="retryWrongQuestions()" style="display:none;">❌ Yanlışları Tekrar Et</button>
         <button class="restart-btn" onclick="backToMenu()">Ana Menüye Dön</button>
     </div>
 </div>
-
 <div class="footer-signature" onclick="handleSignatureClick()">
     Created by <span style="font-weight: 600; color: #718096;">S.R.Demirer</span>
 </div>
@@ -329,15 +326,21 @@
         <button onclick="clearAdminLogs()" style="font-size: 0.75rem; cursor: pointer; background: #fed7d7; border: 1px solid #f56565; color: #c53030; border-radius: 4px; padding: 2px 6px;">Temizle</button>
     </div>
     <table class="admin-table">
-        <thead><tr><th>Pilot Adı</th><th>A/C</th><th>Skor</th><th>Tarih</th></tr></thead>
+        <thead>
+            <tr>
+                <th>Pilot Adı</th>
+                <th>A/C</th>
+                <th>Skor</th>
+                <th>Tarih</th>
+            </tr>
+        </thead>
         <tbody id="admin-table-body"></tbody>
     </table>
 </div>
-
 <script>
-    // ============================================================
-    // 1. VERİTABANLARI (DA40, AQUILA, DA20, DA42) – KAPSAMLI
-    // ============================================================
+    const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycby7mUSFYs5s5HAqpdRwpMdda4OK8blyiZvBHeg4fZie2joqZbhZpJkmsyclwdY2Gn3-/exec";
+    
+    // Diamond DA40 NG %100 Uyumlu 66 Ardışık Soru Veritabanı
     const da40Database = [
         { soru: "What is the Operating Maneuvering Speed Up to 1080 Kg.?", secenekler: ["101 KIAS", "108 KIAS", "113 KIAS", "98 KIAS"], cevap: "101 KIAS", aciklama: "Uçak kütlesi 1080 kg veya altındayken ani kumanda limit hızı 101 KIAS'tır.", cat: "Indicated Airspeeds" },
         { soru: "What is the Operating Maneuvering Speed 1080 Kg. to 1180 Kg.?", secenekler: ["101 KIAS", "108 KIAS", "113 KIAS", "110 KIAS"], cevap: "108 KIAS", aciklama: "1080 - 1180 kg ağırlık bandında güvenli sert kumanda hızı 108 KIAS'tır.", cat: "Indicated Airspeeds" },
@@ -405,7 +408,7 @@
         { soru: "What is the Total Fuel Quantity (Litre)?", secenekler: ["140 Litre", "180 Litre", "155 Litre", "90 Litre"], cevap: "155 Litre", aciklama: "Litre bazında uçağın fiziki toplam yakıt deposu hacmi 2 x 77.6 litredir.", cat: "Fuel Quantity" },
         { soru: "What is the Usable Fuel Quantity (Litre)?", secenekler: ["155 Litre", "147 Litre", "200 Litre", "130 Litre"], cevap: "147 Litre", aciklama: "Litre cinsinden motorun emniyetle çekebileceği kullanılabilir yakıt 2 x 73.8 litredir.", cat: "Fuel Quantity" }
     ];
-
+    // Aquila A211 Excel Dosyasından %100 Doğrulanmış 40 Ardışık Soru Veritabanı
     const aquilaDatabase = [
         { soru: "What is the Operating Maneuvering Speed for Aquila A211?", secenekler: ["101 KIAS", "108 KIAS", "112 KIAS", "115 KIAS"], cevap: "112 KIAS", aciklama: "Aquila A211 için izin verilen tasarım manevra sürati (VA) 112 KIAS'tır.", cat: "Indicated Airspeeds" },
         { soru: "What is the VFE Maximum Flap Extended Speed (Landing) for Aquila A211?", secenekler: ["85 KIAS", "90 KIAS", "95 KIAS", "98 KIAS"], cevap: "90 KIAS", aciklama: "İniş tam flap pozisyonundayken yapısal hız limiti 90 KIAS'tır.", cat: "Indicated Airspeeds" },
@@ -448,7 +451,7 @@
         { soru: "What is the Total Fuel Quantity (Litre) for Aquila A211?", secenekler: ["100 Litre", "110 Litre", "120 Litre", "155 Litre"], cevap: "120 Litre", aciklama: "Aquila A211 uçağın fiziki toplam yakıt deposu hacmi 120 litredir.", cat: "Fuel Quantity" },
         { soru: "What is the Usable Fuel Quantity (Litre) for Aquila A211?", secenekler: ["104 Litre", "108 Litre", "110 Litre", "120 Litre"], cevap: "110 Litre", aciklama: "Uçağın motor tarafından emniyetle çekilebilen kullanılabilir yakıt hacmi 110 litredir.", cat: "Fuel Quantity" }
     ];
-
+    // Diamond DA20 Eclipse Excel Dosyasından %100 Doğrulanmış 73 Soru Veritabanı
     const da20Database = [
         { soru: "What is the Forced Landing Final Approach Speed (Landing) for DA20?", secenekler: ["50 KIAS", "55 KIAS", "60 KIAS", "64 KIAS"], cevap: "55 KIAS", aciklama: "Mecburi iniş son yaklaşmada tam iniş flap konfigürasyonu hızı 55 KIAS'tır.", cat: "Indicated Airspeeds" },
         { soru: "What is the Minimum Engine-Out Airspeed to Sustain Windmilling Propeller?", secenekler: ["55 KIAS", "60 KIAS", "65 KIAS", "70 KIAS"], cevap: "60 KIAS", aciklama: "Motor durduğunda pervanenin rüzgar değirmeni etkisiyle (windmilling) dönmeye devam etmesi için asgari sürat 60 KIAS'tır.", cat: "Indicated Airspeeds" },
@@ -524,7 +527,7 @@
         { soru: "What is the Maximum Demonstrated Crosswind Component (KTS)?", secenekler: ["15 KTS", "20 KTS", "22 KTS", "25 KTS"], cevap: "20 KTS", aciklama: "Test uçuşlarında demonstre edilmiş maksimum yan rüzgar (crosswind) limiti 20 Knottur.", cat: "Take Off & Landing" },
         { soru: "What is the Maximum Tailwind Component (KTS) allowed for DA20?", secenekler: ["5 KTS", "10 KTS", "12 KTS", "15 KTS"], cevap: "5 KTS", aciklama: "Kalkış ve inişlerde emniyet sınırı olarak izin verilen maksimum arka rüzgar (tailwind) bileşeni 5 Knottur.", cat: "Take Off & Landing" }
     ];
-
+    // Diamond DA42 NG Excel Verilerinden %100 Doğrulanmış 4 Kategori Veritabanı
     const da42Database = [
         { soru: "What is the Operating Maneuvering Speed Up to 1700 Kg. for DA42 NG?", secenekler: ["112 KIAS", "119 KIAS", "122 KIAS", "126 KIAS"], cevap: "112 KIAS", aciklama: "1700 kg kütleye kadar ani kumanda ve manevra hız limiti 112 KIAS'tır.", cat: "Indicated Airspeeds" },
         { soru: "What is the Operating Maneuvering Speed 1700 Kg. to 1800 Kg. for DA42 NG?", secenekler: ["112 KIAS", "119 KIAS", "122 KIAS", "113 KIAS"], cevap: "119 KIAS", aciklama: "1700-1800 kg ağırlık bandındaki tasarımsal manevra sürati 119 KIAS'tır.", cat: "Indicated Airspeeds" },
@@ -576,41 +579,32 @@
         { soru: "What is the Total Fuel Quantity (USG) for DA42 NG Main Tanks?", secenekler: ["56 USG", "50 USG", "52 USG", "26 USG"], cevap: "52 USG", aciklama: "DA42 NG ana depolarının fiziki toplam yakıt hacmi 2 x 25.9 = 51.8 galondur.", cat: "Fuel Quantity" },
         { soru: "What is the Usable Fuel Quantity (USG) for DA42 NG Main Tanks?", secenekler: ["50 USG", "51.8 USG", "48 USG", "45 USG"], cevap: "50 USG", aciklama: "Ana depolardan motorlar tarafından çekilebilen net emniyetli kullanılabilir yakıt miktarı 2 x 25 = 50 galondur.", cat: "Fuel Quantity" }
     ];
-
-    // ============================================================
-    // 2. GLOBAL DEĞİŞKENLER
-    // ============================================================
-    const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycby7mUSFYs5s5HAqpdRwpMdda4OK8blyiZvBHeg4fZie2joqZbhZpJkmsyclwdY2Gn3-/exec";
-
     let activeQuestions = [];
     let currentQuestionIndex = 0;
     let selectedCategory = "";
-    let selectedAircraft = "";
-    let currentDatabase = []; // artık her loadQuestion'da bulmaya gerek yok
+    let selectedAircraft = ""; 
     
     let currentName = "";
     let currentSurname = "";
     let currentGender = "";
-    let pilotEmoji = "👨‍✈️";
-    
-    let questionStates = [];
+    let pilotEmoji = "👨‍✈️"; 
+    let signatureClickCount = 0;
+    let questionStates = []; 
     let quizTimerInterval = null;
-    let timeLeft = 0;
-    let currentQuestionStartTime = 0;
+    let questionTimeLeft = 30; 
+    let isShuffleActive = false;
+    
     let consecutiveCorrect = 0;
     let consecutiveWrong = 0;
-    let maydayTriggered = false;
-    let signatureClickCount = 0;
-    let shuffleEnabled = false;
-    let wrongQuestionsForRetry = []; // yanlış tekrar için
+    let trollModalCallback = null;
 
-    // Ses
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function playBeep(freq, type, duration) {
         try {
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
-            osc.type = type;
+            const oscType = type;
+            osc.type = oscType;
             osc.frequency.value = freq;
             gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
@@ -620,8 +614,6 @@
             osc.stop(audioCtx.currentTime + duration);
         } catch(e) {}
     }
-
-    // DOM referansları
     const loginScreen = document.getElementById('login-screen');
     const aircraftSelector = document.getElementById('aircraft-selector');
     const subcategorySelector = document.getElementById('subcategory-selector');
@@ -644,17 +636,14 @@
     const quizTimerView = document.getElementById('quiz-timer');
     const weaknessInsightBox = document.getElementById('weakness-insight-box');
     const certDownloadBtn = document.getElementById('cert-download-btn');
-    const retryWrongBtn = document.getElementById('retry-wrong-btn');
+    
     const prevBtn = document.getElementById('prev-btn');
+    const pasBtn = document.getElementById('pas-btn');
     const nextBtn = document.getElementById('next-btn');
     const trollModalOverlay = document.getElementById('troll-modal-overlay');
     const trollModalTitle = document.getElementById('troll-modal-title');
     const trollModalText = document.getElementById('troll-modal-text');
-    const shuffleToggleBtn = document.getElementById('shuffle-toggle-btn');
-
-    // ============================================================
-    // 3. TEMEL FONKSİYONLAR
-    // ============================================================
+    
     window.onload = function() {
         const storedName = localStorage.getItem('p_name');
         if (storedName) {
@@ -666,19 +655,57 @@
         } else {
             showLoginScreen();
         }
-        // Enter tuşu ile giriş
-        document.getElementById('username-input').addEventListener('keydown', (e) => { if(e.key === 'Enter') saveUser(); });
-        document.getElementById('usersurname-input').addEventListener('keydown', (e) => { if(e.key === 'Enter') saveUser(); });
-        document.getElementById('login-btn').addEventListener('click', saveUser);
+
+        // Enter ile Giriş İşlemi
+        document.querySelectorAll('#login-screen input, #login-screen select').forEach(el => {
+            el.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') saveUser();
+            });
+        });
     };
 
-    function openTrollModal(title, text) {
+    // Swipe (Kaydırma) İşlemleri
+    let touchStartX = 0;
+    let touchEndX = 0;
+    document.addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].screenX;
+    }, {passive: true});
+
+    document.addEventListener('touchend', e => {
+        touchEndX = e.changedTouches[0].screenX;
+        if (quizBody.style.display === 'block') {
+            const diff = touchEndX - touchStartX;
+            if (diff > 50) {
+                // Sağa Kaydırma (Önceki Soru)
+                prevQuestion();
+            } else if (diff < -50) {
+                // Sola Kaydırma (Sonraki Soru)
+                handleNextOrFinish();
+            }
+        }
+    }, {passive: true});
+
+    function logoutUser() {
+        localStorage.removeItem('p_name');
+        localStorage.removeItem('p_surname');
+        localStorage.removeItem('p_gender');
+        location.reload();
+    }
+
+    function openTrollModal(title, text, callback = null) {
         trollModalTitle.innerText = title;
         trollModalText.innerText = text;
         trollModalOverlay.classList.add('show');
+        trollModalCallback = callback;
     }
+    
     function closeTrollModal() {
         trollModalOverlay.classList.remove('show');
+        if (trollModalCallback) {
+            let tempCb = trollModalCallback;
+            trollModalCallback = null;
+            tempCb();
+        }
     }
 
     function toggleTheme() {
@@ -690,6 +717,18 @@
         } else {
             document.documentElement.setAttribute('data-theme', 'exam');
             btn.innerText = "Açık Mod ☀️";
+        }
+    }
+
+    function toggleShuffle() {
+        isShuffleActive = !isShuffleActive;
+        const btn = document.getElementById('shuffle-toggle-btn');
+        if (isShuffleActive) {
+            btn.innerText = "Soruları Karıştır: AÇIK 🔀";
+            btn.style.backgroundColor = "#48bb78";
+        } else {
+            btn.innerText = "Soruları Karıştır: KAPALI 🔀";
+            btn.style.backgroundColor = "#f6ad55";
         }
     }
 
@@ -707,17 +746,6 @@
             }).catch(err => console.error('Kopyalanamadı:', err));
         }
     }
-
-    function logoutUser() {
-        if (confirm("Çıkış yapmak istediğinize emin misiniz?")) {
-            localStorage.removeItem('p_name');
-            localStorage.removeItem('p_surname');
-            localStorage.removeItem('p_gender');
-            currentName = ""; currentSurname = ""; currentGender = "";
-            showLoginScreen();
-        }
-    }
-
     function showLoginScreen() {
         mainTitle.innerText = "Uçak Limitleri ✈️";
         questionCounter.innerText = "Kullanıcı Kaydı Gerekli";
@@ -725,14 +753,12 @@
         aircraftSelector.style.display = 'none';
         subcategorySelector.style.display = 'none';
         quizBody.style.display = 'none';
-        resultBody.style.display = 'none';
-        adminPanel.style.display = 'none';
     }
-
     function saveUser() {
         const nameInput = document.getElementById('username-input').value.trim();
         const surnameInput = document.getElementById('usersurname-input').value.trim();
         const genderInput = document.getElementById('usergender-input').value;
+        
         if(nameInput === "" || surnameInput === "" || genderInput === "") {
             alert("Başarı Belgesi için Lütfen Bilgileri Doldurunuz!");
             return;
@@ -740,13 +766,13 @@
         localStorage.setItem('p_name', nameInput);
         localStorage.setItem('p_surname', surnameInput);
         localStorage.setItem('p_gender', genderInput);
+        
         currentName = nameInput;
         currentSurname = surnameInput;
         currentGender = genderInput;
         pilotEmoji = (genderInput === "Kadın") ? "👩‍✈️" : "👨‍✈️";
         showMainMenu();
     }
-
     function showMainMenu() {
         loginScreen.style.display = 'none';
         quizBody.style.display = 'none';
@@ -757,24 +783,30 @@
         quizTimerView.style.display = 'none';
         certDownloadBtn.style.display = 'none';
         clearInterval(quizTimerInterval);
+        
         mainTitle.innerText = "Uçak Limitleri ✈️";
         questionCounter.innerText = "Lütfen Uçak Tipini Seçiniz";
         questionCounter.style.display = 'block';
+        
         welcomeMsg.innerHTML = `Pilot: ${currentName} ${currentSurname} ${pilotEmoji}`;
         aircraftSelector.style.display = 'block';
+        
         generateWeaknessInsight();
         drawChart();
         updateAdminTable();
     }
-
     function showSubCategories(aircraftName) {
         selectedAircraft = aircraftName;
         aircraftSelector.style.display = 'none';
         subcategorySelector.style.display = 'block';
-        document.getElementById('subcategory-welcome-title').innerText = `${selectedAircraft} - Sınav Bölümü Seçiniz`;
+        
+        const welcomeTitle = document.getElementById('subcategory-welcome-title');
+        welcomeTitle.innerText = `${selectedAircraft} - Sınav Bölümü Seçiniz`;
         questionCounter.innerText = "Lütfen Sınav Konusunu Seçiniz";
+        
         const container = document.getElementById('subcategory-buttons-container');
         container.innerHTML = '';
+        
         let categories = [];
         if (selectedAircraft === 'Diamond DA40 NG') {
             categories = ['Indicated Airspeeds', 'Maneuvering', 'Weight And Balance', 'Rotate Speeds', 'Engine & Power System Limits', 'Fuel Quantity'];
@@ -785,6 +817,7 @@
         } else if (selectedAircraft === 'Diamond DA42 NG') {
             categories = ['Indicated Airspeeds', 'Maneuvering', 'Engine & Power System Limits', 'Fuel Quantity'];
         }
+        
         categories.forEach(cat => {
             const btn = document.createElement('button');
             btn.className = "btn subcat-btn";
@@ -792,46 +825,41 @@
             btn.onclick = () => startQuiz(cat);
             container.appendChild(btn);
         });
+        
         const generalBtn = document.createElement('button');
         generalBtn.className = "btn";
         generalBtn.style.cssText = "background-color:#e2f0d9; border-color:#70ad47; color:#385723; text-align:center; font-weight:bold;";
-        generalBtn.innerText = "General (Tüm Sorular)";
+        generalBtn.innerText = "General (Tüm Sorular - Sıralı)";
         generalBtn.onclick = () => startQuiz('General');
         container.appendChild(generalBtn);
+        
         const backBtn = document.createElement('button');
         backBtn.className = "btn prev-style";
         backBtn.style.cssText = "text-align:center; font-weight:bold;";
         backBtn.innerText = "↩ Geri Dön";
         backBtn.onclick = backToAircrafts;
         container.appendChild(backBtn);
-        // Karıştır butonunu güncelle
-        shuffleToggleBtn.textContent = shuffleEnabled ? "🔀 Karıştır (Açık)" : "🔀 Karıştır (Kapalı)";
-        shuffleToggleBtn.className = shuffleEnabled ? "shuffle-toggle active" : "shuffle-toggle";
     }
-
     function backToAircrafts() {
         subcategorySelector.style.display = 'none';
         aircraftSelector.style.display = 'block';
         questionCounter.innerText = "Lütfen Uçak Tipini Seçiniz";
     }
-
-    function toggleShuffle() {
-        shuffleEnabled = !shuffleEnabled;
-        shuffleToggleBtn.textContent = shuffleEnabled ? "🔀 Karıştır (Açık)" : "🔀 Karıştır (Kapalı)";
-        shuffleToggleBtn.className = shuffleEnabled ? "shuffle-toggle active" : "shuffle-toggle";
-    }
-
     function generateWeaknessInsight() {
         const history = JSON.parse(localStorage.getItem('quiz_history')) || [];
         if (history.length === 0 || !localStorage.getItem('cat_errors')) {
             weaknessInsightBox.style.display = 'none';
             return;
         }
+        
         const errors = JSON.parse(localStorage.getItem('cat_errors')) || {};
         let worstCategory = "";
         let maxErrors = 0;
         for (const [cat, count] of Object.entries(errors)) {
-            if (count > maxErrors) { maxErrors = count; worstCategory = cat; }
+            if (count > maxErrors) {
+                maxErrors = count;
+                worstCategory = cat;
+            }
         }
         if (maxErrors > 1) {
             weaknessInsightBox.innerHTML = `⚠️ <strong>Uçuş Emniyet Notu:</strong> Son test analizlerine göre <strong>"${worstCategory}"</strong> konusundaki limitlerde hata oranınız yüksektir. Bu bölüme ağırlık vermeniz önerilir.`;
@@ -840,91 +868,102 @@
             weaknessInsightBox.style.display = 'none';
         }
     }
-
-    // ============================================================
-    // 4. ZAMANLAYICI (SORU BAZLI 30 SN)
-    // ============================================================
-    let questionTimer = null;
-    let questionTimeLeft = 30;
     function startQuestionTimer() {
-        clearInterval(questionTimer);
+        clearInterval(quizTimerInterval);
         questionTimeLeft = 30;
-        quizTimerView.style.display = 'inline-block';
         updateTimerDisplay();
-        questionTimer = setInterval(() => {
+        quizTimerView.style.display = 'inline-block';
+        
+        quizTimerInterval = setInterval(() => {
             questionTimeLeft--;
             updateTimerDisplay();
-            if (questionTimeLeft === 5) playBeep(880, 'sine', 0.1);
+            
             if (questionTimeLeft <= 0) {
-                clearInterval(questionTimer);
-                // Otomatik pas
+                clearInterval(quizTimerInterval);
+                playBeep(440, 'sawtooth', 0.8);
+                
                 let state = questionStates[currentQuestionIndex];
-                if (state.status === 'unanswered' || state.status === 'flagged') {
+                if(state.status === 'unanswered' || state.status === 'flagged') {
                     state.status = 'pas';
                     state.userA = '';
-                    playBeep(400, 'sawtooth', 0.3);
-                    openTrollModal("⏰ SÜRE DOLDU", "Soru süresi bitti! Otomatik olarak pas geçildi. Hadi devam edelim.");
+                    consecutiveCorrect = 0;
+                    consecutiveWrong = 0;
+                    updateMatrixUI();
                 }
-                // Cevap seçeneklerini kilitle ve bir sonraki soruya geç
-                const buttons = optionsContainer.querySelectorAll('.btn');
-                buttons.forEach(btn => btn.disabled = true);
-                setTimeout(() => {
+                
+                openTrollModal("⏳ SÜRE DOLDU ⏳", "30 saniye boyunca ekrana bakıştınız! Karar veremediğiniz için sistem pas geçti. Havada bu kadar beklemeyin! ✈️", () => {
                     handleNextOrFinish();
-                }, 800);
+                });
             }
         }, 1000);
     }
-
     function updateTimerDisplay() {
-        const mins = Math.floor(questionTimeLeft / 60);
-        const secs = questionTimeLeft % 60;
-        quizTimerView.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        quizTimerView.innerText = `${questionTimeLeft} Sn`;
+        if(questionTimeLeft <= 5) {
+            quizTimerView.style.color = "#fff5f5";
+            quizTimerView.style.backgroundColor = "#e53e3e";
+            quizTimerView.style.borderColor = "#c53030";
+        } else {
+            quizTimerView.style.color = "";
+            quizTimerView.style.backgroundColor = "";
+            quizTimerView.style.borderColor = "";
+        }
     }
-
-    function stopQuestionTimer() {
-        clearInterval(questionTimer);
-        quizTimerView.style.display = 'none';
-    }
-
-    // ============================================================
-    // 5. SINAV BAŞLATMA, SORU YÜKLEME
-    // ============================================================
     function startQuiz(categoryName) {
         selectedCategory = categoryName;
         mainTitle.innerText = selectedAircraft;
-        // Veritabanını seç
-        if (selectedAircraft === 'Diamond DA40 NG') currentDatabase = da40Database;
-        else if (selectedAircraft === 'Aquila A211') currentDatabase = aquilaDatabase;
-        else if (selectedAircraft === 'Diamond DA20 Eclipse') currentDatabase = da20Database;
-        else if (selectedAircraft === 'Diamond DA42 NG') currentDatabase = da42Database;
-
-        let filtered = (categoryName === 'General') ? [...currentDatabase] : currentDatabase.filter(q => q.cat === categoryName);
-        // Karıştır
-        if (shuffleEnabled) {
-            filtered = shuffleArray(filtered);
+        let activeDatabase = [];
+        if (selectedAircraft === 'Diamond DA40 NG') activeDatabase = da40Database;
+        else if (selectedAircraft === 'Aquila A211') activeDatabase = aquilaDatabase;
+        else if (selectedAircraft === 'Diamond DA20 Eclipse') activeDatabase = da20Database;
+        else if (selectedAircraft === 'Diamond DA42 NG') activeDatabase = da42Database;
+        
+        if (categoryName === 'General') {
+            activeQuestions = [...activeDatabase];
+        } else {
+            activeQuestions = activeDatabase.filter(q => q.cat === categoryName);
         }
-        activeQuestions = filtered;
+        
+        if (isShuffleActive) {
+            activeQuestions.sort(() => Math.random() - 0.5);
+        }
+
+        questionStates = activeQuestions.map(() => ({ status: 'unanswered', userA: '' }));
+        
+        currentQuestionIndex = 0;
+        consecutiveCorrect = 0;
+        consecutiveWrong = 0;
+        subcategorySelector.style.display = 'none';
+        adminPanel.style.display = 'none'; 
+        signatureClickCount = 0;
+        quizBody.style.display = 'block';
+        progressBarContainer.style.display = 'block';
+        
+        buildMatrix();
+        loadQuestion();
+    }
+
+    function retryWrongQuestions() {
+        let wrongQ = activeQuestions.filter((_, idx) => questionStates[idx].status === 'wrong');
+        if (wrongQ.length === 0) {
+            alert("Yanlışınız yok ki tekrar edesiniz!");
+            return;
+        }
+        activeQuestions = [...wrongQ];
+        if (isShuffleActive) {
+            activeQuestions.sort(() => Math.random() - 0.5);
+        }
         questionStates = activeQuestions.map(() => ({ status: 'unanswered', userA: '' }));
         currentQuestionIndex = 0;
         consecutiveCorrect = 0;
         consecutiveWrong = 0;
-        wrongQuestionsForRetry = [];
-        subcategorySelector.style.display = 'none';
-        adminPanel.style.display = 'none';
-        signatureClickCount = 0;
+        
+        resultBody.style.display = 'none';
         quizBody.style.display = 'block';
         progressBarContainer.style.display = 'block';
+        
         buildMatrix();
         loadQuestion();
-        startQuestionTimer();
-    }
-
-    function shuffleArray(arr) {
-        for (let i = arr.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [arr[i], arr[j]] = [arr[j], arr[i]];
-        }
-        return arr;
     }
 
     function buildMatrix() {
@@ -937,7 +976,6 @@
             matrixContainer.appendChild(box);
         });
     }
-
     function updateMatrixUI() {
         const boxes = matrixContainer.querySelectorAll('.matrix-box');
         boxes.forEach((box, idx) => {
@@ -949,36 +987,37 @@
             else if (questionStates[idx].status === 'flagged') box.classList.add('m-flag');
         });
     }
-
     function jumpToQuestion(idx) {
         currentQuestionIndex = idx;
         loadQuestion();
     }
-
     function loadQuestion() {
-        stopQuestionTimer();
         explanationBox.style.display = 'none';
         optionsContainer.innerHTML = '';
-        currentQuestionStartTime = Date.now();
-
-        let currentQuestion = activeQuestions[currentQuestionIndex];
+        
+        let activeDatabase = [];
+        if (selectedAircraft === 'Diamond DA40 NG') activeDatabase = da40Database;
+        else if (selectedAircraft === 'Aquila A211') activeDatabase = aquilaDatabase;
+        else if (selectedAircraft === 'Diamond DA20 Eclipse') activeDatabase = da20Database;
+        else if (selectedAircraft === 'Diamond DA42 NG') activeDatabase = da42Database;
+        
+        let currentQuestion = activeDatabase.find(q => q.soru === activeQuestions[currentQuestionIndex].soru);
         let state = questionStates[currentQuestionIndex];
-
+        
         questionCounter.innerText = `${selectedCategory} - Soru ${currentQuestionIndex + 1} / ${activeQuestions.length}`;
         const answeredCount = questionStates.filter(s => s.status !== 'unanswered' && s.status !== 'flagged').length;
         const progressPercent = (answeredCount / activeQuestions.length) * 100;
         progressFill.style.width = `${progressPercent}%`;
-
         questionText.innerHTML = currentQuestion.soru;
-
+        
         let randomizedOptions = [...currentQuestion.secenekler].sort(() => Math.random() - 0.5);
         const prefixMap = ['A) ', 'B) ', 'C) ', 'D) '];
-
         randomizedOptions.forEach((option, oIdx) => {
             const button = document.createElement('button');
             const prefix = prefixMap[oIdx] || '';
             button.innerText = prefix + option;
             button.classList.add('btn');
+            
             if (state.status === 'unanswered' || state.status === 'flagged') {
                 button.addEventListener('click', () => checkMultipleChoice(button, option, currentQuestion.cevap, currentQuestion.aciklama));
             } else {
@@ -988,12 +1027,16 @@
             }
             optionsContainer.appendChild(button);
         });
-
-        if (state.status !== 'unanswered' && state.status !== 'flagged') {
+        if(state.status !== 'unanswered' && state.status !== 'flagged') {
+            clearInterval(quizTimerInterval);
+            quizTimerView.style.display = 'none';
             showExplanationStatic(state.status === 'correct', currentQuestion.cevap, currentQuestion.aciklama);
+        } else {
+            startQuestionTimer();
         }
-
+        
         prevBtn.disabled = (currentQuestionIndex === 0);
+        
         if (currentQuestionIndex === activeQuestions.length - 1) {
             nextBtn.innerText = "Sınavı Bitir";
             nextBtn.className = "nav-btn finish-style";
@@ -1001,54 +1044,66 @@
             nextBtn.innerText = "Sonraki";
             nextBtn.className = "nav-btn next-style";
         }
-
         updateMatrixUI();
-        startQuestionTimer();
     }
-
-    // ============================================================
-    // 6. CEVAP KONTROLÜ
-    // ============================================================
     function checkMultipleChoice(selectedBtn, selectedOption, correctAnswer, aciklama) {
+        clearInterval(quizTimerInterval);
         let state = questionStates[currentQuestionIndex];
         let currentQuestion = activeQuestions[currentQuestionIndex];
         state.userA = selectedOption;
+        
         const buttons = optionsContainer.querySelectorAll('.btn');
         buttons.forEach(btn => btn.disabled = true);
-        stopQuestionTimer();
-
+        
+        let modalTriggered = false;
+        
         if (selectedOption === correctAnswer) {
             state.status = 'correct';
             selectedBtn.classList.add('correct');
             playBeep(1200, 'sine', 0.15);
+            
             consecutiveWrong = 0;
             consecutiveCorrect++;
+            
             if (consecutiveCorrect === 20) {
-                openTrollModal("😎 KAPTAN MODU AKTİF 😎", "20 Peşpeşe Doğru! Kaptan Pilot gibi uçuyorsun! Motor sıcaklığı stabil, rüzgar tam karşıdan. Şov yapma, emniyetle devam et! 😎");
+                modalTriggered = true;
+                openTrollModal("😎 KAPTAN MODU AKTİF 😎", "20 Peşpeşe Doğru! Kaptan Pilot gibi uçuyorsun! Motor sıcaklığı stabil, rüzgar tam karşıdan. Şov yapma, emniyetle devam et! 😎", () => handleNextOrFinish());
             }
+            
             showExplanationStatic(true, correctAnswer, aciklama);
             updateMatrixUI();
-            setTimeout(() => { handleNextOrFinish(); }, 1000);
+            
+            if(!modalTriggered) {
+                setTimeout(() => {
+                    handleNextOrFinish();
+                }, 1000);
+            }
         } else {
             state.status = 'wrong';
             selectedBtn.classList.add('wrong');
             buttons.forEach(btn => {
                 const optionTextWithoutPrefix = btn.innerText.substring(3);
-                if (optionTextWithoutPrefix === correctAnswer) btn.classList.add('correct');
+                if(optionTextWithoutPrefix === correctAnswer) btn.classList.add('correct');
             });
             playBeep(250, 'square', 0.3);
             logCategoryError(currentQuestion.cat);
+            
             consecutiveCorrect = 0;
             consecutiveWrong++;
-            // Troll modal'ı seyrelt (sadece 5. yanlışta)
-            if (consecutiveWrong === 5) {
-                openTrollModal("🚨 CRITICAL FAILURE 🚨", "5. yanlış! Belki de limitleri tekrar gözden geçirmenin zamanı gelmiştir. ☕️");
+            
+            if (consecutiveWrong === 2) {
+                openTrollModal("⚠️ KOKPİT İKAZI ⚠️", "Arka Arkaya 2 Yanlış! Sanırım Stall'a giriyorsun kaptan? ✈️");
+            } else if (consecutiveWrong === 3) {
+                openTrollModal("🚨 MASTER CAUTION 🚨", "Maşallah Soluksuz 3 Yanlış! SOP'yi Hiç Okumamışsın! 🚨");
+            } else if (consecutiveWrong === 4) {
+                openTrollModal("❌ SİSTEM UYARISI ❌", "Gerçekten Tebrikler! Elinden hiç bir iş gelmiyor :) Biraz Dikkatli Oku!");
+            } else if (consecutiveWrong >= 5) {
+                openTrollModal("🚨 CRITICAL FAILURE 🚨", "İstersen Okumayı Öğrenmekle Başlayalım. Alfabemizde 29 Harf Mevcuttur. A-B-C-D-E şeklinde tekrar edelim!");
             }
             showExplanationStatic(false, correctAnswer, aciklama);
             updateMatrixUI();
         }
     }
-
     function flagQuestion() {
         let state = questionStates[currentQuestionIndex];
         if (state.status === 'unanswered') state.status = 'flagged';
@@ -1056,10 +1111,25 @@
         updateMatrixUI();
         handleNextOrFinish();
     }
-
+    function logCategoryError(category) {
+        let errors = JSON.parse(localStorage.getItem('cat_errors')) || {};
+        errors[category] = (errors[category] || 0) + 1;
+        localStorage.setItem('cat_errors', JSON.stringify(errors));
+    }
+    function showExplanationStatic(isCorrect, rightAnswer, text) {
+        explanationBox.innerHTML = `<strong>${isCorrect ? 'Doğru! ✔️' : 'Yanlış! ❌'}</strong> Doğru Cevap: ${rightAnswer}<br>${text}`;
+        explanationBox.style.display = 'block';
+    }
+    function prevQuestion() {
+        if (currentQuestionIndex > 0) {
+            currentQuestionIndex--;
+            loadQuestion();
+        }
+    }
     function pasQuestion() {
+        clearInterval(quizTimerInterval);
         let state = questionStates[currentQuestionIndex];
-        if (state.status === 'unanswered' || state.status === 'flagged') {
+        if(state.status === 'unanswered' || state.status === 'flagged') {
             state.status = 'pas';
             state.userA = '';
             consecutiveCorrect = 0;
@@ -1067,23 +1137,24 @@
         }
         handleNextOrFinish();
     }
-
-    function logCategoryError(category) {
-        let errors = JSON.parse(localStorage.getItem('cat_errors')) || {};
-        errors[category] = (errors[category] || 0) + 1;
-        localStorage.setItem('cat_errors', JSON.stringify(errors));
-    }
-
-    function showExplanationStatic(isCorrect, rightAnswer, text) {
-        explanationBox.innerHTML = `<strong>${isCorrect ? 'Doğru! ✔️' : 'Yanlış! ❌'}</strong> Doğru Cevap: ${rightAnswer}<br>${text}`;
-        explanationBox.style.display = 'block';
-    }
-
-    function prevQuestion() {
-        if (currentQuestionIndex > 0) {
-            currentQuestionIndex--;
-            loadQuestion();
-        }
+    
+    function sendDataToCloud(name, surname, aircraft, category, score, date) {
+        if(!GOOGLE_SHEETS_URL) return;
+        
+        const payload = { 
+            name: name, 
+            surname: surname, 
+            aircraft: aircraft, 
+            category: category, 
+            score: score, 
+            date: date 
+        };
+        
+        fetch(GOOGLE_SHEETS_URL, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify(payload)
+        }).catch(err => console.log("Bulut gönderim hatası: ", err));
     }
 
     function handleNextOrFinish() {
@@ -1094,85 +1165,46 @@
             showResult();
         }
     }
-
-    // ============================================================
-    // 7. SONUÇ EKRANI
-    // ============================================================
-    function sendDataToCloud(name, surname, aircraft, category, score, date) {
-        if (!GOOGLE_SHEETS_URL) return;
-        const payload = { name, surname, aircraft, category, score, date };
-        fetch(GOOGLE_SHEETS_URL, {
-            method: "POST",
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify(payload)
-        }).catch(err => console.log("Bulut gönderim hatası: ", err));
-    }
-
+    
     function showResult() {
-        stopQuestionTimer();
+        clearInterval(quizTimerInterval);
         quizTimerView.style.display = 'none';
         quizBody.style.display = 'none';
         progressBarContainer.style.display = 'none';
         questionCounter.style.display = 'none';
-
+        
         let correctCount = questionStates.filter(s => s.status === 'correct').length;
         let wrongCount = questionStates.filter(s => s.status === 'wrong').length;
         let pasCount = questionStates.filter(s => s.status === 'pas' || s.status === 'unanswered' || s.status === 'flagged').length;
-
+        
         const percentage = Math.round((correctCount / activeQuestions.length) * 100);
-        const testDate = new Date().toLocaleDateString('tr-TR', { hour: '2-digit', minute: '2-digit' });
-
+        const testDate = new Date().toLocaleDateString('tr-TR', {hour: '2-digit', minute:'2-digit'});
+        
         let acLabel = 'AC';
         if (selectedAircraft === 'Diamond DA40 NG') acLabel = 'DA40';
         else if (selectedAircraft === 'Aquila A211') acLabel = 'A211';
         else if (selectedAircraft === 'Diamond DA20 Eclipse') acLabel = 'DA20';
         else if (selectedAircraft === 'Diamond DA42 NG') acLabel = 'DA42';
-
+        
         saveHistory(`${acLabel}-${selectedCategory.substring(0,5).toUpperCase()}`, percentage);
+        
         sendDataToCloud(currentName, currentSurname, selectedAircraft, selectedCategory, percentage, testDate);
-
+        
         resultBody.style.display = 'block';
         document.getElementById('score').innerText = correctCount;
         document.getElementById('total').innerText = activeQuestions.length;
         userScoreMsg.innerText = `Pilot Sayın ${currentName} ${currentSurname}, Sınav Başarı Oranınız: %${percentage}`;
-
+        
         if (percentage >= 80 && selectedCategory === 'General') {
             certDownloadBtn.style.display = 'block';
         }
-
-        // Yanlışları tekrar et butonunu göster
-        if (wrongCount > 0) {
-            retryWrongBtn.style.display = 'block';
-            // Yanlış soruları topla
-            wrongQuestionsForRetry = activeQuestions.filter((_, idx) => questionStates[idx].status === 'wrong');
-        } else {
-            retryWrongBtn.style.display = 'none';
-        }
-
         calculateCategoryMetrics();
         buildReviewList();
-        setTimeout(() => { renderPieChart(correctCount, wrongCount, pasCount); }, 150);
+        setTimeout(() => {
+            renderPieChart(correctCount, wrongCount, pasCount);
+        }, 150);
     }
-
-    function retryWrongQuestions() {
-        if (wrongQuestionsForRetry.length === 0) {
-            alert("Hiç yanlış soru yok, tebrikler!");
-            return;
-        }
-        // Sadece yanlış sorularla yeni bir sınav başlat
-        activeQuestions = [...wrongQuestionsForRetry];
-        questionStates = activeQuestions.map(() => ({ status: 'unanswered', userA: '' }));
-        currentQuestionIndex = 0;
-        consecutiveCorrect = 0;
-        consecutiveWrong = 0;
-        resultBody.style.display = 'none';
-        quizBody.style.display = 'block';
-        progressBarContainer.style.display = 'block';
-        buildMatrix();
-        loadQuestion();
-        startQuestionTimer();
-    }
-
+    
     function calculateCategoryMetrics() {
         const catData = {};
         activeQuestions.forEach((q, idx) => {
@@ -1193,11 +1225,10 @@
         }
         categoryBreakdownBox.innerHTML = html;
     }
-
     function buildReviewList() {
         reviewListBox.innerHTML = '';
-        let wrongItems = activeQuestions.filter((_, idx) => questionStates[idx].status === 'wrong');
-        if (wrongItems.length === 0) {
+        let wrongQuestions = activeQuestions.filter((_, idx) => questionStates[idx].status === 'wrong');
+        if (wrongQuestions.length === 0) {
             reviewListBox.innerHTML = `<div style="color:#2f855a; font-weight:600; text-align:center;">Harika! Hiç yanlışınız bulunmuyor. 🎉</div>`;
             return;
         }
@@ -1215,7 +1246,6 @@
             }
         });
     }
-
     function toggleReviewList() {
         if (reviewListBox.style.display === 'none') {
             reviewListBox.style.display = 'block';
@@ -1225,19 +1255,21 @@
             document.getElementById('review-toggle-btn').innerText = "Hataları İncele 🔍";
         }
     }
-
     function renderPieChart(correct, wrong, pas) {
         const canvas = document.getElementById('pie-canvas');
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         const total = correct + wrong + pas;
-        if (total === 0) return;
+        if(total === 0) return;
         const data = [correct, wrong, pas];
-        const colors = ['#48bb78', '#f56565', '#a0aec0'];
+        const colors = ['#48bb78', '#f56565', '#a0aec0']; 
         const labels = ['Doğru', 'Yanlış', 'Boş/Pas/Flag'];
-        let centerX = 100, centerY = 100, radius = 75, startAngle = 0;
+        let centerX = 100;
+        let centerY = 100;
+        let radius = 75;
+        let startAngle = 0;
         for (let i = 0; i < data.length; i++) {
-            if (data[i] === 0) continue;
+            if(data[i] === 0) continue;
             let sliceAngle = (data[i] / total) * 2 * Math.PI;
             ctx.beginPath();
             ctx.fillStyle = colors[i];
@@ -1248,7 +1280,8 @@
             startAngle += sliceAngle;
         }
         ctx.font = '12px Arial';
-        let legendX = 200, legendY = 50;
+        let legendX = 200;
+        let legendY = 50;
         for (let i = 0; i < data.length; i++) {
             ctx.fillStyle = colors[i];
             ctx.fillRect(legendX, legendY + (i * 25), 15, 15);
@@ -1256,24 +1289,18 @@
             ctx.fillText(`${labels[i]}: ${data[i]}`, legendX + 22, legendY + 12 + (i * 25));
         }
     }
-
-    // ============================================================
-    // 8. YARDIMCI FONKSİYONLAR (GEÇMİŞ, GRAFİK, SERTİFİKA, ADMIN)
-    // ============================================================
     function backToMenu() { showMainMenu(); }
-
     function saveHistory(acLabel, pct) {
         let history = JSON.parse(localStorage.getItem('quiz_history')) || [];
         const newRecord = {
-            pilot: `${currentName} ${currentSurname}`,
+            pilot: `${currentName} ${currentSurname}`, 
             aircraft: acLabel,
             score: pct,
-            date: new Date().toLocaleDateString('tr-TR', { hour: '2-digit', minute: '2-digit' })
+            date: new Date().toLocaleDateString('tr-TR', {hour: '2-digit', minute:'2-digit'})
         };
         history.push(newRecord);
         localStorage.setItem('quiz_history', JSON.stringify(history));
     }
-
     function handleSignatureClick() {
         signatureClickCount++;
         if (signatureClickCount === 3) {
@@ -1287,11 +1314,10 @@
             signatureClickCount = 0;
         }
     }
-
     function updateAdminTable() {
         const history = JSON.parse(localStorage.getItem('quiz_history')) || [];
         adminTableBody.innerHTML = '';
-        if (history.length === 0) {
+        if(history.length === 0) {
             adminTableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#a0aec0;">Henüz sınav kaydı bulunmuyor.</td></tr>`;
             return;
         }
@@ -1306,16 +1332,14 @@
             adminTableBody.appendChild(row);
         });
     }
-
     function clearAdminLogs() {
-        if (confirm("Tüm kullanıcı sınav geçmişini silmek istediğinize emin misiniz?")) {
+        if(confirm("Tüm kullanıcı sınav geçmişini silmek istediğinize emin misiniz?")) {
             localStorage.removeItem('quiz_history');
             localStorage.removeItem('cat_errors');
             updateAdminTable();
             drawChart();
         }
     }
-
     function drawChart() {
         const history = JSON.parse(localStorage.getItem('quiz_history')) || [];
         const canvas = document.getElementById('stats-canvas');
@@ -1330,6 +1354,7 @@
         const padding = 30;
         const chartWidth = canvas.width - padding * 2;
         const chartHeight = canvas.height - padding * 2;
+        
         ctx.beginPath();
         ctx.strokeStyle = '#cbd5e0';
         ctx.lineWidth = 1;
@@ -1343,14 +1368,14 @@
         displayHistory.forEach((data, index) => {
             const x = padding + (index * stepX);
             const y = (canvas.height - padding) - (data.score / 100 * chartHeight);
-            points.push({ x, y, label: data.aircraft, score: data.score });
+            points.push({x, y, label: data.aircraft, score: data.score});
         });
         if (points.length > 0) {
             ctx.beginPath();
             ctx.strokeStyle = '#328cc1';
             ctx.lineWidth = 3;
             ctx.moveTo(points[0].x, points[0].y);
-            for (let i = 1; i < points.length; i++) ctx.lineTo(points[i].x, points[i].y);
+            for(let i=1; i<points.length; i++) ctx.lineTo(points[i].x, points[i].y);
             ctx.stroke();
         }
         points.forEach(p => {
@@ -1365,7 +1390,6 @@
             ctx.fillText(p.label, p.x - 12, canvas.height - padding + 15);
         });
     }
-
     function wrapText(context, text, x, y, maxWidth, lineHeight) {
         var words = text.split(' ');
         var line = '';
@@ -1384,7 +1408,6 @@
         context.fillText(line, x, y);
         return y;
     }
-
     function generateCertificate() {
         const canvas = document.createElement('canvas');
         canvas.width = 850;
@@ -1410,42 +1433,24 @@
         ctx.fillText(`${currentName.toUpperCase()} ${currentSurname.toUpperCase()}`, 425, 190);
         ctx.fillStyle = '#ffffff';
         ctx.font = '15px Arial';
+        
         const mainText = `Bu belge, seçmiş olduğu ${selectedAircraft.toUpperCase()} uçağının motorunu yakmadan, kanatlarını eline almadan, kokpitteki Master Caution ışıklarını yakıp uçağı ''Gece Kulübüne'' çevirmeden uçabileceğini gösterir. Uçağı limitlerinde emniyetle uçurmanız tamamen kendi hayatta kalma içgüdünüzle ve edeceğiniz duaların gücüyle alakalıdır.`;
+        
         let lastY = wrapText(ctx, mainText, 425, 240, 680, 24);
         ctx.fillStyle = '#d4af37';
         ctx.font = 'bold 24px Arial';
         ctx.fillText(`${pilotEmoji}   Başarı Belgesi   ${pilotEmoji}`, 425, lastY + 50);
         ctx.fillStyle = '#fc8181';
         ctx.font = 'bold 11px Arial';
+        
         const disclaimerText = `⚠️ Yasal Uyarı: Bu belge tamamen eğlence amacıyla üretilmiştir. Öğretmenlerinize göstermeniz durumunda lisansınızın askıya alınması, meydandan kovulmanıza veya en hafifinden " Senden Pilot Olmaz !! " bakışlarına maruz kalmanıza sebob olur. `;
+        
         wrapText(ctx, disclaimerText, 425, lastY + 100, 700, 16);
         const link = document.createElement('a');
         link.download = `${currentName}_${currentSurname}_Limit_Sertifikasi.png`;
         link.href = canvas.toDataURL();
         link.click();
     }
-
-    // ============================================================
-    // 9. SWIPE DESTEĞİ (MOBİL)
-    // ============================================================
-    let touchStartX = 0;
-    let touchEndX = 0;
-    document.addEventListener('touchstart', e => {
-        touchStartX = e.changedTouches[0].screenX;
-    }, { passive: true });
-    document.addEventListener('touchend', e => {
-        touchEndX = e.changedTouches[0].screenX;
-        const diff = touchStartX - touchEndX;
-        if (Math.abs(diff) > 50) {
-            if (diff > 0) {
-                // sola kaydır -> sonraki
-                if (quizBody.style.display !== 'none') handleNextOrFinish();
-            } else {
-                // sağa kaydır -> önceki
-                if (quizBody.style.display !== 'none') prevQuestion();
-            }
-        }
-    }, { passive: true });
 </script>
 </body>
 </html>
