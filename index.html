@@ -2,11 +2,10 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Uçak Limitleri</title>
     <style>
         * { box-sizing: border-box; }
-        
         :root {
             --bg-color: #f0f4f8;
             --container-bg: #ffffff;
@@ -39,6 +38,7 @@
             margin: 0;
             padding: 15px;
             transition: all 0.3s ease;
+            overflow-x: hidden;
         }
         .quiz-container {
             background-color: var(--container-bg);
@@ -49,7 +49,6 @@
             width: 100%;
             position: relative;
         }
-        
         .top-buttons {
             position: absolute;
             top: 15px;
@@ -58,8 +57,9 @@
             display: flex;
             justify-content: center;
             gap: 8px;
+            flex-wrap: wrap;
         }
-        .theme-switch, .share-btn, .home-btn {
+        .top-buttons button {
             background: var(--accent-color);
             color: white;
             border: none;
@@ -70,16 +70,10 @@
             font-weight: bold;
             transition: opacity 0.2s;
         }
-        
-        .share-btn {
-            background: #2f855a;
-        }
-        .home-btn {
-            background: #4a5568;
-        }
-        .theme-switch:hover, .share-btn:hover, .home-btn:hover {
-            opacity: 0.9;
-        }
+        .share-btn { background: #2f855a; }
+        .home-btn { background: #4a5568; }
+        .logout-btn { background: #e53e3e; }
+        .top-buttons button:hover { opacity: 0.9; }
         .timer-badge {
             font-size: 1.1rem;
             font-weight: 800;
@@ -102,18 +96,16 @@
         .progress-bar { height: 6px; background-color: #e2e8f0; border-radius: 3px; margin-bottom: 25px; overflow: hidden; display: none;}
         .progress-fill { height: 100%; background-color: var(--accent-color); width: 0%; transition: width 0.3s ease; }
         .options { display: flex; flex-wrap: wrap; gap: 12px; flex-direction: column; }
-        
         .btn {
             background-color: var(--btn-bg); border: 2px solid var(--btn-border); padding: 14px 18px;
             border-radius: 10px; cursor: pointer; font-size: 1rem; font-weight: 500;
             text-align: left; color: var(--btn-text); transition: all 0.2s ease; -webkit-tap-highlight-color: transparent;
+            min-height: 48px;
         }
         .btn:hover:not([disabled]) { background-color: #edf2f7; border-color: #cbd5e0; }
         [data-theme="exam"] .btn:hover:not([disabled]) { background-color: #718096; }
-        
         .aircraft-btn { background-color: #e3fafc; border-color: #99e9f2; color: #0c8599; text-align: center; font-weight: 600;}
         .aircraft-btn:hover:not([disabled]) { background-color: #c5f6fa !important; }
-        
         .subcat-btn { background-color: #fff9db; border-color: #ffe066; color: #f08c00; text-align: center; font-weight: 600; }
         .subcat-btn:hover:not([disabled]) { background-color: #fff3bf !important; }
         .aircraft-btn:disabled {
@@ -123,14 +115,18 @@
             cursor: not-allowed !important;
             opacity: 0.7;
         }
-        
         .correct { background-color: #c6f6d5 !important; border-color: #48bb78 !important; color: #22543d !important; font-weight: 600; }
         .wrong { background-color: #fed7d7 !important; border-color: #f56565 !important; color: #742a2a !important; font-weight: 600; }
-        
-        .explanation { margin-top: 20px; padding: 15px; background-color: #ebf8ff; border-left: 4px solid #3182ce; border-radius: 4px; font-size: 0.95rem; line-height: 1.5; color: #2b6cb0; display: none; }
+        .explanation {
+            margin-top: 20px; padding: 15px; background-color: #ebf8ff; border-left: 4px solid #3182ce;
+            border-radius: 4px; font-size: 0.95rem; line-height: 1.5; color: #2b6cb0; display: none;
+        }
         [data-theme="exam"] .explanation { background-color: #2b6cb0; color: white; border-left-color: #90cdf4; }
-        .nav-controls { display: flex; gap: 10px; margin-top: 20px; }
-        .nav-btn { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; text-align: center; font-size: 0.95rem; }
+        .nav-controls { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+        .nav-btn {
+            flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: 600; cursor: pointer;
+            text-align: center; font-size: 0.95rem; min-height: 48px;
+        }
         .prev-style { background-color: #e2e8f0; color: #4a5568; }
         .prev-style:hover:not([disabled]) { background-color: #cbd5e0; }
         .prev-style:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -141,9 +137,16 @@
         .next-style { background-color: var(--primary-color); color: white; box-shadow: 0 4px 6px rgba(11, 60, 93, 0.2); }
         [data-theme="exam"] .next-style { color: #1a202c; }
         .finish-style { background-color: #2f855a; color: white; }
-        
-        .matrix-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 25px; padding-top: 15px; border-top: 1px solid #e2e8f0; justify-content: center; }
-        .matrix-box { width: 26px; height: 26px; border-radius: 6px; border: 1px solid #cbd5e0; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; cursor: pointer; background-color: white; color: #1a202c; user-select: none; }
+        .matrix-container {
+            display: flex; flex-wrap: wrap; gap: 6px; margin-top: 25px; padding-top: 15px;
+            border-top: 1px solid #e2e8f0; justify-content: center;
+        }
+        .matrix-box {
+            width: 32px; height: 32px; border-radius: 6px; border: 1px solid #cbd5e0;
+            display: flex; align-items: center; justify-content: center; font-size: 0.75rem;
+            font-weight: 600; cursor: pointer; background-color: white; color: #1a202c;
+            user-select: none; transition: all 0.15s;
+        }
         .matrix-box.active { border: 2px solid var(--accent-color); transform: scale(1.1); }
         .matrix-box.m-correct { background-color: #48bb78; color: white; border-color: #38a169; }
         .matrix-box.m-wrong { background-color: #f56565; color: white; border-color: #e53e3e; }
@@ -152,34 +155,33 @@
         .score-container { text-align: center; padding: 10px 0; }
         .score-title { font-size: 1.4rem; font-weight: bold; margin-bottom: 10px; }
         .score-number { font-size: 3rem; font-weight: 800; color: var(--accent-color); margin-bottom: 20px; }
-        .restart-btn { background-color: var(--accent-color); color: white; border: none; padding: 12px 25px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 15px; width: 100%;}
+        .restart-btn, .retry-wrong-btn {
+            background-color: var(--accent-color); color: white; border: none;
+            padding: 12px 25px; border-radius: 8px; font-size: 1rem; font-weight: 600;
+            cursor: pointer; margin-top: 10px; width: 100%;
+        }
+        .retry-wrong-btn { background-color: #ed8936; }
         .review-btn { background-color: #ed8936; color: white; border: none; padding: 12px 25px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 10px; width: 100%; }
-        
         .cert-btn { background-color: #2b6cb0; color: white; border: none; padding: 12px 25px; border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer; margin-top: 10px; width: 100%; display: none; box-shadow: 0 4px 6px rgba(43, 108, 176, 0.3); }
         .category-breakdown { margin-top: 20px; padding: 15px; background: #f7fafc; border-radius: 10px; text-align: left; border: 1px solid #e2e8f0; }
         [data-theme="exam"] .category-breakdown { background: #4a5568; border-color: #718096; }
         .category-item { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem; font-weight: 500; }
-        
         .review-list { max-height: 300px; overflow-y: auto; text-align: left; margin-top: 15px; padding: 10px; background: #fffaf0; border-radius: 8px; border: 1px dashed #dd6b20; }
         [data-theme="exam"] .review-list { background: #2d3748; color: #edf2f7; }
         .review-item { padding: 10px 0; border-bottom: 1px solid #e2e8f0; font-size: 0.9rem; }
         .insight-badge { background: #fffaf0; border: 1px solid #feebc8; color: #c05621; padding: 12px; border-radius: 10px; margin-top: 15px; font-size: 0.85rem; line-height: 1.4; font-weight: 500; display: none; }
         [data-theme="exam"] .insight-badge { background: #7b341e; border-color: #c05621; color: #fffaf0; }
         .input-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; text-align: left;}
-        .input-control { padding: 14px; border-radius: 10px; border: 2px solid #e2e8f0; font-size: 1rem; width: 100%; background: white; color: #1a202c;}
-        .input-btn { background-color: var(--primary-color); color: white; border: none; font-weight: bold; cursor: pointer; margin-top: 5px;}
+        .input-control { padding: 14px; border-radius: 10px; border: 2px solid #e2e8f0; font-size: 1rem; width: 100%; background: white; color: #1a202c; min-height: 48px; }
+        .input-btn { background-color: var(--primary-color); color: white; border: none; font-weight: bold; cursor: pointer; margin-top: 5px; }
         [data-theme="exam"] .input-btn { color: #1a202c; }
-        
         .stats-panel { margin-top: 25px; border-top: 2px dashed #e2e8f0; padding-top: 20px; text-align: left; }
-        .stats-panel:not(#stats-panel) { display: none; }
         .stats-title { font-weight: bold; color: #4a5568; margin-bottom: 10px; font-size: 1.1rem; }
         [data-theme="exam"] .stats-title { color: #edf2f7; }
         #stats-canvas, #pie-canvas { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; width: 100%; margin-top: 10px; }
         .user-welcome { font-size: 0.95rem; margin-bottom: 15px; font-weight: 600; text-align: center; }
-        
         .question { font-size: 1.15rem; font-weight: 600; margin-bottom: 24px; padding-bottom: 12px; }
         .footer-signature { font-size: 0.75rem; color: #a0aec0; margin-top: 25px; text-align: center; user-select: none; cursor: pointer; }
-        
         .admin-panel { background: white; border-radius: 12px; padding: 15px; margin-top: 15px; width: 100%; max-width: 550px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: none; color: #1a202c;}
         .admin-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; }
         .admin-table th, .admin-table td { border: 1px solid #e2e8f0; padding: 8px; text-align: left; }
@@ -212,6 +214,12 @@
         }
         [data-theme="exam"] .custom-modal-title { color: #fc8181; }
         [data-theme="exam"] .custom-modal-btn { background: #e53e3e; color: white; }
+        .shuffle-toggle {
+            background: #805ad5; color: white; border: none; padding: 8px 16px;
+            border-radius: 20px; font-weight: 600; cursor: pointer; margin: 5px 0;
+            font-size: 0.85rem;
+        }
+        .shuffle-toggle.active { background: #6b46c1; }
     </style>
 </head>
 <body>
@@ -222,11 +230,13 @@
         <button class="custom-modal-btn" onclick="closeTrollModal()">Anlaşıldı, Devam Et 🧑‍✈️</button>
     </div>
 </div>
+
 <div class="quiz-container">
     <div class="top-buttons">
         <button class="home-btn" onclick="backToMenu()">Ana Sayfa 🏠</button>
         <button class="share-btn" onclick="shareSystem()">Paylaş 🔗</button>
         <button class="theme-switch" onclick="toggleTheme()" id="theme-toggle-btn">Koyu Mod 🌙</button>
+        <button class="logout-btn" onclick="logoutUser()">Çıkış Yap 🚪</button>
     </div>
     <div class="header">
         <h1 id="main-title">Uçak Limitleri ✈️</h1>
@@ -235,10 +245,11 @@
     </div>
     
     <div class="progress-bar" id="progress-bar-container"><div class="progress-fill" id="progress-fill"></div></div>
+
     <div id="login-screen" style="display: none;">
         <div class="input-group">
             <label style="font-weight: 600;">Adınız:</label>
-            <input type="text" id="username-input" class="input-control" placeholder="Örn: Ahmet">
+            <input type="text" id="username-input" class="input-control" placeholder="Örn: Ahmet" autofocus>
         </div>
         <div class="input-group">
             <label style="font-weight: 600;">Soyadınız:</label>
@@ -252,8 +263,9 @@
                 <option value="Kadın">Kadın</option>
             </select>
         </div>
-        <button class="input-control input-btn" onclick="saveUser()">Sınav Sistemine Giriş Yap</button>
+        <button class="input-control input-btn" id="login-btn">Sınav Sistemine Giriş Yap</button>
     </div>
+
     <div id="aircraft-selector" style="display: none;">
         <div id="welcome-msg" class="user-welcome"></div>
         <div class="options">
@@ -262,25 +274,27 @@
             <button class="btn aircraft-btn" onclick="showSubCategories('Diamond DA40 NG')">Diamond DA40 NG</button>
             <button class="btn aircraft-btn" onclick="showSubCategories('Diamond DA42 NG')">Diamond DA42 NG</button>
         </div>
-        
         <div class="insight-badge" id="weakness-insight-box"></div>
         <div class="stats-panel" id="stats-panel" style="display: none;">
             <div class="stats-title">📊 Son 5 Test Performans Grafiğiniz (%)</div>
             <canvas id="stats-canvas" height="150"></canvas>
         </div>
     </div>
+
     <div id="subcategory-selector" style="display: none;">
         <div id="subcategory-welcome-title" class="user-welcome" style="font-weight:700; color:var(--primary-color);">Sınav Bölümü Seçiniz</div>
+        <div style="text-align:center; margin: 8px 0;">
+            <button class="shuffle-toggle" id="shuffle-toggle-btn" onclick="toggleShuffle()">🔀 Karıştır (Kapalı)</button>
+        </div>
         <div class="options" id="subcategory-buttons-container"></div>
     </div>
+
     <div id="quiz-body" style="display: none;">
         <div class="question" id="question-text"></div>
         <div id="options-area">
             <div class="options" id="options-container"></div>
         </div>
-        
         <div class="explanation" id="explanation-box"></div>
-        
         <div class="nav-controls">
             <button class="nav-btn prev-style" id="prev-btn" onclick="prevQuestion()">Önceki</button>
             <button class="nav-btn pas-style" id="pas-btn" onclick="pasQuestion()">Pas</button>
@@ -289,11 +303,11 @@
         </div>
         <div class="matrix-container" id="matrix-container"></div>
     </div>
+
     <div id="result-body" class="score-container" style="display: none;">
         <div class="score-title">Sınav Raporu 📋</div>
         <div class="score-number"><span id="score">0</span> / <span id="total">0</span></div>
         <div id="user-score-msg" style="font-weight: 600; margin-bottom: 10px;"></div>
-        
         <div style="margin: 20px 0;">
             <canvas id="pie-canvas" width="300" height="200" style="max-width:300px; margin:0 auto;"></canvas>
         </div>
@@ -301,9 +315,11 @@
         <button class="cert-btn" id="cert-download-btn" onclick="generateCertificate()">🎖️ Başarı Brövesi & Sertifikasını İndir</button>
         <button class="review-btn" id="review-toggle-btn" onclick="toggleReviewList()">Hataları İncele 🔍</button>
         <div class="review-list" id="review-list-box" style="display:none;"></div>
+        <button class="retry-wrong-btn" id="retry-wrong-btn" onclick="retryWrongQuestions()" style="display:none;">❌ Yanlışları Tekrar Et</button>
         <button class="restart-btn" onclick="backToMenu()">Ana Menüye Dön</button>
     </div>
 </div>
+
 <div class="footer-signature" onclick="handleSignatureClick()">
     Created by <span style="font-weight: 600; color: #718096;">S.R.Demirer</span>
 </div>
@@ -313,23 +329,16 @@
         <button onclick="clearAdminLogs()" style="font-size: 0.75rem; cursor: pointer; background: #fed7d7; border: 1px solid #f56565; color: #c53030; border-radius: 4px; padding: 2px 6px;">Temizle</button>
     </div>
     <table class="admin-table">
-        <thead>
-            <tr>
-                <th>Pilot Adı</th>
-                <th>A/C</th>
-                <th>Skor</th>
-                <th>Tarih</th>
-            </tr>
-        </thead>
+        <thead><tr><th>Pilot Adı</th><th>A/C</th><th>Skor</th><th>Tarih</th></tr></thead>
         <tbody id="admin-table-body"></tbody>
     </table>
 </div>
+
 <script>
-    const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycby7mUSFYs5s5HAqpdRwpMdda4OK8blyiZvBHeg4fZie2joqZbhZpJkmsyclwdY2Gn3-/exec";
-    
-    // Diamond DA40 NG %100 Uyumlu 66 Ardışık Soru Veritabanı
+    // ============================================================
+    // 1. VERİTABANLARI (DA40, AQUILA, DA20, DA42) – KAPSAMLI
+    // ============================================================
     const da40Database = [
-        // === BÖLÜM 1: Indicated Airspeeds (18 Soru) ===
         { soru: "What is the Operating Maneuvering Speed Up to 1080 Kg.?", secenekler: ["101 KIAS", "108 KIAS", "113 KIAS", "98 KIAS"], cevap: "101 KIAS", aciklama: "Uçak kütlesi 1080 kg veya altındayken ani kumanda limit hızı 101 KIAS'tır.", cat: "Indicated Airspeeds" },
         { soru: "What is the Operating Maneuvering Speed 1080 Kg. to 1180 Kg.?", secenekler: ["101 KIAS", "108 KIAS", "113 KIAS", "110 KIAS"], cevap: "108 KIAS", aciklama: "1080 - 1180 kg ağırlık bandında güvenli sert kumanda hızı 108 KIAS'tır.", cat: "Indicated Airspeeds" },
         { soru: "What is the Operating Maneuvering Speed Above 1180 Kg.?", secenekler: ["108 KIAS", "113 KIAS", "130 KIAS", "172 KIAS"], cevap: "113 KIAS", aciklama: "Ağır ve yüklü uçakta izin verilen maksimum manevra hızı 113 KIAS'tır.", cat: "Indicated Airspeeds" },
@@ -348,23 +357,19 @@
         { soru: "What is the Stall Speed (Take Off Flap)?", secenekler: ["66 KIAS", "62 KIAS", "60 KIAS", "58 KIAS"], cevap: "62 KIAS", aciklama: "Kalkış flap kademesinde uçağın stall sürat değeri 62 KIAS'tır.", cat: "Indicated Airspeeds" },
         { soru: "What is the Stall Speed (Landing Flap)?", secenekler: ["66 KIAS", "62 KIAS", "60 KIAS", "52 KIAS"], cevap: "60 KIAS", aciklama: "Full iniş konfigürasyonunda uçağın stall sürat limiti 60 KIAS'tır.", cat: "Indicated Airspeeds" },
         { soru: "What is the Steep Turn Speed?", secenekler: ["80-100 KIAS", "90-110 KIAS", "110-130 KIAS", "113 KIAS"], cevap: "90-110 KIAS", aciklama: "Keskin dönüş (Steep turn) manevralarında hedeflenen standart sürat aralığı 90-110 KIAS'tır.", cat: "Indicated Airspeeds" },
-        // === BÖLÜM 2: Maneuvering (5 Soru) ===
         { soru: "What is the Maximum Positive Load Factor - Up Flap (G)?", secenekler: ["2.0 G", "3.8 G", "4.4 G", "1.52 G"], cevap: "3.8 G", aciklama: "Temiz konfigürasyonda uçağın yapısal maksimum pozitif limit faktörü +3.8 G'dir.", cat: "Maneuvering" },
         { soru: "What is the Maximum Positive Load Factor - TO / LDG Flap (G)?", secenekler: ["3.8 G", "2 G", "4.4 G", "0 G"], cevap: "2 G", aciklama: "Flaplar açıkken uçağın taşıyabileceği maksimum pozitif yük faktörü +2 G'dir.", cat: "Maneuvering" },
         { soru: "What is the Maximum Negative Load Factor - Up Flap (G)?", secenekler: ["-1.52 G", "0 G", "-1.0 G", "-2.0 G"], cevap: "-1.52 G", aciklama: "Temiz konfigürasyonda izin verilen yapısal maksimum negatif G yüklemesi -1.52 G'dir.", cat: "Maneuvering" },
         { soru: "What is the Maximum Negative Load Factor - TO / LDG Flap (G)?", secenekler: ["-1.52 G", "-1.0 G", "0 G", "0.5 G"], cevap: "0 G", aciklama: "Flaplar açıkken uçağın hiçbir negatif yüklemeye toleransı yoktur; limit tam 0 G'dir.", cat: "Maneuvering" },
         { soru: "What is the Maximum Bank Angle?", secenekler: ["45°", "60°", "30°", "90°"], cevap: "60°", aciklama: "Manevralarda izin verilen maksimum yapısal yatış açısı sınırı 60 derecedir.", cat: "Maneuvering" },
-        // === BÖLÜM 3: Weight And Balance (4 Soru) ===
         { soru: "What is the Maximum Take Off Mass (Kilogram)?", secenekler: ["1200 - 1300", "1280 - 1400", "1280 - 1310", "1310 - 1390"], cevap: "1280 - 1310", aciklama: "Modifikasyon ve tescile bağlı olarak maksimum kalkış kütlesi (MTOM) 1280 - 1310 kg arasındadır.", cat: "Weight And Balance" },
         { soru: "What is the Maximum Landing Mass (Kilogram)?", secenekler: ["1310", "1280", "1200", "1260"], cevap: "1280", aciklama: "Gövde ve iniş takımı limitlerini korumak için izin verilen maksimum iniş kütlesi 1280 kg'dır.", cat: "Weight And Balance" },
         { soru: "What is the Minimum Take Off Mass (Kilogram)?", secenekler: ["900", "940", "1000", "850"], cevap: "940", aciklama: "Ağırlık merkezi dengesi (CG) emniyeti için asgari kalkış kütlesi 940 kg'dır.", cat: "Weight And Balance" },
         { soru: "What is the Maximum Zero Fuel Mass (Kilogram)?", secenekler: ["1200", "1265", "1280", "1150"], cevap: "1265", aciklama: "Kanat bağlantı köklerini korumak adına yakıtsız maksimum gövde kütlesi 1265 kg'dır.", cat: "Weight And Balance" },
-        // === BÖLÜM 4: Rotate Speeds (4 Soru) ===
         { soru: "What is the Rotate Speed for 940 Kilogram Take Off Mass?", secenekler: ["56 KIAS", "58 KIAS", "61 KIAS", "65 KIAS"], cevap: "56 KIAS", aciklama: "Hafif uçakta (940 kg) rotate için tekerlek kesme sürat normu 56 KIAS'tır.", cat: "Rotate Speeds" },
         { soru: "What is the Rotate Speed for 1000 Kilogram Take Off Mass?", secenekler: ["58 KIAS", "60 KIAS", "61 KIAS", "65 KIAS"], cevap: "58 KIAS", aciklama: "1000 kg kalkış kütlesi planlamasında rotate sürati tam 58 KIAS'tır.", cat: "Rotate Speeds" },
         { soru: "What is the Rotate Speed for 1100 Kilogram Take Off Mass?", secenekler: ["60 KIAS", "61 KIAS", "65 KIAS", "67 KIAS"], cevap: "61 KIAS", aciklama: "1100 kg ağırlığındaki kalkış planlamasında rotate teker kesme hızı 61 KIAS'tır.", cat: "Rotate Speeds" },
         { soru: "What is the Rotate Speed for 1200 Kilogram Take Off Mass?", secenekler: ["61 KIAS", "63 KIAS", "65 KIAS", "67 KIAS"], cevap: "65 KIAS", aciklama: "1200 kg orta-ağır yük kütlesi planında rotate sürati 65 KIAS'tır.", cat: "Rotate Speeds" },
-        // === BÖLÜM 5: Engine & Power System Limits (26 Soru) ===
         { soru: "What is the RPM Limits - Green Arc?", secenekler: ["2100", "2300", "1800", "2000"], cevap: "2100", aciklama: "Motor devir göstergesindeki normal çalışma yeşil üst sınırı 2100 RPM'dir.", cat: "Engine & Power System Limits" },
         { soru: "What is the RPM Limits - Yellow Arc?", secenekler: ["2100 - 2300", "2300 - 2500", "2000 - 2200", "2200 - 2400"], cevap: "2100 - 2300", aciklama: "Devir limitlerinde sarı dikkat uyarı aralığı 2100 ile 2300 RPM arasıdır.", cat: "Engine & Power System Limits" },
         { soru: "What is the RPM Limits - Red Arc?", secenekler: ["2100 +", "2300 +", "2500 +", "2400 +"], cevap: "2300 +", aciklama: "Motor mekanik hasar kırmızı çizgisi 2300 devir ve üzeridir (2300 +).", cat: "Engine & Power System Limits" },
@@ -395,15 +400,13 @@
         { soru: "What is the Voltmeter - Yellow Arc (Volt) range?", secenekler: ["22 - 25", "30 - 32", "32 - 34", "24 - 26"], cevap: "30 - 32", aciklama: "Yüksek voltaj uyarı sarı aralığı 30 ile 32 Volt arasıdır.", cat: "Engine & Power System Limits" },
         { soru: "What is the Voltmeter - Red Arc (Volt) limit?", secenekler: ["30 +", "32 +", "34 +", "28 +"], cevap: "32 +", aciklama: "Sınav koruma aşırı voltaj kırmızı çizgisi 32 Volt ve üzeridir (32 +).", cat: "Engine & Power System Limits" },
         { soru: "What is the Minimum GearBox Temperature for ECU Test?", secenekler: ["35", "38", "45", "50"], cevap: "38", aciklama: "Motor testleri öncesi dişli kutusunun (Gearbox) asgari 38 °C sıcaklığa ulaşması şarttır.", cat: "Engine & Power System Limits" },
-        // === BÖLÜM 6: Fuel Quantity (4 Soru) ===
         { soru: "What is the Total Fuel Quantity (Galon)?", secenekler: ["38 Galon", "40 Galon", "41 Galon", "50 Galon"], cevap: "41 Galon", aciklama: "Uçağın fiziki ana depo toplam hacmi 2 adet 20.5 galondur.", cat: "Fuel Quantity" },
         { soru: "What is the Usable Fuel Quantity (Galon)?", secenekler: ["41 Galon", "38 Galon", "39 Galon", "35 Galon"], cevap: "39 Galon", aciklama: "Motor tarafından çekilebilen emniyetli kullanılabilir yakıt hacmi 2 x 19.5 galondur.", cat: "Fuel Quantity" },
         { soru: "What is the Total Fuel Quantity (Litre)?", secenekler: ["140 Litre", "180 Litre", "155 Litre", "90 Litre"], cevap: "155 Litre", aciklama: "Litre bazında uçağın fiziki toplam yakıt deposu hacmi 2 x 77.6 litredir.", cat: "Fuel Quantity" },
         { soru: "What is the Usable Fuel Quantity (Litre)?", secenekler: ["155 Litre", "147 Litre", "200 Litre", "130 Litre"], cevap: "147 Litre", aciklama: "Litre cinsinden motorun emniyetle çekebileceği kullanılabilir yakıt 2 x 73.8 litredir.", cat: "Fuel Quantity" }
     ];
-    // Aquila A211 Excel Dosyasından %100 Doğrulanmış 40 Ardışık Soru Veritabanı
+
     const aquilaDatabase = [
-        // === BÖLÜM 1: Indicated Airspeeds (18 Soru) ===
         { soru: "What is the Operating Maneuvering Speed for Aquila A211?", secenekler: ["101 KIAS", "108 KIAS", "112 KIAS", "115 KIAS"], cevap: "112 KIAS", aciklama: "Aquila A211 için izin verilen tasarım manevra sürati (VA) 112 KIAS'tır.", cat: "Indicated Airspeeds" },
         { soru: "What is the VFE Maximum Flap Extended Speed (Landing) for Aquila A211?", secenekler: ["85 KIAS", "90 KIAS", "95 KIAS", "98 KIAS"], cevap: "90 KIAS", aciklama: "İniş tam flap pozisyonundayken yapısal hız limiti 90 KIAS'tır.", cat: "Indicated Airspeeds" },
         { soru: "What is the VFE Maximum Flap Extended Speed (Take Off) for Aquila A211?", secenekler: ["85 KIAS", "90 KIAS", "100 KIAS", "110 KIAS"], cevap: "90 KIAS", aciklama: "Kalkış kademesinde (T/O) flapların dayanabileceği maksimum sürat limiti de 90 KIAS'tır.", cat: "Indicated Airspeeds" },
@@ -417,22 +420,18 @@
         { soru: "What is the Rotate Speed for Aquila A211?", secenekler: ["45 KIAS", "50 KIAS", "52 KIAS", "55 KIAS"], cevap: "50 KIAS", aciklama: "Aquila A211 için tavsiye edilen standart rotate (teker kesme) sürati 50 KIAS'tır.", cat: "Indicated Airspeeds" },
         { soru: "What is the VX Take Off Flap Climb Speed for Aquila A211?", secenekler: ["50 KIAS", "52 KIAS", "55 KIAS", "57 KIAS"], cevap: "52 KIAS", aciklama: "Kalkış flap kademesinde en iyi tırmanış açısı sürati (VX) 52 KIAS'tır.", cat: "Indicated Airspeeds" },
         { soru: "What is the VY Take Off Flap Climb Speed for Aquila A211?", secenekler: ["52 KIAS", "55 KIAS", "57 KIAS", "60 KIAS"], cevap: "57 KIAS", aciklama: "Kalkış flap kademesinde en iyi tırmanış oranı sürati (VY) 57 KIAS'tır.", cat: "Indicated Airspeeds" },
-        { soru: "What is the Up Flap Climb Speed for Aquila A211?", secenekler: ["70 KIAS", "73 KIAS", "75 KIAS", "78 KIAS"], font: "75 KIAS", cevap: "75 KIAS", aciklama: "Flaplar tamamen toplandıktan sonraki standart tırmanış sürati 75 KIAS'tır.", cat: "Indicated Airspeeds" },
+        { soru: "What is the Up Flap Climb Speed for Aquila A211?", secenekler: ["70 KIAS", "73 KIAS", "75 KIAS", "78 KIAS"], cevap: "75 KIAS", aciklama: "Flaplar tamamen toplandıktan sonraki standart tırmanış sürati 75 KIAS'tır.", cat: "Indicated Airspeeds" },
         { soru: "What is the Stall Speed (Up Flap) for Aquila A211?", secenekler: ["45 KIAS", "47 KIAS", "49 KIAS", "52 KIAS"], cevap: "49 KIAS", aciklama: "Temiz konfigürasyonda uçağın havada tutunabileceği asgari stall sürati 49 KIAS'tır.", cat: "Indicated Airspeeds" },
         { soru: "What is the Stall Speed (Take Off Flap) for Aquila A211?", secenekler: ["42 KIAS", "45 KIAS", "47 KIAS", "49 KIAS"], cevap: "45 KIAS", aciklama: "Kalkış flap pozisyonunda uçağın stall sürat değeri 45 KIAS'tır.", cat: "Indicated Airspeeds" },
         { soru: "What is the Stall Speed (Landing Flap) for Aquila A211?", secenekler: ["40 KIAS", "39 KIAS", "45 KIAS", "47 KIAS"], cevap: "39 KIAS", aciklama: "Full iniş konfigürasyonunda uçağın minimum stall limit sürati 39 KIAS'tır.", cat: "Indicated Airspeeds" },
         { soru: "What is the Steep Turn Speed for Aquila A211?", secenekler: ["70 KIAS", "80 KIAS", "90 KIAS", "60 KIAS"], cevap: "90 KIAS", aciklama: "Keskin dönüş sürati 90 KIAS'tır.", cat: "Indicated Airspeeds" },
-        
-        // === BÖLÜM 2: Maneuvering (5 Soru) ===
         { soru: "What is the Maximum Positive Load Factor - Up Flap (G) for Aquila A211?", secenekler: ["3.8 G", "4.0 G", "4.4 G", "2.0 G"], cevap: "4.0 G", aciklama: "Temiz konfigürasyonda izin verilen yapısal maksimum pozitif yük faktörü +4.0 G'dir.", cat: "Maneuvering" },
         { soru: "What is the Maximum Positive Load Factor - TO / LDG Flap (G) for Aquila A211?", secenekler: ["2.0 G", "3.8 G", "4.0 G", "0 G"], cevap: "2.0 G", aciklama: "Flaplar açık pozisyondayken maksimum yapısal pozitif yük limiti +2.0 G'dir.", cat: "Maneuvering" },
         { soru: "What is the Maximum Negative Load Factor - Up Flap (G) for Aquila A211?", secenekler: ["-1.52 G", "-1.76 G", "-2.0 G", "0 G"], cevap: "-2.0 G", aciklama: "Temiz konfigürasyonda müsaade edilen maksimum negatif yük faktörü -2.0 G'dir.", cat: "Maneuvering" },
         { soru: "What is the Maximum Negative Load Factor - TO / LDG Flap (G) for Aquila A211?", secenekler: ["-1.0 G", "-0.5 G", "0 G", "0.5 G"], cevap: "0 G", aciklama: "Flaplar açıkken uçak yapısal olarak negatif yüklemeye maruz bırakılamaz; limit tam 0 G'dir.", cat: "Maneuvering" },
         { soru: "What is Maximum Bank Angle for Aquila A211?", secenekler: ["60°", "90°", "30°", "45°"], cevap: "60°", aciklama: "İzin verilen maksimum yatış açısı 60 Derecedir.", cat: "Maneuvering" },
-        // === BÖLÜM 3: Weight And Balance (2 Soru) ===
         { soru: "What is the Maximum Take Off Mass (Kilogram) for Aquila A211?", secenekler: ["750 kg", "800 kg", "850 kg", "940 kg"], cevap: "750 kg", aciklama: "Aquila A211 için yapısal maksimum kalkış kütlesi (MTOM) 750 kg'dır.", cat: "Weight And Balance" },
         { soru: "What is the Maximum Landing Mass (Kilogram) for Aquila A211?", secenekler: ["700 kg", "750 kg", "800 kg", "1280 kg"], cevap: "750 kg", aciklama: "İniş takımlarının emniyeti için izin verilen maksimum iniş kütlesi kalkış kütlesiyle aynı olup 750 kg'dır.", cat: "Weight And Balance" },
-        // === BÖLÜM 4: Engine & Power System Limits (13 Soru) ===
         { soru: "What is the RPM Limits - Green Arc for Aquila A211?", secenekler: ["535 - 2260 RPM", "2100 RPM", "2100 - 2300 RPM", "1800 - 2400 RPM"], cevap: "535 - 2260 RPM", aciklama: "Aquila Rotax motorunda standart yeşil çalışma devir aralığı 535 ile 2260 RPM arasıdır.", cat: "Engine & Power System Limits" },
         { soru: "What is the RPM Limits - Yellow Arc for Aquila A211?", secenekler: ["2100 - 2300 RPM", "2260 - 2385 RPM", "2300 - 2500 RPM", "2385 - 2500 RPM"], cevap: "2260 - 2385 RPM", aciklama: "Pervane devir göstergesindeki sarı dikkat uyarı aralığı 2260 - 2385 RPM'dir.", cat: "Engine & Power System Limits" },
         { soru: "What is the RPM Limits - Red Arc for Aquila A211?", secenekler: ["2300 RPM", "2385 RPM", "2500 RPM", "2700 RPM"], cevap: "2385 RPM", aciklama: "Motor mekanik limit kırmızı çizgisi 2385 RPM'dir.", cat: "Engine & Power System Limits" },
@@ -446,13 +445,11 @@
         { soru: "What is the Voltmeter - Green Arc (Volt) range for Aquila A211?", secenekler: ["10 - 12 Volt", "11 - 12 Volt", "12 - 15 Volt", "15 - 16 Volt"], cevap: "12 - 15 Volt", aciklama: "Elektrik sistemi normal şarj voltajı yeşil yayın aralığı 12 - 15 Volttur.", cat: "Engine & Power System Limits" },
         { soru: "What is the Voltmeter - Yellow Arc (Volt) range for Aquila A211?", secenekler: ["10 - 11 Volt", "11 - 12 Volt", "15 - 16 Volt", "16 - 17 Volt"], cevap: "11 - 12 Volt", aciklama: "Düşük voltaj uyarı sarı aralığı 11 ile 12 Volt arasıdır.", cat: "Engine & Power System Limits" },
         { soru: "What is the Voltmeter - Red Arc (Volt) limit for Aquila A211?", secenekler: ["12 Volt +", "15 Volt +", "15 - 16 Volt", "16 Volt +"], cevap: "15 - 16 Volt", aciklama: "Yüksek voltaj tehlikesi kırmızı bant aralığı 15 - 16 Volttur.", cat: "Engine & Power System Limits" },
-        // === BÖLÜM 5: Fuel Quantity (2 Soru) ===
         { soru: "What is the Total Fuel Quantity (Litre) for Aquila A211?", secenekler: ["100 Litre", "110 Litre", "120 Litre", "155 Litre"], cevap: "120 Litre", aciklama: "Aquila A211 uçağın fiziki toplam yakıt deposu hacmi 120 litredir.", cat: "Fuel Quantity" },
         { soru: "What is the Usable Fuel Quantity (Litre) for Aquila A211?", secenekler: ["104 Litre", "108 Litre", "110 Litre", "120 Litre"], cevap: "110 Litre", aciklama: "Uçağın motor tarafından emniyetle çekilebilen kullanılabilir yakıt hacmi 110 litredir.", cat: "Fuel Quantity" }
     ];
-    // Diamond DA20 Eclipse Excel Dosyasından %100 Doğrulanmış 73 Soru Veritabanı
+
     const da20Database = [
-        // === BÖLÜM 1: Indicated Airspeeds (18 Soru) ===
         { soru: "What is the Forced Landing Final Approach Speed (Landing) for DA20?", secenekler: ["50 KIAS", "55 KIAS", "60 KIAS", "64 KIAS"], cevap: "55 KIAS", aciklama: "Mecburi iniş son yaklaşmada tam iniş flap konfigürasyonu hızı 55 KIAS'tır.", cat: "Indicated Airspeeds" },
         { soru: "What is the Minimum Engine-Out Airspeed to Sustain Windmilling Propeller?", secenekler: ["55 KIAS", "60 KIAS", "65 KIAS", "70 KIAS"], cevap: "60 KIAS", aciklama: "Motor durduğunda pervanenin rüzgar değirmeni etkisiyle (windmilling) dönmeye devam etmesi için asgari sürat 60 KIAS'tır.", cat: "Indicated Airspeeds" },
         { soru: "What is the Forced Landing Final Approach Speed (Take Off) for DA20?", secenekler: ["55 KIAS", "60 KIAS", "65 KIAS", "73 KIAS"], cevap: "60 KIAS", aciklama: "Mecburi inişte kalkış (T/O) kademesi yaklaşma sürati 60 KIAS'tır.", cat: "Indicated Airspeeds" },
@@ -471,30 +468,24 @@
         { soru: "What is the Stall Speed (Take Off Flap) for DA20?", secenekler: ["45 KIAS", "48 KIAS", "50 KIAS", "40 KIAS"], cevap: "40 KIAS", aciklama: "Kalkış (T/O) flap pozisyonunda uçağın stall sürat değeri 40 KIAS'tır.", cat: "Indicated Airspeeds" },
         { soru: "What is the Stall Speed (Landing Flap) for DA20?", secenekler: ["40 KIAS", "44 KIAS", "47 KIAS", "36 KIAS"], cevap: "36 KIAS", aciklama: "Full iniş konfigürasyonunda (LDG) uçağın minimum stall emniyet sürati 36 KIAS'tır.", cat: "Indicated Airspeeds" },
         { soru: "What is the Steep Turn Speed for DA20?", secenekler: ["70 KIAS", "80 KIAS", "90 KIAS", "60 KIAS"], cevap: "90 KIAS", aciklama: "Keskin dönüş sürati 90 KIAS'tır.", cat: "Indicated Airspeeds" },
-        
-        // === BÖLÜM 2: Maneuvering (5 Soru) ===
         { soru: "What is the Maximum Positive Load Factor - Up Flap (G) for DA20?", secenekler: ["3.8 G", "4.0 G", "4.4 G", "2.0 G"], cevap: "4.4 G", aciklama: "Utility kategorisindeki DA20 temiz konfigürasyonda maksimum +4.4 G yüke dayanır.", cat: "Maneuvering" },
         { soru: "What is the Maximum Positive Load Factor - TO / LDG Flap (G) for DA20?", secenekler: ["2.0 G", "3.8 G", "4.4 G", "0 G"], cevap: "2.0 G", aciklama: "Flaplar açık pozisyondayken maksimum yapısal pozitif yük limiti +2.0 G'dir.", cat: "Maneuvering" },
         { soru: "What is the Maximum Negative Load Factor - Up Flap (G) for DA20?", secenekler: ["-1.52 G", "-2.0 G", "-2.2 G", "0 G"], cevap: "-2.2 G", aciklama: "Temiz konfigürasyonda müsaade edilen maksimum negatif yük faktörü -2.2 G'dir.", cat: "Maneuvering" },
         { soru: "What is the Maximum Negative Load Factor - TO / LDG Flap (G) for DA20?", secenekler: ["-1.0 G", "-0.5 G", "0 G", "0.5 G"], cevap: "0 G", aciklama: "Flaplar açıkken uçak yapısal olarak hiçbir negatif yüklemeye maruz bırakılamaz (0 G).", cat: "Maneuvering" },
         { soru: "What is the Maximum Bank Angle for DA20 maneuvers?", secenekler: ["45°", "60°", "75°", "30°"], cevap: "60°", aciklama: "Sertifikalı manevralarda izin verilen maksimum yatış açısı 60 derecedir.", cat: "Maneuvering" },
-        // === BÖLÜM 3: Weight And Balance (4 Soru) ===
         { soru: "What is the Maximum Take Off Mass (Kilogram) for DA20?", secenekler: ["750 kg", "800 kg", "803 kg", "940 kg"], cevap: "800 kg", aciklama: "DA20 Eclipse modelinin maksimum kalkış kütlesi (MTOM) tam 800 kg'dır.", cat: "Weight And Balance" },
         { soru: "What is the Maximum Landing Mass (Kilogram) for DA20?", secenekler: ["750 kg", "800 kg", "803 kg", "850 kg"], cevap: "800 kg", aciklama: "Yapısal emniyet gereği maksimum iniş kütlesi de kalkış kütlesiyle aynı olup 800 kg'dır.", cat: "Weight And Balance" },
         { soru: "What is the Maximum Ramp Mass (Kilogram) for DA20?", secenekler: ["800 kg", "803 kg", "810 kg", "850 kg"], cevap: "803 kg", aciklama: "Motor çalıştırma bir taksi payı dahil maksimum yer rampa kütlesi 803 kg'dır.", cat: "Weight And Balance" },
         { soru: "What is the Maximum Baggage Compartment Weight (Kilogram) for DA20?", secenekler: ["15 kg", "20 kg", "25 kg", "30 kg"], cevap: "20 kg", aciklama: "Gövde arkası bagaj bölmesinde taşınabilecek maksimum yük sınırı 20 kg'dır.", cat: "Weight And Balance" },
-        // === BÖLÜM 4: Voltmeter (4 Soru) ===
         { soru: "What is the Voltmeter Lower Limit (Red Arc) in Volts?", secenekler: ["8 - 11 V", "10 - 11 V", "11 - 12.5 V", "12.5 - 16 V"], cevap: "8 - 11 V", aciklama: "Voltmetrenin en alt tehlikeli kırmızı yay aralığı 8 - 11 Volttur.", cat: "Voltmeter" },
         { soru: "What is the Voltmeter Caution Limit (Yellow Arc) in Volts?", secenekler: ["8 - 11 V", "11 - 12.5 V", "12.5 - 16 V", "16.1 V"], cevap: "11 - 12.5 V", aciklama: "Düşük voltaj şarj yetersizliği sarı dikkat bölgesi aralığı 11 - 12.5 Volttur.", cat: "Voltmeter" },
         { soru: "What is the Voltmeter Normal Limit (Green Arc) in Volts?", secenekler: ["11 - 12.5 V", "12.5 - 16 V", "16.1 V", "15 - 16 V"], cevap: "12.5 - 16 V", aciklama: "Sistemin normal emniyetli şarj yeşil çalışma voltaj aralığı 12.5 - 16 Volttur.", cat: "Voltmeter" },
         { soru: "What is the Voltmeter Upper Limit (Red Arc) in Volts?", secenekler: ["15 V", "16 V", "16.1 V", "17 V"], cevap: "16.1 V", aciklama: "Aşırı voltaj koruma üst sınır kırmızı çizgisi tam 16.1 Volttur.", cat: "Voltmeter" },
-        // === BÖLÜM 5: Miscellaneous (5 Soru) ===
         { soru: "What is the Maximum Structural Temperature (Santigrat) for DA20?", secenekler: ["45 °C", "50 °C", "55 °C", "60 °C"], cevap: "55 °C", aciklama: "Kompozit yapıyı korumak adına izin verilen maksimum yapısal sıcaklık 55 °C'dir.", cat: "Miscellaneous" },
         { soru: "What is the Propeller Approx. Minimum Ground Clearance (CM)?", secenekler: ["15 cm", "18 cm", "20 cm", "25 cm"], cevap: "25 cm", aciklama: "Pervane ucunun yere olan tahmini asgari emniyet mesafesi clearance değeri 25 cm'dir.", cat: "Miscellaneous" },
         { soru: "What is the Main Landing Gear Tire Pressure (PSI)?", secenekler: ["21 PSI", "26 PSI", "33 PSI", "40 PSI"], cevap: "33 PSI", aciklama: "Ana iniş takımı lastiklerinin standart hava basınç değeri 33 PSI'dır.", cat: "Miscellaneous" },
         { soru: "What is the Nose Gear Tire Pressure (PSI)?", secenekler: ["21 PSI", "26 PSI", "33 PSI", "35 PSI"], cevap: "26 PSI", aciklama: "Burun iniş takımı lastiğinin standart muhafaza basınç değeri 26 PSI'dır.", cat: "Miscellaneous" },
         { soru: "What is the Minimum OAT Cabin Heat not Req. for 10 Minutes Before Take Off?", secenekler: ["-10 °C", "-5 °C", "0 °C", "-20 °C"], cevap: "-20 °C", aciklama: "Kabin ısıtıcısının tam açık (Full ON) pozisyonda kullanılmaması gereken asgari dış hava sıcaklığı -20 °C'dir.", cat: "Miscellaneous" },
-        // === BÖLÜM 6: Engine & Power System Limits (32 Soru) ===
         { soru: "What is the Minimum Idle Mixture Rise Leaned to Peak?", secenekler: ["25 RPM", "50 RPM", "75 RPM", "100 RPM"], cevap: "50 RPM", aciklama: "Rölanti karışım kontrolü peak fakirleştirmede minimum devir artış değeri 50 RPM olmalıdır.", cat: "Engine & Power System Limits" },
         { soru: "What is the Minimum RPM During Engine Runup Idle Check?", secenekler: ["900 RPM", "975 RPM", "1000 RPM", "1100 RPM"], cevap: "975 RPM", aciklama: "Runup motor rölanti kontrol testinde aranacak asgari devir limit değeri 975 RPM'dir.", cat: "Engine & Power System Limits" },
         { soru: "What is the Minimum RPM for In-Flight Idle Beyond Gliding Range of a Runway?", secenekler: ["1000 RPM", "1200 RPM", "1400 RPM", "1500 RPM"], cevap: "1400 RPM", aciklama: "Pist süzülme mesafesi dışındaki uçuş safhalarında havada tutulacak asgari rölanti devri 1400 RPM'dir.", cat: "Engine & Power System Limits" },
@@ -527,17 +518,14 @@
         { soru: "What is the Cylinder Head Temperature (CHT) Normal Operating Range (F)?", secenekler: ["200 - 400 °F", "240 - 420 °F", "300 - 420 °F", "300 - 460 °F"], cevap: "300 - 420 °F", aciklama: "Silindir kapak sıcaklığının (CHT) normal yeşil çalışma aralığı standardı 300 - 420 °F arasıdır.", cat: "Engine & Power System Limits" },
         { soru: "What is the Cylinder Head Temperature (CHT) Caution Range (F)?", secenekler: ["400 - 450 °F", "420 - 460 °F", "440 - 480 °F", "460 - 500 °F"], cevap: "420 - 460 °F", aciklama: "Silindir kafası hararet dikkat ve ikaz sarı şerit aralığı 420 - 460 °F arasıdır.", cat: "Engine & Power System Limits" },
         { soru: "What is the absolute Maximum Cylinder Head Temperature (CHT) allowed?", secenekler: ["420 °F", "440 °F", "460 °F", "480 °F"], cevap: "460 °F", aciklama: "Silindir kapak sıcaklığının (CHT) asla aşmaması gereken kırmızı çizgi tavan limiti 460 °F'tır.", cat: "Engine & Power System Limits" },
-        // === BÖLÜM 7: Fuel Quantity (3 Soru) ===
         { soru: "What is the Approved Fuel Grade for DA20 Eclipse?", secenekler: ["JET A-1", "MOGAS 95", "100 LL", "AVGAS 100"], cevap: "100 LL", aciklama: "DA20 Eclipse motoru için üretici tarafından onaylanmış havacılık yakıt tipi 100 LL (Low Lead) Avgas'tır.", cat: "Fuel Quantity" },
         { soru: "What is the Usable Fuel Quantity (Litre) for DA20?", secenekler: ["91 Litre", "93 Litre", "100 Litre", "120 Litre"], cevap: "91 Litre", aciklama: "Uçağın emniyetle motora çekebileceği kullanılabilir net yakıt miktarı 91 litredir.", cat: "Fuel Quantity" },
         { soru: "What is the Total Fuel Quantity (Litre) for DA20?", secenekler: ["91 Litre", "93 Litre", "95 Litre", "105 Litre"], cevap: "93 Litre", aciklama: "Uçağın yakıt deposunun fiziki toplam yakıt alma kapasite hacmi 93 litredir.", cat: "Fuel Quantity" },
-        // === BÖLÜM 8: Take Off & Landing (2 Soru) ===
         { soru: "What is the Maximum Demonstrated Crosswind Component (KTS)?", secenekler: ["15 KTS", "20 KTS", "22 KTS", "25 KTS"], cevap: "20 KTS", aciklama: "Test uçuşlarında demonstre edilmiş maksimum yan rüzgar (crosswind) limiti 20 Knottur.", cat: "Take Off & Landing" },
         { soru: "What is the Maximum Tailwind Component (KTS) allowed for DA20?", secenekler: ["5 KTS", "10 KTS", "12 KTS", "15 KTS"], cevap: "5 KTS", aciklama: "Kalkış ve inişlerde emniyet sınırı olarak izin verilen maksimum arka rüzgar (tailwind) bileşeni 5 Knottur.", cat: "Take Off & Landing" }
     ];
-    // === Diamond DA42 NG Excel Verilerinden %100 Doğrulanmış 4 Kategori Veritabanı ===
+
     const da42Database = [
-        // --- 1. Indicated Airspeeds (17 Soru) ---
         { soru: "What is the Operating Maneuvering Speed Up to 1700 Kg. for DA42 NG?", secenekler: ["112 KIAS", "119 KIAS", "122 KIAS", "126 KIAS"], cevap: "112 KIAS", aciklama: "1700 kg kütleye kadar ani kumanda ve manevra hız limiti 112 KIAS'tır.", cat: "Indicated Airspeeds" },
         { soru: "What is the Operating Maneuvering Speed 1700 Kg. to 1800 Kg. for DA42 NG?", secenekler: ["112 KIAS", "119 KIAS", "122 KIAS", "113 KIAS"], cevap: "119 KIAS", aciklama: "1700-1800 kg ağırlık bandındaki tasarımsal manevra sürati 119 KIAS'tır.", cat: "Indicated Airspeeds" },
         { soru: "What is the Operating Maneuvering Speed Above 1800 Kg. for DA42 NG?", secenekler: ["119 KIAS", "122 KIAS", "133 KIAS", "151 KIAS"], cevap: "122 KIAS", aciklama: "1800 kg üzerindeki maksimum yüklü manevra sürat tavanı 122 KIAS'tır.", cat: "Indicated Airspeeds" },
@@ -555,12 +543,10 @@
         { soru: "What is the Rotate Speed (Recommended) for DA42 NG?", secenekler: ["76 KIAS", "80 KIAS", "84 KIAS", "69 KIAS"], cevap: "80 KIAS", aciklama: "Tavsiye edilen standart rotate (teker kesme) hızı 80 KIAS'tır.", cat: "Indicated Airspeeds" },
         { soru: "What is the Stall Speed (Up Flap) for DA42 NG?", secenekler: ["69 KIAS", "66 KIAS", "62 KIAS", "76 KIAS"], cevap: "69 KIAS", aciklama: "Flaplar ve iniş takımları kapalıyken uçağın havada tutunabileceği taban sürat 69 KIAS'tır.", cat: "Indicated Airspeeds" },
         { soru: "What is the Stall Speed (Take Off Flap) for DA42 NG?", secenekler: ["69 KIAS", "66 KIAS", "62 KIAS", "73 KIAS"], cevap: "66 KIAS", aciklama: "Kalkış flap konfigürasyonunda uçağın stall sürat değeri 66 KIAS'tır.", cat: "Indicated Airspeeds" },
-        // --- 2. Maneuvering (4 Soru) ---
         { soru: "What is the Maximum Positive Load Factor - Up Flap (G) for DA42 NG?", secenekler: ["3.8 G", "2.0 G", "-1.52 G", "4.4 G"], cevap: "3.8 G", aciklama: "Flaplar kapalıyken (Clean) uçağın taşıyabileceği maksimum pozitif yük faktörü +3.8 G'dir.", cat: "Maneuvering" },
         { soru: "What is the Maximum Positive Load Factor - TO / LDG Flap (G) for DA42 NG?", secenekler: ["3.8 G", "2 G", "0 G", "2.5 G"], cevap: "2 G", aciklama: "Flaplar açık pozisyonda (Take Off veya Landing) maksimum yük sınırı +2 G'dir.", cat: "Maneuvering" },
         { soru: "What is the Maximum Negative Load Factor - Up Flap (G) for DA42 NG?", secenekler: ["-1.52 G", "0 G", "-2.0 G", "-1.0 G"], cevap: "-1.52 G", aciklama: "Temiz konfigürasyonda uçağın yapısal izin verilen azami negatif yük faktörü -1.52 G'dir.", cat: "Maneuvering" },
         { soru: "What is the Maximum Negative Load Factor - TO / LDG Flap (G) for DA42 NG?", secenekler: ["-1.52 G", "-1.0 G", "0 G", "-0.5 G"], cevap: "0 G", aciklama: "Flaplar açıkken DA42 NG hiçbir negatif yüklemeye maruz bırakılamaz; limit tam 0 G'dir.", cat: "Maneuvering" },
-        // --- 3. Engine & Power System Limits (26 Soru) ---
         { soru: "What is the RPM Limits - Green Arc for DA42 NG?", secenekler: ["2100", "2300", "1800", "2200"], cevap: "2100", aciklama: "Göstergedeki normal sürekli çalışma yeşil üst sınırı 2100 RPM'dir.", cat: "Engine & Power System Limits" },
         { soru: "What is the RPM Limits - Yellow Arc for DA42 NG?", secenekler: ["2100 - 2300", "2300 +", "1800 - 2100", "2200 - 2300"], cevap: "2100 - 2300", aciklama: "Takometre üzerindeki sarı dikkat ikaz şeridi aralığı 2100 ile 2300 RPM arasıdır.", cat: "Engine & Power System Limits" },
         { soru: "What is the RPM Limits - Red Arc for DA42 NG?", secenekler: ["2100 +", "2300 +", "2500 +", "2400 +"], cevap: "2300 +", aciklama: "Mekanik hasar sınırı kırmızı çizgisi 2300 RPM ve üzeridir (2300 +).", cat: "Engine & Power System Limits" },
@@ -587,35 +573,44 @@
         { soru: "What is the Voltmeter - Green Arc (Volt) for DA42 NG?", secenekler: ["24 - 28", "25 - 30", "30 - 32", "32 +"], cevap: "25 - 30", aciklama: "Ana DC elektrik barası normal şarj voltajı yeşil aralığı 25 - 30 Volttur.", cat: "Engine & Power System Limits" },
         { soru: "What is the Voltmeter - Yellow Arc (Volt) for DA42 NG?", secenekler: ["25 - 30", "30 - 32", "32 +", "22 - 25"], cevap: "30 - 32", aciklama: "Yüksek voltaj uyarı sarı dikkat aralığı 30 ile 32 Volt arasıdır.", cat: "Engine & Power System Limits" },
         { soru: "What is the Voltmeter - Red Arc (Volt) for DA42 NG?", secenekler: ["30 +", "32 +", "34 +", "28 +"], cevap: "32 +", aciklama: "Sistem koruma aşırı voltaj kırmızı çizgisi 32 Volt ve üzeridir (32 +).", cat: "Engine & Power System Limits" },
-        // --- 4. Fuel Quantity (2 Soru) ---
         { soru: "What is the Total Fuel Quantity (USG) for DA42 NG Main Tanks?", secenekler: ["56 USG", "50 USG", "52 USG", "26 USG"], cevap: "52 USG", aciklama: "DA42 NG ana depolarının fiziki toplam yakıt hacmi 2 x 25.9 = 51.8 galondur.", cat: "Fuel Quantity" },
         { soru: "What is the Usable Fuel Quantity (USG) for DA42 NG Main Tanks?", secenekler: ["50 USG", "51.8 USG", "48 USG", "45 USG"], cevap: "50 USG", aciklama: "Ana depolardan motorlar tarafından çekilebilen net emniyetli kullanılabilir yakıt miktarı 2 x 25 = 50 galondur.", cat: "Fuel Quantity" }
     ];
+
+    // ============================================================
+    // 2. GLOBAL DEĞİŞKENLER
+    // ============================================================
+    const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycby7mUSFYs5s5HAqpdRwpMdda4OK8blyiZvBHeg4fZie2joqZbhZpJkmsyclwdY2Gn3-/exec";
+
     let activeQuestions = [];
     let currentQuestionIndex = 0;
     let selectedCategory = "";
-    let selectedAircraft = ""; 
+    let selectedAircraft = "";
+    let currentDatabase = []; // artık her loadQuestion'da bulmaya gerek yok
     
     let currentName = "";
     let currentSurname = "";
     let currentGender = "";
-    let pilotEmoji = "👨‍✈️"; 
-    let signatureClickCount = 0;
-    let questionStates = []; 
-    let quizTimerInterval = null;
-    let timeLeft = 0; 
-    let currentQuestionStartTime = 0; 
+    let pilotEmoji = "👨‍✈️";
     
+    let questionStates = [];
+    let quizTimerInterval = null;
+    let timeLeft = 0;
+    let currentQuestionStartTime = 0;
     let consecutiveCorrect = 0;
     let consecutiveWrong = 0;
     let maydayTriggered = false;
+    let signatureClickCount = 0;
+    let shuffleEnabled = false;
+    let wrongQuestionsForRetry = []; // yanlış tekrar için
+
+    // Ses
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function playBeep(freq, type, duration) {
         try {
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
-            const oscType = type;
-            osc.type = oscType;
+            osc.type = type;
             osc.frequency.value = freq;
             gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
@@ -625,6 +620,8 @@
             osc.stop(audioCtx.currentTime + duration);
         } catch(e) {}
     }
+
+    // DOM referansları
     const loginScreen = document.getElementById('login-screen');
     const aircraftSelector = document.getElementById('aircraft-selector');
     const subcategorySelector = document.getElementById('subcategory-selector');
@@ -647,13 +644,17 @@
     const quizTimerView = document.getElementById('quiz-timer');
     const weaknessInsightBox = document.getElementById('weakness-insight-box');
     const certDownloadBtn = document.getElementById('cert-download-btn');
-    
+    const retryWrongBtn = document.getElementById('retry-wrong-btn');
     const prevBtn = document.getElementById('prev-btn');
-    const pasBtn = document.getElementById('pas-btn');
     const nextBtn = document.getElementById('next-btn');
     const trollModalOverlay = document.getElementById('troll-modal-overlay');
     const trollModalTitle = document.getElementById('troll-modal-title');
     const trollModalText = document.getElementById('troll-modal-text');
+    const shuffleToggleBtn = document.getElementById('shuffle-toggle-btn');
+
+    // ============================================================
+    // 3. TEMEL FONKSİYONLAR
+    // ============================================================
     window.onload = function() {
         const storedName = localStorage.getItem('p_name');
         if (storedName) {
@@ -665,7 +666,12 @@
         } else {
             showLoginScreen();
         }
+        // Enter tuşu ile giriş
+        document.getElementById('username-input').addEventListener('keydown', (e) => { if(e.key === 'Enter') saveUser(); });
+        document.getElementById('usersurname-input').addEventListener('keydown', (e) => { if(e.key === 'Enter') saveUser(); });
+        document.getElementById('login-btn').addEventListener('click', saveUser);
     };
+
     function openTrollModal(title, text) {
         trollModalTitle.innerText = title;
         trollModalText.innerText = text;
@@ -674,6 +680,7 @@
     function closeTrollModal() {
         trollModalOverlay.classList.remove('show');
     }
+
     function toggleTheme() {
         const currentTheme = document.documentElement.getAttribute('data-theme');
         const btn = document.getElementById('theme-toggle-btn');
@@ -685,6 +692,7 @@
             btn.innerText = "Açık Mod ☀️";
         }
     }
+
     function shareSystem() {
         const shareData = {
             title: 'Uçak Limitleri',
@@ -699,6 +707,17 @@
             }).catch(err => console.error('Kopyalanamadı:', err));
         }
     }
+
+    function logoutUser() {
+        if (confirm("Çıkış yapmak istediğinize emin misiniz?")) {
+            localStorage.removeItem('p_name');
+            localStorage.removeItem('p_surname');
+            localStorage.removeItem('p_gender');
+            currentName = ""; currentSurname = ""; currentGender = "";
+            showLoginScreen();
+        }
+    }
+
     function showLoginScreen() {
         mainTitle.innerText = "Uçak Limitleri ✈️";
         questionCounter.innerText = "Kullanıcı Kaydı Gerekli";
@@ -706,12 +725,14 @@
         aircraftSelector.style.display = 'none';
         subcategorySelector.style.display = 'none';
         quizBody.style.display = 'none';
+        resultBody.style.display = 'none';
+        adminPanel.style.display = 'none';
     }
+
     function saveUser() {
         const nameInput = document.getElementById('username-input').value.trim();
         const surnameInput = document.getElementById('usersurname-input').value.trim();
         const genderInput = document.getElementById('usergender-input').value;
-        
         if(nameInput === "" || surnameInput === "" || genderInput === "") {
             alert("Başarı Belgesi için Lütfen Bilgileri Doldurunuz!");
             return;
@@ -719,13 +740,13 @@
         localStorage.setItem('p_name', nameInput);
         localStorage.setItem('p_surname', surnameInput);
         localStorage.setItem('p_gender', genderInput);
-        
         currentName = nameInput;
         currentSurname = surnameInput;
         currentGender = genderInput;
         pilotEmoji = (genderInput === "Kadın") ? "👩‍✈️" : "👨‍✈️";
         showMainMenu();
     }
+
     function showMainMenu() {
         loginScreen.style.display = 'none';
         quizBody.style.display = 'none';
@@ -736,30 +757,24 @@
         quizTimerView.style.display = 'none';
         certDownloadBtn.style.display = 'none';
         clearInterval(quizTimerInterval);
-        
         mainTitle.innerText = "Uçak Limitleri ✈️";
         questionCounter.innerText = "Lütfen Uçak Tipini Seçiniz";
         questionCounter.style.display = 'block';
-        
         welcomeMsg.innerHTML = `Pilot: ${currentName} ${currentSurname} ${pilotEmoji}`;
         aircraftSelector.style.display = 'block';
-        
         generateWeaknessInsight();
         drawChart();
         updateAdminTable();
     }
+
     function showSubCategories(aircraftName) {
         selectedAircraft = aircraftName;
         aircraftSelector.style.display = 'none';
         subcategorySelector.style.display = 'block';
-        
-        const welcomeTitle = document.getElementById('subcategory-welcome-title');
-        welcomeTitle.innerText = `${selectedAircraft} - Sınav Bölümü Seçiniz`;
+        document.getElementById('subcategory-welcome-title').innerText = `${selectedAircraft} - Sınav Bölümü Seçiniz`;
         questionCounter.innerText = "Lütfen Sınav Konusunu Seçiniz";
-        
         const container = document.getElementById('subcategory-buttons-container');
         container.innerHTML = '';
-        
         let categories = [];
         if (selectedAircraft === 'Diamond DA40 NG') {
             categories = ['Indicated Airspeeds', 'Maneuvering', 'Weight And Balance', 'Rotate Speeds', 'Engine & Power System Limits', 'Fuel Quantity'];
@@ -770,7 +785,6 @@
         } else if (selectedAircraft === 'Diamond DA42 NG') {
             categories = ['Indicated Airspeeds', 'Maneuvering', 'Engine & Power System Limits', 'Fuel Quantity'];
         }
-        
         categories.forEach(cat => {
             const btn = document.createElement('button');
             btn.className = "btn subcat-btn";
@@ -778,41 +792,46 @@
             btn.onclick = () => startQuiz(cat);
             container.appendChild(btn);
         });
-        
         const generalBtn = document.createElement('button');
         generalBtn.className = "btn";
         generalBtn.style.cssText = "background-color:#e2f0d9; border-color:#70ad47; color:#385723; text-align:center; font-weight:bold;";
-        generalBtn.innerText = "General (Tüm Sorular - Sıralı)";
+        generalBtn.innerText = "General (Tüm Sorular)";
         generalBtn.onclick = () => startQuiz('General');
         container.appendChild(generalBtn);
-        
         const backBtn = document.createElement('button');
         backBtn.className = "btn prev-style";
         backBtn.style.cssText = "text-align:center; font-weight:bold;";
         backBtn.innerText = "↩ Geri Dön";
         backBtn.onclick = backToAircrafts;
         container.appendChild(backBtn);
+        // Karıştır butonunu güncelle
+        shuffleToggleBtn.textContent = shuffleEnabled ? "🔀 Karıştır (Açık)" : "🔀 Karıştır (Kapalı)";
+        shuffleToggleBtn.className = shuffleEnabled ? "shuffle-toggle active" : "shuffle-toggle";
     }
+
     function backToAircrafts() {
         subcategorySelector.style.display = 'none';
         aircraftSelector.style.display = 'block';
         questionCounter.innerText = "Lütfen Uçak Tipini Seçiniz";
     }
+
+    function toggleShuffle() {
+        shuffleEnabled = !shuffleEnabled;
+        shuffleToggleBtn.textContent = shuffleEnabled ? "🔀 Karıştır (Açık)" : "🔀 Karıştır (Kapalı)";
+        shuffleToggleBtn.className = shuffleEnabled ? "shuffle-toggle active" : "shuffle-toggle";
+    }
+
     function generateWeaknessInsight() {
         const history = JSON.parse(localStorage.getItem('quiz_history')) || [];
         if (history.length === 0 || !localStorage.getItem('cat_errors')) {
             weaknessInsightBox.style.display = 'none';
             return;
         }
-        
         const errors = JSON.parse(localStorage.getItem('cat_errors')) || {};
         let worstCategory = "";
         let maxErrors = 0;
         for (const [cat, count] of Object.entries(errors)) {
-            if (count > maxErrors) {
-                maxErrors = count;
-                worstCategory = cat;
-            }
+            if (count > maxErrors) { maxErrors = count; worstCategory = cat; }
         }
         if (maxErrors > 1) {
             weaknessInsightBox.innerHTML = `⚠️ <strong>Uçuş Emniyet Notu:</strong> Son test analizlerine göre <strong>"${worstCategory}"</strong> konusundaki limitlerde hata oranınız yüksektir. Bu bölüme ağırlık vermeniz önerilir.`;
@@ -821,71 +840,93 @@
             weaknessInsightBox.style.display = 'none';
         }
     }
-    function startTimer() {
-        const totalTime = activeQuestions.length * 10;
-        timeLeft = totalTime;
-        const warningTime = Math.floor(totalTime * 0.10);
-        maydayTriggered = false;
+
+    // ============================================================
+    // 4. ZAMANLAYICI (SORU BAZLI 30 SN)
+    // ============================================================
+    let questionTimer = null;
+    let questionTimeLeft = 30;
+    function startQuestionTimer() {
+        clearInterval(questionTimer);
+        questionTimeLeft = 30;
         quizTimerView.style.display = 'inline-block';
         updateTimerDisplay();
-        
-        currentQuestionStartTime = Date.now();
-        
-        quizTimerInterval = setInterval(() => {
-            timeLeft--;
+        questionTimer = setInterval(() => {
+            questionTimeLeft--;
             updateTimerDisplay();
-            
-            const elapsedOnQuestion = Math.floor((Date.now() - currentQuestionStartTime) / 1000);
-            if (elapsedOnQuestion >= 6 && elapsedOnQuestion < 10) {
-                playBeep(440, 'sine', 0.08);
-            }
-            
-            if (timeLeft === warningTime && !maydayTriggered) {
-                maydayTriggered = true;
-                playBeep(600, 'sine', 0.4);
-                openTrollModal("🚨 KOKPİT İKAZI 🚨", "Sınav sürenizin %10'u kaldı! Azıcık gaz açın, emniyetli uçuşlar! ⏱️");
-            }
-            
-            if (timeLeft <= 0) {
-                clearInterval(quizTimerInterval);
-                playBeep(440, 'sawtooth', 0.8);
-                alert("Süre Sınırı Doldu! Sınavınız Otomatik Kilitleniyor.");
-                showResult();
+            if (questionTimeLeft === 5) playBeep(880, 'sine', 0.1);
+            if (questionTimeLeft <= 0) {
+                clearInterval(questionTimer);
+                // Otomatik pas
+                let state = questionStates[currentQuestionIndex];
+                if (state.status === 'unanswered' || state.status === 'flagged') {
+                    state.status = 'pas';
+                    state.userA = '';
+                    playBeep(400, 'sawtooth', 0.3);
+                    openTrollModal("⏰ SÜRE DOLDU", "Soru süresi bitti! Otomatik olarak pas geçildi. Hadi devam edelim.");
+                }
+                // Cevap seçeneklerini kilitle ve bir sonraki soruya geç
+                const buttons = optionsContainer.querySelectorAll('.btn');
+                buttons.forEach(btn => btn.disabled = true);
+                setTimeout(() => {
+                    handleNextOrFinish();
+                }, 800);
             }
         }, 1000);
     }
+
     function updateTimerDisplay() {
-        const mins = Math.floor(timeLeft / 60);
-        const secs = timeLeft % 60;
+        const mins = Math.floor(questionTimeLeft / 60);
+        const secs = questionTimeLeft % 60;
         quizTimerView.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
+
+    function stopQuestionTimer() {
+        clearInterval(questionTimer);
+        quizTimerView.style.display = 'none';
+    }
+
+    // ============================================================
+    // 5. SINAV BAŞLATMA, SORU YÜKLEME
+    // ============================================================
     function startQuiz(categoryName) {
         selectedCategory = categoryName;
         mainTitle.innerText = selectedAircraft;
-        let activeDatabase = [];
-        if (selectedAircraft === 'Diamond DA40 NG') activeDatabase = da40Database;
-        else if (selectedAircraft === 'Aquila A211') activeDatabase = aquilaDatabase;
-        else if (selectedAircraft === 'Diamond DA20 Eclipse') activeDatabase = da20Database;
-        else if (selectedAircraft === 'Diamond DA42 NG') activeDatabase = da42Database;
-        if (categoryName === 'General') {
-            activeQuestions = [...activeDatabase];
-        } else {
-            activeQuestions = activeDatabase.filter(q => q.cat === categoryName);
+        // Veritabanını seç
+        if (selectedAircraft === 'Diamond DA40 NG') currentDatabase = da40Database;
+        else if (selectedAircraft === 'Aquila A211') currentDatabase = aquilaDatabase;
+        else if (selectedAircraft === 'Diamond DA20 Eclipse') currentDatabase = da20Database;
+        else if (selectedAircraft === 'Diamond DA42 NG') currentDatabase = da42Database;
+
+        let filtered = (categoryName === 'General') ? [...currentDatabase] : currentDatabase.filter(q => q.cat === categoryName);
+        // Karıştır
+        if (shuffleEnabled) {
+            filtered = shuffleArray(filtered);
         }
+        activeQuestions = filtered;
         questionStates = activeQuestions.map(() => ({ status: 'unanswered', userA: '' }));
-        
         currentQuestionIndex = 0;
         consecutiveCorrect = 0;
         consecutiveWrong = 0;
+        wrongQuestionsForRetry = [];
         subcategorySelector.style.display = 'none';
-        adminPanel.style.display = 'none'; 
+        adminPanel.style.display = 'none';
         signatureClickCount = 0;
         quizBody.style.display = 'block';
         progressBarContainer.style.display = 'block';
         buildMatrix();
         loadQuestion();
-        startTimer();
+        startQuestionTimer();
     }
+
+    function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
     function buildMatrix() {
         matrixContainer.innerHTML = '';
         questionStates.forEach((_, idx) => {
@@ -896,6 +937,7 @@
             matrixContainer.appendChild(box);
         });
     }
+
     function updateMatrixUI() {
         const boxes = matrixContainer.querySelectorAll('.matrix-box');
         boxes.forEach((box, idx) => {
@@ -907,36 +949,36 @@
             else if (questionStates[idx].status === 'flagged') box.classList.add('m-flag');
         });
     }
+
     function jumpToQuestion(idx) {
         currentQuestionIndex = idx;
         loadQuestion();
     }
+
     function loadQuestion() {
+        stopQuestionTimer();
         explanationBox.style.display = 'none';
         optionsContainer.innerHTML = '';
         currentQuestionStartTime = Date.now();
-        let activeDatabase = [];
-        if (selectedAircraft === 'Diamond DA40 NG') activeDatabase = da40Database;
-        else if (selectedAircraft === 'Aquila A211') activeDatabase = aquilaDatabase;
-        else if (selectedAircraft === 'Diamond DA20 Eclipse') activeDatabase = da20Database;
-        else if (selectedAircraft === 'Diamond DA42 NG') activeDatabase = da42Database;
-        let currentQuestion = activeDatabase.find(q => q.soru === activeQuestions[currentQuestionIndex].soru);
+
+        let currentQuestion = activeQuestions[currentQuestionIndex];
         let state = questionStates[currentQuestionIndex];
-        
+
         questionCounter.innerText = `${selectedCategory} - Soru ${currentQuestionIndex + 1} / ${activeQuestions.length}`;
         const answeredCount = questionStates.filter(s => s.status !== 'unanswered' && s.status !== 'flagged').length;
         const progressPercent = (answeredCount / activeQuestions.length) * 100;
         progressFill.style.width = `${progressPercent}%`;
+
         questionText.innerHTML = currentQuestion.soru;
-        
+
         let randomizedOptions = [...currentQuestion.secenekler].sort(() => Math.random() - 0.5);
         const prefixMap = ['A) ', 'B) ', 'C) ', 'D) '];
+
         randomizedOptions.forEach((option, oIdx) => {
             const button = document.createElement('button');
             const prefix = prefixMap[oIdx] || '';
             button.innerText = prefix + option;
             button.classList.add('btn');
-            
             if (state.status === 'unanswered' || state.status === 'flagged') {
                 button.addEventListener('click', () => checkMultipleChoice(button, option, currentQuestion.cevap, currentQuestion.aciklama));
             } else {
@@ -946,11 +988,12 @@
             }
             optionsContainer.appendChild(button);
         });
-        if(state.status !== 'unanswered' && state.status !== 'flagged') {
+
+        if (state.status !== 'unanswered' && state.status !== 'flagged') {
             showExplanationStatic(state.status === 'correct', currentQuestion.cevap, currentQuestion.aciklama);
         }
+
         prevBtn.disabled = (currentQuestionIndex === 0);
-        
         if (currentQuestionIndex === activeQuestions.length - 1) {
             nextBtn.innerText = "Sınavı Bitir";
             nextBtn.className = "nav-btn finish-style";
@@ -958,58 +1001,54 @@
             nextBtn.innerText = "Sonraki";
             nextBtn.className = "nav-btn next-style";
         }
+
         updateMatrixUI();
+        startQuestionTimer();
     }
+
+    // ============================================================
+    // 6. CEVAP KONTROLÜ
+    // ============================================================
     function checkMultipleChoice(selectedBtn, selectedOption, correctAnswer, aciklama) {
         let state = questionStates[currentQuestionIndex];
         let currentQuestion = activeQuestions[currentQuestionIndex];
         state.userA = selectedOption;
-        
         const buttons = optionsContainer.querySelectorAll('.btn');
         buttons.forEach(btn => btn.disabled = true);
+        stopQuestionTimer();
+
         if (selectedOption === correctAnswer) {
             state.status = 'correct';
             selectedBtn.classList.add('correct');
             playBeep(1200, 'sine', 0.15);
-            
             consecutiveWrong = 0;
             consecutiveCorrect++;
-            
             if (consecutiveCorrect === 20) {
                 openTrollModal("😎 KAPTAN MODU AKTİF 😎", "20 Peşpeşe Doğru! Kaptan Pilot gibi uçuyorsun! Motor sıcaklığı stabil, rüzgar tam karşıdan. Şov yapma, emniyetle devam et! 😎");
             }
-            
-            showExplanationStatic(state.status === 'correct', correctAnswer, aciklama);
+            showExplanationStatic(true, correctAnswer, aciklama);
             updateMatrixUI();
-            setTimeout(() => {
-                handleNextOrFinish();
-            }, 1000);
+            setTimeout(() => { handleNextOrFinish(); }, 1000);
         } else {
             state.status = 'wrong';
             selectedBtn.classList.add('wrong');
             buttons.forEach(btn => {
                 const optionTextWithoutPrefix = btn.innerText.substring(3);
-                if(optionTextWithoutPrefix === correctAnswer) btn.classList.add('correct');
+                if (optionTextWithoutPrefix === correctAnswer) btn.classList.add('correct');
             });
             playBeep(250, 'square', 0.3);
             logCategoryError(currentQuestion.cat);
-            
             consecutiveCorrect = 0;
             consecutiveWrong++;
-            
-            if (consecutiveWrong === 2) {
-                openTrollModal("⚠️ KOKPİT İKAZI ⚠️", "Arka Arkaya 2 Yanlış! Sanırım Stall'a giriyorsun kaptan? ✈️");
-            } else if (consecutiveWrong === 3) {
-                openTrollModal("🚨 MASTER CAUTION 🚨", "Maşallah Soluksuz 3 Yanlış! SOP'yi Hiç Okumamışsın! 🚨");
-            } else if (consecutiveWrong === 4) {
-                openTrollModal("❌ SİSTEM UYARISI ❌", "Gerçekten Tebrikler! Elinden hiç bir iş gelmiyor :) Biraz Dikkatli Oku!");
-            } else if (consecutiveWrong >= 5) {
-                openTrollModal("🚨 CRITICAL FAILURE 🚨", "İstersen Okumayı Öğrenmekle Başlayalım. Alfabemizde 29 Harf Mevcuttur. A-B-C-D-E şeklinde tekrar edelim!");
+            // Troll modal'ı seyrelt (sadece 5. yanlışta)
+            if (consecutiveWrong === 5) {
+                openTrollModal("🚨 CRITICAL FAILURE 🚨", "5. yanlış! Belki de limitleri tekrar gözden geçirmenin zamanı gelmiştir. ☕️");
             }
-            showExplanationStatic(state.status === 'wrong', correctAnswer, aciklama);
+            showExplanationStatic(false, correctAnswer, aciklama);
             updateMatrixUI();
         }
     }
+
     function flagQuestion() {
         let state = questionStates[currentQuestionIndex];
         if (state.status === 'unanswered') state.status = 'flagged';
@@ -1017,24 +1056,10 @@
         updateMatrixUI();
         handleNextOrFinish();
     }
-    function logCategoryError(category) {
-        let errors = JSON.parse(localStorage.getItem('cat_errors')) || {};
-        errors[category] = (errors[category] || 0) + 1;
-        localStorage.setItem('cat_errors', JSON.stringify(errors));
-    }
-    function showExplanationStatic(isCorrect, rightAnswer, text) {
-        explanationBox.innerHTML = `<strong>${isCorrect ? 'Doğru! ✔️' : 'Yanlış! ❌'}</strong> Doğru Cevap: ${rightAnswer}<br>${text}`;
-        explanationBox.style.display = 'block';
-    }
-    function prevQuestion() {
-        if (currentQuestionIndex > 0) {
-            currentQuestionIndex--;
-            loadQuestion();
-        }
-    }
+
     function pasQuestion() {
         let state = questionStates[currentQuestionIndex];
-        if(state.status === 'unanswered' || state.status === 'flagged') {
+        if (state.status === 'unanswered' || state.status === 'flagged') {
             state.status = 'pas';
             state.userA = '';
             consecutiveCorrect = 0;
@@ -1042,25 +1067,23 @@
         }
         handleNextOrFinish();
     }
-    
-    // FETCH (CLOUD) BÖLÜMÜ - TEXT/PLAIN VE YENİ FORMAT EKLENDİ
-    function sendDataToCloud(name, surname, aircraft, category, score, date) {
-        if(!GOOGLE_SHEETS_URL) return;
-        
-        const payload = { 
-            name: name, 
-            surname: surname, 
-            aircraft: aircraft, 
-            category: category, 
-            score: score, 
-            date: date 
-        };
-        
-        fetch(GOOGLE_SHEETS_URL, {
-            method: "POST",
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify(payload)
-        }).catch(err => console.log("Bulut gönderim hatası: ", err));
+
+    function logCategoryError(category) {
+        let errors = JSON.parse(localStorage.getItem('cat_errors')) || {};
+        errors[category] = (errors[category] || 0) + 1;
+        localStorage.setItem('cat_errors', JSON.stringify(errors));
+    }
+
+    function showExplanationStatic(isCorrect, rightAnswer, text) {
+        explanationBox.innerHTML = `<strong>${isCorrect ? 'Doğru! ✔️' : 'Yanlış! ❌'}</strong> Doğru Cevap: ${rightAnswer}<br>${text}`;
+        explanationBox.style.display = 'block';
+    }
+
+    function prevQuestion() {
+        if (currentQuestionIndex > 0) {
+            currentQuestionIndex--;
+            loadQuestion();
+        }
     }
 
     function handleNextOrFinish() {
@@ -1071,48 +1094,85 @@
             showResult();
         }
     }
-    
-    // SONUÇ EKRANI GÜNCELLENDİ (sendDataToCloud ile 6 parametreli gönderim yapıldı)
+
+    // ============================================================
+    // 7. SONUÇ EKRANI
+    // ============================================================
+    function sendDataToCloud(name, surname, aircraft, category, score, date) {
+        if (!GOOGLE_SHEETS_URL) return;
+        const payload = { name, surname, aircraft, category, score, date };
+        fetch(GOOGLE_SHEETS_URL, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify(payload)
+        }).catch(err => console.log("Bulut gönderim hatası: ", err));
+    }
+
     function showResult() {
-        clearInterval(quizTimerInterval);
+        stopQuestionTimer();
         quizTimerView.style.display = 'none';
         quizBody.style.display = 'none';
         progressBarContainer.style.display = 'none';
         questionCounter.style.display = 'none';
-        
+
         let correctCount = questionStates.filter(s => s.status === 'correct').length;
         let wrongCount = questionStates.filter(s => s.status === 'wrong').length;
         let pasCount = questionStates.filter(s => s.status === 'pas' || s.status === 'unanswered' || s.status === 'flagged').length;
-        
+
         const percentage = Math.round((correctCount / activeQuestions.length) * 100);
-        const testDate = new Date().toLocaleDateString('tr-TR', {hour: '2-digit', minute:'2-digit'});
-        
+        const testDate = new Date().toLocaleDateString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+
         let acLabel = 'AC';
         if (selectedAircraft === 'Diamond DA40 NG') acLabel = 'DA40';
         else if (selectedAircraft === 'Aquila A211') acLabel = 'A211';
         else if (selectedAircraft === 'Diamond DA20 Eclipse') acLabel = 'DA20';
         else if (selectedAircraft === 'Diamond DA42 NG') acLabel = 'DA42';
-        
+
         saveHistory(`${acLabel}-${selectedCategory.substring(0,5).toUpperCase()}`, percentage);
-        
-        // Yeni Fetch Fonksiyonu çağırıldı (Eksiksiz 6 Parametre ile)
         sendDataToCloud(currentName, currentSurname, selectedAircraft, selectedCategory, percentage, testDate);
-        
+
         resultBody.style.display = 'block';
         document.getElementById('score').innerText = correctCount;
         document.getElementById('total').innerText = activeQuestions.length;
         userScoreMsg.innerText = `Pilot Sayın ${currentName} ${currentSurname}, Sınav Başarı Oranınız: %${percentage}`;
-        
+
         if (percentage >= 80 && selectedCategory === 'General') {
             certDownloadBtn.style.display = 'block';
         }
+
+        // Yanlışları tekrar et butonunu göster
+        if (wrongCount > 0) {
+            retryWrongBtn.style.display = 'block';
+            // Yanlış soruları topla
+            wrongQuestionsForRetry = activeQuestions.filter((_, idx) => questionStates[idx].status === 'wrong');
+        } else {
+            retryWrongBtn.style.display = 'none';
+        }
+
         calculateCategoryMetrics();
         buildReviewList();
-        setTimeout(() => {
-            renderPieChart(correctCount, wrongCount, pasCount);
-        }, 150);
+        setTimeout(() => { renderPieChart(correctCount, wrongCount, pasCount); }, 150);
     }
-    
+
+    function retryWrongQuestions() {
+        if (wrongQuestionsForRetry.length === 0) {
+            alert("Hiç yanlış soru yok, tebrikler!");
+            return;
+        }
+        // Sadece yanlış sorularla yeni bir sınav başlat
+        activeQuestions = [...wrongQuestionsForRetry];
+        questionStates = activeQuestions.map(() => ({ status: 'unanswered', userA: '' }));
+        currentQuestionIndex = 0;
+        consecutiveCorrect = 0;
+        consecutiveWrong = 0;
+        resultBody.style.display = 'none';
+        quizBody.style.display = 'block';
+        progressBarContainer.style.display = 'block';
+        buildMatrix();
+        loadQuestion();
+        startQuestionTimer();
+    }
+
     function calculateCategoryMetrics() {
         const catData = {};
         activeQuestions.forEach((q, idx) => {
@@ -1133,10 +1193,11 @@
         }
         categoryBreakdownBox.innerHTML = html;
     }
+
     function buildReviewList() {
         reviewListBox.innerHTML = '';
-        let wrongQuestions = activeQuestions.filter((_, idx) => questionStates[idx].status === 'wrong');
-        if (wrongQuestions.length === 0) {
+        let wrongItems = activeQuestions.filter((_, idx) => questionStates[idx].status === 'wrong');
+        if (wrongItems.length === 0) {
             reviewListBox.innerHTML = `<div style="color:#2f855a; font-weight:600; text-align:center;">Harika! Hiç yanlışınız bulunmuyor. 🎉</div>`;
             return;
         }
@@ -1154,6 +1215,7 @@
             }
         });
     }
+
     function toggleReviewList() {
         if (reviewListBox.style.display === 'none') {
             reviewListBox.style.display = 'block';
@@ -1163,21 +1225,19 @@
             document.getElementById('review-toggle-btn').innerText = "Hataları İncele 🔍";
         }
     }
+
     function renderPieChart(correct, wrong, pas) {
         const canvas = document.getElementById('pie-canvas');
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         const total = correct + wrong + pas;
-        if(total === 0) return;
+        if (total === 0) return;
         const data = [correct, wrong, pas];
-        const colors = ['#48bb78', '#f56565', '#a0aec0']; 
+        const colors = ['#48bb78', '#f56565', '#a0aec0'];
         const labels = ['Doğru', 'Yanlış', 'Boş/Pas/Flag'];
-        let centerX = 100;
-        let centerY = 100;
-        let radius = 75;
-        let startAngle = 0;
+        let centerX = 100, centerY = 100, radius = 75, startAngle = 0;
         for (let i = 0; i < data.length; i++) {
-            if(data[i] === 0) continue;
+            if (data[i] === 0) continue;
             let sliceAngle = (data[i] / total) * 2 * Math.PI;
             ctx.beginPath();
             ctx.fillStyle = colors[i];
@@ -1188,8 +1248,7 @@
             startAngle += sliceAngle;
         }
         ctx.font = '12px Arial';
-        let legendX = 200;
-        let legendY = 50;
+        let legendX = 200, legendY = 50;
         for (let i = 0; i < data.length; i++) {
             ctx.fillStyle = colors[i];
             ctx.fillRect(legendX, legendY + (i * 25), 15, 15);
@@ -1197,18 +1256,24 @@
             ctx.fillText(`${labels[i]}: ${data[i]}`, legendX + 22, legendY + 12 + (i * 25));
         }
     }
+
+    // ============================================================
+    // 8. YARDIMCI FONKSİYONLAR (GEÇMİŞ, GRAFİK, SERTİFİKA, ADMIN)
+    // ============================================================
     function backToMenu() { showMainMenu(); }
+
     function saveHistory(acLabel, pct) {
         let history = JSON.parse(localStorage.getItem('quiz_history')) || [];
         const newRecord = {
-            pilot: `${currentName} ${currentSurname}`, 
+            pilot: `${currentName} ${currentSurname}`,
             aircraft: acLabel,
             score: pct,
-            date: new Date().toLocaleDateString('tr-TR', {hour: '2-digit', minute:'2-digit'})
+            date: new Date().toLocaleDateString('tr-TR', { hour: '2-digit', minute: '2-digit' })
         };
         history.push(newRecord);
         localStorage.setItem('quiz_history', JSON.stringify(history));
     }
+
     function handleSignatureClick() {
         signatureClickCount++;
         if (signatureClickCount === 3) {
@@ -1222,10 +1287,11 @@
             signatureClickCount = 0;
         }
     }
+
     function updateAdminTable() {
         const history = JSON.parse(localStorage.getItem('quiz_history')) || [];
         adminTableBody.innerHTML = '';
-        if(history.length === 0) {
+        if (history.length === 0) {
             adminTableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#a0aec0;">Henüz sınav kaydı bulunmuyor.</td></tr>`;
             return;
         }
@@ -1240,14 +1306,16 @@
             adminTableBody.appendChild(row);
         });
     }
+
     function clearAdminLogs() {
-        if(confirm("Tüm kullanıcı sınav geçmişini silmek istediğinize emin misiniz?")) {
+        if (confirm("Tüm kullanıcı sınav geçmişini silmek istediğinize emin misiniz?")) {
             localStorage.removeItem('quiz_history');
             localStorage.removeItem('cat_errors');
             updateAdminTable();
             drawChart();
         }
     }
+
     function drawChart() {
         const history = JSON.parse(localStorage.getItem('quiz_history')) || [];
         const canvas = document.getElementById('stats-canvas');
@@ -1262,7 +1330,6 @@
         const padding = 30;
         const chartWidth = canvas.width - padding * 2;
         const chartHeight = canvas.height - padding * 2;
-        
         ctx.beginPath();
         ctx.strokeStyle = '#cbd5e0';
         ctx.lineWidth = 1;
@@ -1276,14 +1343,14 @@
         displayHistory.forEach((data, index) => {
             const x = padding + (index * stepX);
             const y = (canvas.height - padding) - (data.score / 100 * chartHeight);
-            points.push({x, y, label: data.aircraft, score: data.score});
+            points.push({ x, y, label: data.aircraft, score: data.score });
         });
         if (points.length > 0) {
             ctx.beginPath();
             ctx.strokeStyle = '#328cc1';
             ctx.lineWidth = 3;
             ctx.moveTo(points[0].x, points[0].y);
-            for(let i=1; i<points.length; i++) ctx.lineTo(points[i].x, points[i].y);
+            for (let i = 1; i < points.length; i++) ctx.lineTo(points[i].x, points[i].y);
             ctx.stroke();
         }
         points.forEach(p => {
@@ -1298,6 +1365,7 @@
             ctx.fillText(p.label, p.x - 12, canvas.height - padding + 15);
         });
     }
+
     function wrapText(context, text, x, y, maxWidth, lineHeight) {
         var words = text.split(' ');
         var line = '';
@@ -1316,6 +1384,7 @@
         context.fillText(line, x, y);
         return y;
     }
+
     function generateCertificate() {
         const canvas = document.createElement('canvas');
         canvas.width = 850;
@@ -1341,24 +1410,42 @@
         ctx.fillText(`${currentName.toUpperCase()} ${currentSurname.toUpperCase()}`, 425, 190);
         ctx.fillStyle = '#ffffff';
         ctx.font = '15px Arial';
-        
         const mainText = `Bu belge, seçmiş olduğu ${selectedAircraft.toUpperCase()} uçağının motorunu yakmadan, kanatlarını eline almadan, kokpitteki Master Caution ışıklarını yakıp uçağı ''Gece Kulübüne'' çevirmeden uçabileceğini gösterir. Uçağı limitlerinde emniyetle uçurmanız tamamen kendi hayatta kalma içgüdünüzle ve edeceğiniz duaların gücüyle alakalıdır.`;
-        
         let lastY = wrapText(ctx, mainText, 425, 240, 680, 24);
         ctx.fillStyle = '#d4af37';
         ctx.font = 'bold 24px Arial';
         ctx.fillText(`${pilotEmoji}   Başarı Belgesi   ${pilotEmoji}`, 425, lastY + 50);
         ctx.fillStyle = '#fc8181';
         ctx.font = 'bold 11px Arial';
-        
         const disclaimerText = `⚠️ Yasal Uyarı: Bu belge tamamen eğlence amacıyla üretilmiştir. Öğretmenlerinize göstermeniz durumunda lisansınızın askıya alınması, meydandan kovulmanıza veya en hafifinden " Senden Pilot Olmaz !! " bakışlarına maruz kalmanıza sebob olur. `;
-        
         wrapText(ctx, disclaimerText, 425, lastY + 100, 700, 16);
         const link = document.createElement('a');
         link.download = `${currentName}_${currentSurname}_Limit_Sertifikasi.png`;
         link.href = canvas.toDataURL();
         link.click();
     }
+
+    // ============================================================
+    // 9. SWIPE DESTEĞİ (MOBİL)
+    // ============================================================
+    let touchStartX = 0;
+    let touchEndX = 0;
+    document.addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+    document.addEventListener('touchend', e => {
+        touchEndX = e.changedTouches[0].screenX;
+        const diff = touchStartX - touchEndX;
+        if (Math.abs(diff) > 50) {
+            if (diff > 0) {
+                // sola kaydır -> sonraki
+                if (quizBody.style.display !== 'none') handleNextOrFinish();
+            } else {
+                // sağa kaydır -> önceki
+                if (quizBody.style.display !== 'none') prevQuestion();
+            }
+        }
+    }, { passive: true });
 </script>
 </body>
 </html>
